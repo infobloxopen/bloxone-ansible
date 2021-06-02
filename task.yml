@@ -1,0 +1,137 @@
+---
+- hosts: localhost
+  vars_files:
+    - vars_file.yaml
+  tasks:
+    - name:  zone vhost  dataaaaa
+      debug: msg="{{ item['zones'] | type_debug}}"
+      with_items: 
+       - "{{ views }}"
+ 
+      
+    - name: craete view list
+      set_fact: create_dns_view_list="{{  create_dns_view_list + [item['name']] *  item['zones']|length }}"
+      with_items:
+      - "{{ views }}"
+      vars:
+       - create_dns_view_list: []
+    
+   
+    - name: create zone list
+      set_fact: create_dns_zone_list="{{ create_dns_zone_list + item['zones']  }}"
+      with_items:
+      - "{{ views }}"
+      vars:
+       - create_dns_zone_list: [] 
+
+
+    - set_fact: primary_zone_fqdn="{{ primary_zone_fqdn +  [item['fqdn']] * item['record']|length  }}"
+      with_items: 
+       - "{{ create_dns_zone_list }}"
+      
+      vars:
+       - primary_zone_fqdn: []
+
+
+    - set_fact: primary_zone_fqdn_arecord="{{ primary_zone_fqdn_arecord +  [item['fqdn']] * ( item['record'] |  selectattr("type", "equalto", ( 'arecord')) | length )}}"
+      with_items:
+       - "{{ create_dns_zone_list }}"
+      vars:
+       - primary_zone_fqdn_arecord: []
+
+
+    - set_fact: primary_zone_fqdn_cname="{{ primary_zone_fqdn_cname +  [item['fqdn']] * ( item['record'] |  selectattr("type", "equalto", ( 'cname')) | length )}}"
+      with_items:
+       - "{{ create_dns_zone_list }}"
+      vars:
+       - primary_zone_fqdn_cname: []
+
+    - set_fact: primary_zone_fqdn_ptr="{{ primary_zone_fqdn_ptr +  [item['fqdn']] * ( item['record'] |  selectattr("type", "equalto", ( 'ptr')) | length )}}"
+      with_items:
+       - "{{ create_dns_zone_list }}"
+      vars:
+       - primary_zone_fqdn_ptr: []
+
+    - set_fact: primary_zone_fqdn_ns="{{ primary_zone_fqdn_ns +  [item['fqdn']] * ( item['record'] |  selectattr("type", "equalto", ( 'ns')) | length )}}"
+      with_items:
+       - "{{ create_dns_zone_list }}"
+      vars:
+       - primary_zone_fqdn_ns: []
+
+
+    - set_fact: auth_server="{{ auth_server +  [item['host']] }}"
+      with_items:
+       - "{{ create_dns_zone_list }}"
+      vars:
+       - auth_server: []
+   
+
+    - set_fact: record_list="{{ record_list +  item['record'] }}"
+      with_items:
+       - "{{ create_dns_zone_list }}"
+      vars:
+       - record_list: []
+   
+
+    -  debug: msg="{{  item | json_query('type') }}"
+       with_items:
+        - "{{ record_list }}"
+
+    - set_fact: A_record_ip="{{ A_record_ip +  [item['record_ip']] }}"
+      when: item | json_query('type') == "arecord"  
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - A_record_ip: []
+
+    - set_fact: A_record_name="{{ A_record_name +  [item['name']] }}"
+      when: item | json_query('type') == "arecord"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - A_record_name: [] 
+
+    - set_fact: cname="{{ cname +  [item['cname']] }}"
+      when: item | json_query('type') == "cname"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - cname: []
+
+
+    - set_fact: cname_name="{{ cname_name +  [item['name']] }}"
+      when: item | json_query('type') == "cname"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - cname_name: []
+
+
+    - set_fact: ptr_domain_name="{{ ptr_domain_name +  [item['ptr_domain']] }}"
+      when: item | json_query('type') == "ptr"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - ptr_domain_name: []
+
+    - set_fact: ptr_address="{{ ptr_address +  [item['ptr_address']] }}"
+      when: item | json_query('type') == "ptr"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - ptr_address: []
+
+    - set_fact: ns_name="{{ ns_name +  [item['ns_name']] }}"
+      when: item | json_query('type') == "ns"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - ns_name: []
+
+    - set_fact: ns_server="{{ ns_server +  [item['ns_server']] }}"
+      when: item | json_query('type') == "ns"
+      with_items:
+       - "{{ record_list }}"
+      vars:
+       - ns_server: []
+

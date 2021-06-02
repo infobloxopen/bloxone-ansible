@@ -1,0 +1,5 @@
+
+[all:vars]
+api_key=1aee720884b452e251bdc9df84f2d4a3
+host_server=https://env-6.test.infoblox.com/
+

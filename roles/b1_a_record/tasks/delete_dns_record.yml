@@ -1,0 +1,12 @@
+
+- name: Delete A record
+  b1_a_record:
+    dns_view_auth_key: "{{ api_key }}"
+    name: "{{ item }}"
+    host: "{{ host_server }}"
+    state: absent
+  with_items: "{{ zone_id_arecord_delete }}"
+  when: zone_id_arecord_delete is defined
+
+
+   

@@ -1,0 +1,97 @@
+
+#- hosts: localhost
+#  tasks:
+
+   - name: Get dns primary zone
+     b1_a_record:
+       dns_view_auth_key: "{{ api_key }}"
+       state: gather
+       host: "{{ host_server }}"
+     register: zone_result
+   - name: filter zone host data
+     set_fact: zone_dict="{{ item  }}"
+     when: item | type_debug == "dict"
+     with_items: "{{ zone_result.values() }}"
+
+   - name: Print zone vhost  dataaaaa
+     #debug: msg="{{item.value | type_debug}}"
+     #debug: msg="{{ item.value | map('json_query','{ip_address:ip_address,id:id}')  }}"
+     set_fact: zone_view_list="{{ item.value | map('json_query','{view_name:view_name,id:id,zone:zone,absolute_zone_name:absolute_zone_name,type:type,source:source,name_in_zone:name_in_zone}')   }}"
+     loop: "{{ zone_dict | dict2items}}"
+
+   - name: Get dns primary zone
+     debug: msg="{{ zone_view_list | sort(attribute='view_name')}}"
+
+   - name: fetch zone record
+     set_fact: zone_id_arecord="{{ zone_id_arecord + (zone_view_list|selectattr	('absolute_zone_name', 'equalto', ( item + "." ))) | map(attribute='zone') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_arecord }}"
+     vars:
+       zone_id_arecord: []
+
+   - name: fetch  record delete
+     set_fact: zone_id_arecord_delete="{{ zone_id_arecord_delete + ((zone_view_list|selectattr ("type", "equalto", "A" ) | selectattr ('absolute_zone_name', 'equalto', ( item + "." )))) | map(attribute='id') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}" and (zone_view_list|selectattr("type", "equalto", "A"))
+     with_items: "{{ primary_zone_fqdn_arecord | unique }}"
+     vars:
+       zone_id_arecord_delete: []
+
+   #- debug: msg="{{ zone_id_arecord_delete }}"
+
+   - name: fetch zone cname
+     set_fact: zone_id_cname="{{ zone_id_cname + (zone_view_list|selectattr ('absolute_zone_name', 'equalto', ( item + "." ))) | map(attribute='zone') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_cname }}"
+     vars:
+       zone_id_cname: []
+
+   - name: fetch  cname delete
+     set_fact: zone_id_cname_delete="{{ zone_id_cname_delete + ((zone_view_list|selectattr ("type", "equalto", "CNAME" ) | selectattr ('absolute_zone_name', 'equalto', ( item + "." )))) | map(attribute='id') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_cname|unique }}"
+     vars:
+       zone_id_cname_delete: []
+
+
+   - name: fetch zone ptr
+     set_fact: zone_id_ptr="{{ zone_id_ptr + (zone_view_list|selectattr ('absolute_zone_name', 'equalto', ( item + "." ))) | map(attribute='zone') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_ptr  }}"
+     vars:
+       zone_id_ptr: []
+
+   - name: fetch  ptr delete
+     set_fact: zone_id_ptr_delete="{{ zone_id_ptr_delete + ((zone_view_list|selectattr ("type", "equalto", "PTR" ) | selectattr ('absolute_zone_name', 'equalto', ( item + "." )))) | map(attribute='id') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_ptr | unique }}"
+     vars:
+       zone_id_ptr_delete: []
+
+   - name: fetch zone ns
+     set_fact: zone_id_ns="{{ zone_id_ns + (zone_view_list|selectattr ('absolute_zone_name', 'equalto', ( item + "." ))) | map(attribute='zone') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_ns }}"
+     vars:
+       zone_id_ns: []
+
+   - name: fetch  ns delete
+     set_fact: zone_id_ns_delete="{{ zone_id_ns_delete + ((zone_view_list|selectattr ("type", "equalto", "NS" ) | selectattr ('absolute_zone_name', 'equalto', ( item + "." )))) | rejectattr ('source', 'equalto', ['SYSTEM']) | map(attribute='id') | unique | list | flatten  }}"
+     when: (zone_view_list|selectattr("absolute_zone_name", "equalto", ( item + "."))) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ primary_zone_fqdn_ns | unique }}"
+     vars:
+       zone_id_ns_delete: []
+
+   #- name: set unique zone id
+   #  set_fact: zone_id= "{{ server | map(attribute='tagged_instances') | list | flatten }}"
+
+   - debug: msg="{{ zone_id_arecord }}"
+     when: "{{ auth_server|length>0 }}"
+
+   - name: fetch record id
+     set_fact: record_id="{{ record_id + [(zone_view_list|selectattr('view_name', 'equalto', item )) | map(attribute='id') | first] }}"
+     when: (zone_view_list|selectattr("view_name", "equalto", item )) and "{{ create_dns_view_list|length>0 }}"
+     with_items: "{{ create_dns_view_list }}"
+     vars:
+       record_id: []
+
+   - debug: msg="{{ record_id }}"

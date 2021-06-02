@@ -1,0 +1,16 @@
+
+
+- name: Create A record
+  b1_a_record:
+    name: "{{ item.2 }}"
+    fqdn: "{{ item.0 }}"
+    ip_address: "{{ item.1 }}"
+    type: "A"
+    dns_view_auth_key: "{{ api_key }}"
+    host: "{{ host_server }}"
+    state: present
+  when: item.2 != None and item.1 != None and item.0 != None
+  with_together:
+    - "{{ A_record_name }}"
+    - "{{ A_record_ip }}" 
+    - "{{ zone_id_arecord }}"

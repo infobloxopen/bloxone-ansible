@@ -1,0 +1,7 @@
+
+- name: Delete zone list
+  set_fact: delete_dns_zone_list="{{ delete_dns_zone_list  +  [ (zone_view_list|selectattr('id', 'equalto', item.id )) | map(attribute='id') | first ]}}"
+  when: "{{ item.view in view_id and view_id is defined }}"
+  with_items: "{{ zone_view_list }}"
+  vars:
+    delete_dns_zone_list: []

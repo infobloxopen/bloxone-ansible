@@ -1,0 +1,18 @@
+
+   - name: Get dns primary zone
+     b1_dns_zone:
+       dns_view_auth_key: "{{ api_key }}"
+       state: gather
+       host: "{{ host_server }}"
+     register: zone_result
+
+   - name: filter zone host data
+     set_fact: zone_dict="{{ item  }}"
+     when: item | type_debug == "dict"
+     with_items: "{{ zone_result.values() }}"
+
+   - name:  zone vhost  dataaaaa
+     set_fact: zone_view_list="{{ item.value | map('json_query','{id:id,view:view}')  }}"
+     loop: "{{ zone_dict | dict2items}}"
+
+

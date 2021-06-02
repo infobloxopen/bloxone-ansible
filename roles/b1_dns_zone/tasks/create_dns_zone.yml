@@ -1,0 +1,17 @@
+
+- name: Create dns primary zone
+  b1_dns_zone:
+     name: "{{ item.0 }}"
+     fqdn: "{{ item.2 }}"
+     internal_secondaries: "dns/host/{{ item.1 }}"
+     primary_type: "cloud"
+     dns_view_auth_key: "{{ api_key }}"
+     host: "{{ host_server }}"
+     state: present
+  when: item.0 != None and item.1 != None and item.2 != None
+  with_together:
+    - "{{ view_id }}"
+    - "{{ host_id }}"
+    - "{{ primary_zone_fqdn | unique }}" 
+
+

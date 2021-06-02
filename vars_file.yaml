@@ -1,0 +1,98 @@
+---
+  views:
+    - name: TME-View1
+      desc: test1
+      zones:
+       - fqdn: dev1.com
+         host: 172.28.4.212
+         record:
+          - name: record_1_1
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_1_2
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_cname_1
+            type: cname
+            cname: defgh
+          - name: record_cname1_2
+            type: cname
+            cname: dddd
+          - ptr_domain: ptr1_1
+            type: ptr
+            ptr_address: 10.10.10.10
+          - ns_name: ns1_1
+            type: ns
+            ns_server: abcd
+    - name: TME-View2
+      desc: test1
+      zones:
+       - fqdn: dev2.com
+         host: 172.28.4.212
+         record:
+          - name: record_2_1
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_2_2
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_cname_2
+            type: cname
+            cname: defgh
+          - name: record_cname2_2
+            type: cname
+            cname: dddd
+          - ptr_domain: ptr2_1
+            type: ptr
+            ptr_address: 10.10.10.10
+          - ns_name: ns2
+            type: ns
+            ns_server: abcd
+    - name: TME-View3
+      desc: test1
+      zones:
+       - fqdn: dev3.com
+         host: 172.28.4.212
+         record:
+          - name: record_3_1
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_3_2
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_cname3
+            type: cname
+            cname: defgh
+          - name: record_cname3_2
+            type: cname
+            cname: dddd
+          - ptr_domain: ptr3
+            type: ptr
+            ptr_address: 10.10.10.10
+          - ns_name: ns3
+            type: ns
+            ns_server: abcd
+    - name: TME-View4
+      desc: test1
+      zones:
+       - fqdn: dev4.com
+         host: 172.28.4.212
+         record:
+          - name: record_4
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_4_2
+            type: arecord
+            record_ip: 10.10.10.13
+          - name: record_cname_4
+            type: cname
+            cname: defgh
+          - name: record_cname4_2
+            type: cname
+            cname: dddd
+          - ptr_domain: ptr4
+            type: ptr
+            ptr_address: 10.10.10.10
+          - ns_name: ns4
+            type: ns
+            ns_server: abcd

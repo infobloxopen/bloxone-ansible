@@ -1,0 +1,18 @@
+---
+# tasks file for b1_gather
+
+- import_tasks: gather_dns_view_bddi.yml
+  when: create_dns_view is defined or delete_dns_view is defined or create_dns_zone is defined or delete_dns_zone is defined or get_dns_view is defined  
+
+- import_tasks: gather_dns_zone.yml
+  when: delete_dns_view is defined or delete_dns_zone is defined
+
+- import_tasks: gather_dns_zone_hosts.yml
+  when: create_dns_zone is defined 
+
+- import_tasks: gather_zone_delete.yml 
+  when: delete_dns_zone is defined or delete_dns_view is defined
+
+- import_tasks: gather_dns_record.yml
+  when: create_a_record is defined or delete_a_record is defined or create_cname_record is defined or delete_cname_record is defined or create_ptr_record is defined or delete_ptr_record is defined or create_ns_record is defined or delete_ns_record is defined or get_dns_view is defined
+ 

@@ -1,0 +1,16 @@
+
+
+- name: Create ns
+  b1_ns_record:
+    name: "{{ item.2 }}"
+    ns_name: "{{ item.0 }}"
+    ns_server: "{{ item.1 }}" 
+    type: "NS"
+    dns_view_auth_key: "{{ api_key }}"
+    host: "{{ host_server }}"
+    state: present
+  when: item.2 != None and item.1  != None
+  with_together:
+    - "{{ ns_name }}"
+    - "{{ ns_server }}" 
+    - "{{ zone_id_ns }}"

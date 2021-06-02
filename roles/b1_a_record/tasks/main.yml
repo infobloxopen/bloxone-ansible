@@ -1,0 +1,8 @@
+---
+# tasks file for b1_record
+
+- import_tasks: create_dns_record.yml
+  when: create_a_record is defined
+
+- import_tasks: delete_dns_record.yml
+  when: delete_a_record is defined
