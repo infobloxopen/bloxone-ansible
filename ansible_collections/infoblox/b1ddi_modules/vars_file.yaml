@@ -1,5 +1,4 @@
----
-  views:
+- views:
     - name: TME-View1
       desc: test1
       zones:
@@ -28,7 +27,7 @@
       desc: test1
       zones:
        - fqdn: dev2.com
-         host: 172.28.4.212
+         host: 172.28.4.210
          record:
           - name: record_2_1
             type: arecord
@@ -52,7 +51,7 @@
       desc: test1
       zones:
        - fqdn: dev3.com
-         host: 172.28.4.212
+         host: 172.28.4.239
          record:
           - name: record_3_1
             type: arecord
@@ -76,7 +75,7 @@
       desc: test1
       zones:
        - fqdn: dev4.com
-         host: 172.28.4.212
+         host: 172.28.4.239
          record:
           - name: record_4
             type: arecord
