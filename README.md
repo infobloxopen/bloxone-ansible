@@ -50,26 +50,28 @@ To run a playbook, complete the following:
 2. Update the names of the objects to be created and deleted in vars_file.yaml. 
 
 Example:
-'''---
+--------
+```shell
   views:
      - name: devops1
-  	 desc: test1
-  	 zones:
-   	 - fqdn: dev1.com
+  	    desc: test1
+  	    zones:
+   	   - fqdn: dev1.com
          host: 172.28.4.128
          record:
-      	- name: record_1
+      	     - name: record_1
               record_ip: 10.10.10.13
-   	- fqdn: dev2.com
-        host: 172.28.4.128
-        record:
+   	   - fqdn: dev2.com
+         host: 172.28.4.128
+         record:
      	      - name: record_2
               record_ip: 10.10.10.14
-      - fqdn: dev3.com
-        host: 172.28.4.128
-        record:
+       - fqdn: dev3.com
+         host: 172.28.4.128
+         record:
      	      - name: record_3
-              record_ip: 10.10.10.14'''
+              record_ip: 10.10.10.14
+```
  
 3. Execute the following commands for running the playbook:
 
