@@ -18,12 +18,12 @@ Modules
 --------
 The `infoblox.b1ddi_modules` collection has the following content:
 
-- `b1_dns_view`: Module to create and delete dns view
-- `b1_dns_zone`: Module to create and delete dns zone
+- `b1_dns_view`: Module to create and delete DNS view
+- `b1_dns_zone`: Module to create and delete DNS zone
 - `b1_a_record`: Module to create and delete A record
-- `b1_cname_record`: Module to create and delete cname record
-- `b1_ptr_record`: Module to Create and delete ptr record
-- `b1_ns_record`: Module to Create and delta ns record
+- `b1_cname_record`: Module to create and delete CNAME record
+- `b1_ptr_record`: Module to create and delete PTR record
+- `b1_ns_record`: Module to create and delete NS record
 
 
 Role Variables
@@ -31,13 +31,14 @@ Role Variables
  
 You need to provide the following variables as an extra var character to the Ansible playbook during runtime:
  
-- `create_dns_view`: For creating a view
-- `delete_dns_view`: For deleting a view
-- `create_dns_zone`: For creating a zone
-- `delete_dns_zone`: For deleting a zone
-- `create_a_record`: For creating a record
-- `delete_a_record`: For deleting a record
+- `create_dns_view`: For creating a DNS view
+- `delete_dns_view`: For deleting a DNS view
+- `create_dns_zone`: For creating a DNS zone
+- `delete_dns_zone`: For deleting a DNS zone
+- `create_a_record`: For creating an A record
+- `delete_a_record`: For deleting an A record
 - `create_ns_record`: For creating an NS record
+- `delete_ns_record`: For deleting an NS record
 - `create_ptr_record`: For creating a PTR record
 - `delete_ptr_record`: For deleting a PTR record
 
@@ -91,7 +92,11 @@ $ ansible-playbook configure.yml -e create_dns_zone=True
 ```shell
 $ ansible-playbook configure.yml -e delete_dns_zone=True
 ```
- 
+
+Limitations
+===========
+The update operation is currently not supported
+
 License
 =======
  
