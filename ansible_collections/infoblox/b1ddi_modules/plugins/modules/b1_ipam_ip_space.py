@@ -8,12 +8,12 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: b1_dns_view
-author: "Vedant Sethia (@vedantsethia)/Amit Mishra (@amishra2-infoblox)"
-short_description: Configure DNS View on Infoblox BloxOne DDI
+module: b1_ipam_ip_space
+author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
+short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
-  - Get, Create, Update and Delete DNS View on Infoblox BloxOne DDI. This module manages the DNS View object using BloxOne REST APIs.
+  -  Create, Update and Delete IP spaces on Infoblox BloxOne DDI. This module manages the IPAM IP space object using BloxOne REST APIs.
 requirements:
   - requests
 options:
@@ -52,73 +52,58 @@ options:
     choices:
       - present
       - absent
-      - get
     required: true
 '''
 
-  
 EXAMPLES = '''
+   - name: Create IP space
+     b1_ipam_ip_space:
+        name: "Test-Ansible-Space"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "Engineering"
+        comment: "This is a test IPSpace to validate Infoblox Ansible Collection"
+        host: "{{ host_server }}"
+        api_key: "{{ api }}"
+        state: present
 
-- name: GET all DNS View
-  b1_dns_view:
-    api_key: "{{ api_key }}"
-    host: "{{ host_server }}"
-    state: get
+   - name: Update the IPSpace
+     b1_ipam_ip_space:
+        name: "Test-Ansible-Space"
+        tags:
+          - "Status": "Working"
+          - "GeoLoc": "India"
+        host: "{{ host_server }}"
+        api_key: "{{ api }}"
+        state: present
 
-- name: GET DNS View
-  b1_dns_view:
-    name: "{{ name of the dns_view }}"
-    api_key: "{{ api_key }}"
-    host: "{{ host_server }}"
-    state: get
-
-- name: Create DNS View
-  b1_dns_view:
-    name: "{{ name of the dns_view }}"
-    tags:
-      - {{ key }}: "{{ value }}"
-    comment: "{{ comment }}"
-    api_key: "{{ api_key }}"
-    host: "{{ host_server }}"
-    state: present
-
-- name: Update DNS View
-  b1_dns_view:
-    name: '{"new_name": "{{ new name of the dns_view }}", "old_name": "{{ old name of the dns_view }}"}'
-    tags:
-      - {{ key }}: "{{ value }}"
-    comment: "{{ comment }}"
-    api_key: "{{ api_key }}"
-    host: "{{ host_server }}"
-    state: present
-
-- name: Delete DNS View
-  b1_dns_view:
-    name: "{{ name of the dns_view }}"
-    api_key: "{{ api_key }}"
-    host: "{{ host_server }}"
-    state: absent
+   - name: Delete IP space
+      b1_ipam_ip_space:
+        name: "Test-Ansible-Space"
+        host: "{{ host_server }}"
+        api_key: "{{ api }}"
+        state: absent
 
 '''
 
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.b1ddi import Request, Utilities
+from ..module_utils.b1ddi import Request, Utilities
 import json
 
-def get_dns_view(data):
-    '''Fetches the BloxOne DDI DNS View object
+def get_ip_space(data):
+    '''Fetches the BloxOne DDI IP Space object
     '''
     connector = Request(data['host'], data['api_key'])
     if data['name'] == '':
-        return connector.get('/api/ddi/v1/dns/view')
+        return connector.get('/api/ddi/v1/ipam/ip_space')
     else:
-        endpoint = '{}\"{}\"'.format('/api/ddi/v1/dns/view?_filter=name==',data['name'])
+        endpoint = '{}\"{}\"'.format('/api/ddi/v1/ipam/ip_space?_filter=name==',data['name'])
         return connector.get(endpoint)
 
-def update_dns_view(data):
-    '''Updates the existing BloxOne DDI DNS View object
+def update_ip_space(data):
+    '''Updates the existing BloxOne DDI IP Space object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
@@ -133,11 +118,11 @@ def update_dns_view(data):
     else:
         new_name = data['name']
 
-    reference = get_dns_view(data)
+    reference = get_ip_space(data)
     if('results' in reference[2].keys() and len(reference[2]['results']) > 0):
         ref_id = reference[2]['results'][0]['id']
     else:
-        return(True, False, {'status': '400', 'response': 'DNS View not found', 'data':data})
+        return(True, False, {'status': '400', 'response': 'IP Space not found', 'data':data})
     payload={}
     payload['name'] = new_name
     payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
@@ -147,36 +132,36 @@ def update_dns_view(data):
     endpoint  = '{}{}'.format('/api/ddi/v1/',ref_id)
     return connector.update(endpoint, payload)
     
-def create_dns_view(data):
-    '''Creates a new BloxOne DDI DNS View object
+def create_ip_space(data):
+    '''Creates a new BloxOne DDI IP Space object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
     if data['name'] != '':
         if 'new_name' in data['name']:
-            return update_dns_view(data)
+            return update_ip_space(data)
         else:
-            ip_space = get_dns_view(data)
+            ip_space = get_ip_space(data)
             payload={}
-            if(len(ip_space[2]['results']) > 0):
-                return update_dns_view(data)
+            if('results' in ip_space[2].keys() and len(ip_space[2]['results']) > 0):
+                return update_ip_space(data)
             else:
                 payload['name'] = data['name']
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
                 if 'tags' in data.keys():
                     payload['tags']=helper.flatten_dict_object('tags',data)
                 
-                return connector.create('/api/ddi/v1/dns/view', payload)
+                return connector.create('/api/ddi/v1/ipam/ip_space', payload)
     else:
         return(True, False, {'status': '400', 'response': 'object name not defined','data':data})                
 
-def delete_dns_view(data):
-    '''Delete a BloxOne DDI DNS View object
+def delete_ip_space(data):
+    '''Delete a BloxOne DDI IP space object
     '''
     if data['name'] != '':
         connector = Request(data['host'], data['api_key'])
-        ip_space = get_dns_view(data)
-        if(len(ip_space[2]['results']) > 0):
+        ip_space = get_ip_space(data)
+        if('results' in ip_space[2].keys() and len(ip_space[2]['results']) > 0):
             ref_id = ip_space[2]['results'][0]['id']
             endpoint = '{}{}'.format('/api/ddi/v1/', ref_id)
             return connector.delete(endpoint)
@@ -197,9 +182,9 @@ def main():
         state=dict(type='str', default='present', choices=['present','absent','get'])
     )
 
-    choice_map = {'present': create_dns_view,
-                  'get': get_dns_view,
-                  'absent': delete_dns_view}
+    choice_map = {'present': create_ip_space,
+                  'get': get_ip_space,
+                  'absent': delete_ip_space}
 
     module = AnsibleModule(argument_spec=argument_spec)
     (is_error, has_changed, result) = choice_map.get(module.params['state'])(module.params)

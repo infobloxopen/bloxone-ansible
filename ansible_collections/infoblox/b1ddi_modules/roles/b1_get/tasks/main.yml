@@ -1,7 +1,0 @@
----
-# tasks file for b1_gather
-
-- import_tasks: get_view_record.yml
-  when: get_dns_view is defined 
-
- 
