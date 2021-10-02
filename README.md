@@ -81,7 +81,7 @@ collections_paths = ./collections
 ```
 Playbooks
 ==================
-Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/bloxone-ansible/tree/main/playbook).
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/bloxone-ansible/tree/main/sample_playbook).
  
 Limitations
 ===========
