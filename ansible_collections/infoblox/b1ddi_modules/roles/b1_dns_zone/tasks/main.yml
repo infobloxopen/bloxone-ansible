@@ -1,7 +1,0 @@
----
-# tasks file for b1_zone
-
-- import_tasks: create_dns_zone.yml 
-  when: create_dns_zone is defined 
-- import_tasks: delete_dns_zone_bddi.yml
-  when: delete_dns_zone is defined

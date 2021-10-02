@@ -1,7 +1,0 @@
----
-# tasks file for b1_ns
-
-- import_tasks: create_dns_ns.yml
-  when: create_ns_record is defined
-- import_tasks: delete_dns_ns.yml
-  when: delete_ns_record is defined

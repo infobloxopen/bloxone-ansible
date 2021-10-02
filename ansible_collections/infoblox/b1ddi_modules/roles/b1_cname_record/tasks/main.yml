@@ -1,8 +1,0 @@
----
-# tasks file for b1_record
-
-- import_tasks: create_dns_cname.yml
-  when: create_cname_record is defined
-
-- import_tasks: delete_dns_cname.yml
-  when: delete_cname_record is defined
