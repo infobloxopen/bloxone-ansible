@@ -58,7 +58,7 @@ The `b1ddi_modules` collection can be installed from git repository through eith
 
 - Install the collection directly from the [GitHub](https://github.com/infobloxopen/bloxone-ansible/tree/main/ansible_collections/infoblox/b1ddi_modules) repository using the latest commit on the master branch:
 ```shell
-$ ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-ansible#ansible_collections/infoblox/b1ddi_module
+$ ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-ansible#ansible_collections/infoblox/b1ddi_modules
 ```
 
 - Install the collection by defining in requirements.yaml 
@@ -71,7 +71,7 @@ The following example requirements.yaml
 collections:
   - name: git@github.com:infobloxopen/bloxone-ansible.git#ansible_collections/infoblox/b1ddi_modules
     type: git
-    version: ansible_collections
+    version: main
 
 ```
 By default ansible will install the collection in `~/.ansible/collections`. Kindly create or update the `ansible.cfg` to install in the custom location.
