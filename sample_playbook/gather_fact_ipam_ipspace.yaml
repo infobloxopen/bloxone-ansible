@@ -12,7 +12,7 @@
     #  Gather ID for a given IP space
     - name: Gather IP space
       b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
       register: ip_spaces
@@ -21,7 +21,7 @@
     #  Gather ID for a given IP space
     - name: Gather the ID information of an for a given name
       b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
         fields: ['id' ]
@@ -32,7 +32,7 @@
     #  Gather Tags for a given IP space
     - name: Gather the tags  of an for a given IPSpace name
       b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
         fields: ['tags' ]
@@ -43,7 +43,7 @@
     #  Gather dhcp options for a given IP space
     - name: Gather the tags  of an for a given IPSpace name
       b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
         fields: ['dhcp_options' ]
@@ -54,7 +54,7 @@
     #  Gather asm config for a given IP space
     - name: Gather the asm config  of an for a given IPSpace name
       b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
         fields: ['asm_config' ]

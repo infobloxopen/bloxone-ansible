@@ -5,7 +5,7 @@
     - infoblox.b1ddi_modules
 
   vars:
-  - host: "{{ host_server }}"
+  - host: "{{ host }}"
   - api: "{{ api_key }}"
 
   tasks:

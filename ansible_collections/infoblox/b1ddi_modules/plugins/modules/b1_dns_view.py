@@ -104,7 +104,7 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.b1ddi import Request, Utilities
+from ..module_utils.b1ddi import Request, Utilities
 import json
 
 def get_dns_view(data):

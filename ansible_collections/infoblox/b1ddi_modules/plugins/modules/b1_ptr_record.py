@@ -131,7 +131,7 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.b1ddi import Request, Utilities
+from ..module_utils.b1ddi import Request, Utilities
 
 def get_ptr_record(data):
     '''Fetches the BloxOne DDI DNS Authoritative Zone object

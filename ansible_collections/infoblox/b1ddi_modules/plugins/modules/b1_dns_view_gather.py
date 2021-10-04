@@ -9,7 +9,7 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: b1_dns_view_gather
-author: "amishra2@infoblox"
+author: "amishra2@infoblox, Sriram kanan"
 short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
@@ -62,7 +62,7 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.b1ddi import Request, Utilities
+from ..module_utils.b1ddi import Request, Utilities
 import json
 
 def get_dns_view_gather(data):
