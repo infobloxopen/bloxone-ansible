@@ -21,7 +21,7 @@
     #  Gather ID, Name, Dhcp Options for a given AddressBlock
     - name: Gather the ID information of an for a given name
       b1_ipam_address_block_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
         fields: ['id', 'name', 'dhcp_options' ]
@@ -32,7 +32,7 @@
     #  Gather information of with multiple filters
     - name: Gather the tags  of an for a given IPSpace name
       b1_ipam_address_block_gather:
-        host: "{{ host_server }}"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
         fields: ['dhcp_options']

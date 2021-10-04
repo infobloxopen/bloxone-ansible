@@ -122,7 +122,7 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.b1ddi import Request, Utilities
+from ..module_utils.b1ddi import Request, Utilities
 
 def get_a_record(data):
     '''Fetches the BloxOne DDI DNS Authoritative Zone object

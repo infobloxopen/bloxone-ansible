@@ -9,7 +9,7 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: b1_dns_auth_zone
-author: "Vedant Sethia (@vedantsethia)"
+author: "Vedant Sethia (@vedantsethia) Amit Mishra ( @amishra2) Sriram Kanan"
 short_description: Configure DNS Authoritative Zone on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
@@ -137,7 +137,7 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 from ansible.module_utils.basic import *
-from ansible.module_utils.b1ddi import Request, Utilities
+from ..module_utils.b1ddi import Request, Utilities
 
 def get_auth_zone(data):
     '''Fetches the BloxOne DDI DNS Authoritative Zone object
