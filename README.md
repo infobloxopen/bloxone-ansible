@@ -63,7 +63,7 @@ $ ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-
 
 - Install the collection by defining in requirements.yaml 
 ```shell
-ansible-galaxy install -r requirements.yml
+ansible-galaxy install -r requirement.yaml -p ./collections
 ```
 The following example requirements.yaml
 ```yaml
