@@ -88,47 +88,41 @@ EXAMPLES = '''
   b1_dns_auth_zone:
     api_key: "{{ api_token }}"
     host: "{{ host_server }}"
-    view: "{{ dns_view }}"
-    fqdn: "{{ zone_fqdn }}"
+    view: "{{ Name of the View}}"
+    fqdn: "{{ Name of the Zone }}"
     state: get
 
 - name: Create DNS Authoritative Zone
   b1_dns_auth_zone:
-    fqdn: "{{ zone_fqdn }}"
-    view: "{{ dns_view }}"
-    primary_type: "{{ primary_type }}"
+    fqdn: "{{ Name of the Zone }}"
+    view: "{{ Name of the View }}"
+    primary_type: "{{ Type of Zone , "cloud or external" }}"
     internal_secondaries: 
-      - "{{ b1_dns_server }}"
-    external_primaries:
-      - "address": "{{ IP_Address }}"
-      - "fqdn": "{{ domain_name }}"
+      - "{{ Name of the On Prem Host }}"
     tags:
       - {{ key }}: "{{ value }}"
-    comment: "{{ comment }}"
+    comment: "{{ Description }}"
     api_key: "{{ api_token }}"
     host: "{{ host_server }}"
     state: present
 
 - name: Update DNS Authoritative Zone
   b1_dns_auth_zone:
-    fqdn: "{{ zone_fqdn }}"
-    view: "{{ dns_view }}"
+    fqdn: "{{ Name of the Zone }}"
+    view: "{{ Name of the View }}"
     internal_secondaries:
-      - "{{ b1_dns_server }}"
-    external_primaries:
-      - "address": "{{ IP_Address }}"
-      - "fqdn": "{{ domain_name }}"
+      - "{{ Name of the On Prem Host}}"
     tags:
       - {{ key }}: "{{ value }}"
-    comment: "{{ comment }}"
+    comment: "{{ Description }}"
     api_key: "{{ api_token }}"
     host: "{{ host_server }}"
     state: present
 
 - name: Delete DNS Authoritative Zone
   b1_dns_auth_zone:
-    fqdn: "{{ zone_fqdn }}"
-    view: "{{ dns_view }}"
+    fqdn: "{{ Name of the Zone }}"
+    view: "{{ Name of the View }}"
     api_key: "{{ api_token }}"
     host: "{{ host_server }}"
     state: absent
@@ -207,9 +201,9 @@ def create_auth_zone(data):
             view = connector.get(view_endpoint)
             if('results' in view[2].keys() and len(view[2]['results']) > 0):
                 payload['view'] = view[2]['results'][0]['id']
-                payload['fqdn'] = data['fqdn']
                 payload['primary_type'] = data['primary_type'] if 'primary_type' in data.keys() else ''
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
+                payload['fqdn'] = data['fqdn']
                 if 'external_primaries' in data.keys() and data['external_primaries']!=None:
                     #payload['external_primaries']=helper.flatten_dict_object('external_primaries',data)
                     payload['external_primaries']=data['external_primaries'] 
@@ -256,7 +250,7 @@ def main():
         host=dict(required=True, type='str'),
         primary_type=dict(type='str'),
         internal_secondaries=dict(type='list', elements='str', default=['']),
-        external_primaries=dict(type='list', elements='dict', default=[{}]),
+        external_primaries=dict(type='list', elements='str', default=[]),
         view=dict(type='str'),
         comment=dict(type='str'),
         tags=dict(type='list', elements='dict', default=[{}]),
