@@ -108,7 +108,7 @@ def get_ptr_record_gather(data):
     elif result.status_code == 401:
         meta = {'status': result.status_code,'url': url, 'response': result.json()}
         return (True, False, meta)
-    else:`
+    else:
         meta = {'status': result.status_code,'url': url, 'response': result.json()}
         return (True, False, meta)
 
