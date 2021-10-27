@@ -205,11 +205,11 @@ def create_a_record(data):
 def delete_a_record(data):
     '''Delete a BloxOne DDI DNS Authoritative Zone object
     '''
-    if all(k in data and data[k]!=None for k in ('view','fqdn')):
+    if all(k in data and data[k]!=None for k in ('name','zone')):
         connector = Request(data['host'], data['api_key'])
-        auth_zone = get_auth_zone(data)
-        if('results' in auth_zone[2].keys() and len(auth_zone[2]['results']) > 0):
-            ref_id = auth_zone[2]['results'][0]['id']
+        record_data = get_a_record(data)
+        if('results' in record_data[2].keys() and len(record_data[2]['results']) > 0):
+            ref_id = record_data[2]['results'][0]['id']
             endpoint = '{}{}'.format('/api/ddi/v1/', ref_id)
             return connector.delete(endpoint)
         else:
