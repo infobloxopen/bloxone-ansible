@@ -122,7 +122,7 @@ def main():
         host=dict(required=True, type='str'),
         comment=dict(type='str'),
         fields=dict(type='list'),
-        filters=dict(type='dict', default={}),
+        filters=dict(type='dict', default={"type": "PTR"}),
         tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','gather'])
     )
