@@ -77,6 +77,10 @@ def get_cname_record_gather(data):
     flag=0
     fields=data['fields']
     filters=data['filters']
+    if 'name' in filters:
+        filters['dns_name_in_zone'] = filters.pop('name')
+    if 'canonical' in filters:
+        filters['dns_rdata'] = filters.pop('canonical')
     if fields!=None and isinstance(fields, list):
         temp_fields = ",".join(fields)
         endpoint = endpoint+"?_fields="+temp_fields
