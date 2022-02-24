@@ -79,8 +79,8 @@ def get_ns_record_gather(data):
     filters=data['filters']
     if 'name' in filters:
         filters['dns_name_in_zone'] = filters.pop('name')
-    if 'nameserver' in filters:
-        filters['dns_rdata'] = filters.pop('nameserver')
+    if 'dname' in filters:
+        filters['dns_rdata'] = filters.pop('dname')
     if fields!=None and isinstance(fields, list):
         temp_fields = ",".join(fields)
         endpoint = endpoint+"?_fields="+temp_fields
