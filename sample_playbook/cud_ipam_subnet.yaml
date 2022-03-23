@@ -35,13 +35,13 @@
         host: "{{ host }}"
         state: present
 
-    #  Create a subnet in a given IP space using next_available_address_block
-    - name: Create Address Block using next-available subnet
-      b1_ipam_address_block:
-        space: "Test-Ansible-Space"
-        address: '{"next_available_address_block": {"cidr": "28", "count": "2", "parent_block": "172.16.0.0/24"}}'
-        name: "Test-Ansible-AB_nextAvailable"
-        comment: "This is the test subnet creation using nextavailable"
+    #  Create a subnet in a given IP space using next_available_subnet
+    - name: Create Subnet using next available function
+      b1_ipam_subnet:
+        address: '{"next_available_subnet": {"parent_block": "10.0.0.0/16", "cidr": "24", "count": "1"}}'
+        space: Test-Ansible-Space
+        name: "Test-Ansible-Subnet"
+        comment: "This is the test AB creation"
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present

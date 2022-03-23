@@ -78,45 +78,55 @@ options:
 
   
 EXAMPLES = '''
-    - name: GET all DNS VIEW
+    - name: GET all A Records
       b1_a_record:
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         state: get
 
-    - name: GET DNS VIEW of speceific Zone
+    - name: GET A Records of a zone
       b1_a_record:
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         zone: "{{ Zone_name }}"
         state: get
 
-    - name: GET Specific View
+    - name: GET Specific A Record
       b1_a_record:
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         zone: "{{ Zone_name }}"
-        name: "{{ name of the view }}"
+        name: "{{ domain name of A Record }}"
         state: get
 
-    - name: CREATE DNS View 
+    - name: CREATE A Record
       b1_a_record:
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         zone: "{{ Zone_name }}"
-        address: "{{ ip address of the zone }}"
-        name: "{{ name of the view }}"
+        address: "{{ ip address of A Record }}"
+        name: "{{ domain name of A Record }}"
         state: present
 
 
-    - name: UPADAT DNS view # Only update of Name is supported in this release
+    - name: UPADATE A Record # Only update of Name is supported in this release
       b1_a_record:
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         zone: "{{ Zone_name }}"
-        address: "{{ ip address of the zone }}"
-        name: '{"new_name": "New Name of the View", "old_name": "Old name of the view"}'
+        address: "{{ ip address of the record }}"
+        name: '{"new_name": "New domain name of the record", "old_name": "Old domain name of the record"}'
         state: present
+
+
+    - name: Delete A record
+      b1_ptr_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        zone: "{{ Zone_name }}"
+        name: "{{ domain name of A record }"
+        address:  "{{ address of A record }}"
+        state: absent
 '''
 
 RETURN = ''' # '''

@@ -77,6 +77,10 @@ def get_ptr_record_gather(data):
     flag=0
     fields=data['fields']
     filters=data['filters']
+    if 'address' in filters:
+        filters['dns_name_in_zone'] = filters.pop('address')
+    if 'dname' in filters:
+        filters['dns_rdata'] = filters.pop('dname')
     if fields!=None and isinstance(fields, list):
         temp_fields = ",".join(fields)
         endpoint = endpoint+"?_fields="+temp_fields

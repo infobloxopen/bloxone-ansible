@@ -39,7 +39,7 @@
         state: present
 
     #  Delete the Range in a given IP space
-    - name: Delete an existing Subnet.
+    - name: Delete an existing Range.
       b1_ipam_range:
         space: "Test-Ansible-Space"
         start: "172.16.0.50"
