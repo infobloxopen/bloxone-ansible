@@ -97,7 +97,7 @@ EXAMPLES = '''
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         zone: "{{ Zone_name }}"
-        name: "
+        name: "{{ domain name of PTR record }"
         state: get
 
     - name: Create PTR record

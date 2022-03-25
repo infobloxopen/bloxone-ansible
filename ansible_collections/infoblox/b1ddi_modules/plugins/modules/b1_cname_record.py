@@ -96,7 +96,7 @@ EXAMPLES = '''
         api_key: "{{ api_key }}"
         host: "{{ host }}"
         zone: "{{ Zone_name }}"
-        name: "{{ name of the view }}"
+        name: "{{ Alias of Cname }}"
         state: get
 
     - name: CREATE CNAME Record

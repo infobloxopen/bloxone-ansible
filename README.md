@@ -9,7 +9,6 @@ Requirements
  
 - Ansible 2.10 and above
 - Python 3.9
-- JsonPath ( pip install Jsonpath )
 
 Collection Overview
 ===================
@@ -27,7 +26,7 @@ DNS
 - `b1_a_record`: Module to create and delete A record.
 - `b1_a_record_gather`: Module to gather information about existing A records.
 - `b1_cname_record`: Module to create and delete CNAME record
-- `b1_cname_records_gather`: Module to gather information about existing CNAME records.
+- `b1_cname_record_gather`: Module to gather information about existing CNAME records.
 - `b1_ptr_record`: Module to create and delete PTR record
 - `b1_ptr_record_gather`: Module to gather information about existing PTR records.
 - `b1_ns_record`: Module to create and delete NS record
@@ -58,7 +57,7 @@ The `b1ddi_modules` collection can be installed from git repository through eith
 
 - Install the collection directly from the [GitHub](https://github.com/infobloxopen/bloxone-ansible/tree/main/ansible_collections/infoblox/b1ddi_modules) repository using the latest commit on the master branch:
 ```shell
-$ ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-ansible#ansible_collections/infoblox/b1ddi_modules
+ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-ansible#ansible_collections/infoblox/b1ddi_modules
 ```
 
 - Install the collection by defining in requirements.yaml 

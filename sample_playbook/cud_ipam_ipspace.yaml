@@ -32,10 +32,10 @@
         api_key: "{{ api }}"
         state: present
 
-#    # Delete the IP space
-#    - name: Delete IP space
-#      b1_ipam_ip_space:
-#        name: "Test-Ansible-Space"
-#        host: "{{ host }}"
-#        api_key: "{{ api }}"
-#        state: absent
+    # Delete the IP space
+    - name: Delete IP space
+      b1_ipam_ip_space:
+        name: "Test-Ansible-Space"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: absent
