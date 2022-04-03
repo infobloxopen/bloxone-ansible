@@ -150,3 +150,21 @@ class Utilities(object):
             for k,v in i.items():
                 payload[k]=v
         return payload
+    
+    def dhcp_options(self, key, data, dhcp_option_codes):
+        """Create a list of DHCP option dicts"""
+        payload = []
+        for i in data[key]:
+            for k, v in i.items():
+                dhcp_option = {}
+                for item in dhcp_option_codes:
+                    if item["name"] == k:
+                        dhcp_option_code = item["id"]
+                        break
+                if dhcp_option_code:
+                    dhcp_option["option_code"] = dhcp_option_code
+                    dhcp_option["option_value"] = v
+                    dhcp_option["type"] = "option"
+                    payload.append(dhcp_option)
+        return payload
+
