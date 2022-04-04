@@ -334,6 +334,7 @@ def main():
         space=dict(type='str'),
         dhcp_host=dict(type='str'),
         comment=dict(type='str'),
+	dhcp_options=dict(type="list", elements="dict", default=[{}])
         tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','get'])
     )
