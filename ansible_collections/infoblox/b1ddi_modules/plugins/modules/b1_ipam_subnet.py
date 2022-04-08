@@ -237,6 +237,25 @@ def create_subnet(data):
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
                 if 'tags' in data.keys() and data['tags']!=None:
                     payload['tags']=helper.flatten_dict_object('tags',data)                
+		if "dhcp_options" in data.keys() and data["dhcp_options"] != None:
+                    dhcp_option_codes = connector.get("/api/ddi/v1/dhcp/option_code")
+                    if (
+                        "results" in dhcp_option_codes[2].keys()
+                        and len(dhcp_option_codes[2]["results"]) > 0
+                    ):
+                        payload["dhcp_options"] = helper.dhcp_options(
+                            "dhcp_options", data, dhcp_option_codes[2]["results"]
+                        )
+                    else:
+                        return (
+                            True,
+                            False,
+                            {
+                                "status": "400",
+                                "response": "Error in fetching DHCP option codes",
+                                "data": data,
+                            },
+                        )
                 return connector.create('/api/ddi/v1/ipam/subnet', payload)
     else:
         return(True, False, {'status': '400', 'response': 'Address or IP Space not defined','data':data})                
@@ -315,6 +334,7 @@ def main():
         space=dict(type='str'),
         dhcp_host=dict(type='str'),
         comment=dict(type='str'),
+	dhcp_options=dict(type="list", elements="dict", default=[{}])
         tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','get'])
     )
