@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Create a Address Block in a given IP space using next_available_address_block
+    - name: Create Address Block using next-available subnet
+      b1_ipam_address_block:
+        space: "qa-space-1"
+        address: '{"next_available_address_block": {"cidr": "28", "count": "5", "parent_block": "40.0.0.0/24"}}'
+        name: "qa-nextAvailable"
+        comment: "Created by QA using nextavailable"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

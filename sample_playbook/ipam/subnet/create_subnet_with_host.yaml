@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Create a Subnet in a given IP space
+    - name: Create Subnet in a given IP Space
+      b1_ipam_subnet:
+        space: "ipspace1"
+        address: '42.0.0.0/24'
+        name: "test-subnet-with-dhcp-server"
+        comment: "This is created by QA"
+        dhcp_host: "ZTP_NIOS_TEST_4_14_8888544975683345166"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    #  Delete the Range in a given IP space
+    - name: Delete an existing Subnet.
+      b1_ipam_range:
+        space: "qa-space-1"
+        start: "40.0.0.15"
+        end: "40.0.0.50"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: absent

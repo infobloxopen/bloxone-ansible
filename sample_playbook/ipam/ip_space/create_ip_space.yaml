@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Create a given IP space
+    - name: Create IP space
+      b1_ipam_ip_space:
+        name: "qa-space-1"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "QA"
+        comment: "This is a test IPSpace to validate Infoblox Ansible Collection"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: present

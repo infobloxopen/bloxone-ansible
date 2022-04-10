@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create ipv4 Fixed address in a given IP Space
+      b1_ipam_fixed_address:
+        space: "qa-space-1"
+        address: '40.0.0.15'
+        name: "Test-Address-18"
+        comment: "This is the test Fixed address "
+        match_type : mac
+        match value : "aa:ab:cd:aa:aa:aa"
+        tags:
+          - "Org": "Infoblox"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

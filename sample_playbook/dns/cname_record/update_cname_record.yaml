@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create a CNAME Record
+      b1_cname_record:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : present
+        zone : "qa-zone-1"
+        tags:
+          - Name: "QA"
+          - Dept: "QA2"
+        comment : "CNAME record updated by QA"
+        name: '{"new_name": "test-cname-updated", "old_name": "test-cname-updated2"}'

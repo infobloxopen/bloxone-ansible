@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create a NS Record
+      b1_ns_record:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : present
+        zone : "qa-zone-1"
+        tags:
+          - Name: "QA"
+        comment : "NS record created by QA"
+        ns_server : "1.2.3.4"
+        name : "qa-ns"
