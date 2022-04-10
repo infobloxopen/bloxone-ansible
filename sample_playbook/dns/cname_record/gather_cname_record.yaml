@@ -9,13 +9,21 @@
   - api: "{{ api key to access the server }}"
 
   tasks:
+    #  Gather information of all CNAME records
     - name: Gather cname
       b1_cname_record_gather:
         host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
-          #fields: [ 'id', 'comment', 'tags']
-        filters: {"cname": "test-b-record1.qa-zone-1.", "name": "test-cname-record1"}
       register: cname_rec_lists
     - debug: msg="{{ cname_rec_lists }}"
 
+    #  Gather information of CNAME records with multiple filters
+    - name: Gather cname
+      b1_cname_record_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        filters: {"cname": "test-b-record1.qa-zone-1.", "name": "test-cname-record1"}
+      register: cname_rec_lists1
+    - debug: msg="{{ cname_rec_lists1 }}"

@@ -22,14 +22,3 @@
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
-
-
-
-
-
-
-		
-		
-		
-Supported parameters include: state, tags, external_primaries, primary_type, view, comment, host, fqdn, api_key, internal_secondaries."}
-

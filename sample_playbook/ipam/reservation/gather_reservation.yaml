@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    #  Gather information of all reservations
+    - name: Create ipv4 reserved address in a given IP Space
+      b1_ipam_ipv4_reservation:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: gather
+      register: reservation_list
+    - debug: msg="{{ reservation_list }}"
+
+    #  Gather information of reservations records with multiple filters
+    - name: Create ipv4 reserved address in a given IP Space
+      b1_ipam_ipv4_reservation:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: gather
+        fields: ['id']
+        filters: {'address': 'ip address' }
+      register: reservation_list1
+    - debug: msg="{{ reservation_list1 }}"

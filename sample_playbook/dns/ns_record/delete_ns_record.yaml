@@ -16,3 +16,4 @@
         state : absent
         zone : "qa-zone-1"
         name : "test-ns-updated"
+        

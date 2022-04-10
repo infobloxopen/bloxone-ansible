@@ -18,3 +18,4 @@
         filters: {'name': 'qa-view-1'}
       register : dns_view_lists
     - debug: msg="{{ dns_view_lists }}"
+    
