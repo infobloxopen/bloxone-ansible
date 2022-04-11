@@ -17,6 +17,8 @@
         name: "Test-Ansible-Subnet1"
         comment: "This is the test AB creation"
         dhcp_host: "ZTP_amit_ansible_2098146097655903253"
+        dhcp_options: 
+          - routers: "172.16.0.1"
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
