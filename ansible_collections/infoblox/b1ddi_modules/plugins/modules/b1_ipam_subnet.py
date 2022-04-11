@@ -47,6 +47,10 @@ options:
     description:
       - Configures the name of subnet object to fetch, add, update or remove from the system. 
     type: str
+  dhcp_options:
+    description:
+      - Configures the DHCP options associated with the subnet.
+    type: list
   tags:
     description:
       - Configures the tags associated with the subnet object to add or update from the system.
@@ -80,6 +84,8 @@ EXAMPLES = '''
     name: "{{ subnet_name }}"
     dhcp_host: "{{ onprem_dhcp_host }}"
     tags:
+      - {{ key }}: "{{ value }}"
+    dhcp_options:
       - {{ key }}: "{{ value }}"
     comment: "{{ comment }}"
     api_key: "{{ api_token }}"
@@ -237,7 +243,7 @@ def create_subnet(data):
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
                 if 'tags' in data.keys() and data['tags']!=None:
                     payload['tags']=helper.flatten_dict_object('tags',data)                
-		if "dhcp_options" in data.keys() and data["dhcp_options"] != None:
+                if "dhcp_options" in data.keys() and data["dhcp_options"] != None:
                     dhcp_option_codes = connector.get("/api/ddi/v1/dhcp/option_code")
                     if (
                         "results" in dhcp_option_codes[2].keys()
@@ -334,7 +340,7 @@ def main():
         space=dict(type='str'),
         dhcp_host=dict(type='str'),
         comment=dict(type='str'),
-	dhcp_options=dict(type="list", elements="dict", default=[{}])
+        dhcp_options=dict(type="list", elements="dict", default=[{}]),
         tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','get'])
     )
