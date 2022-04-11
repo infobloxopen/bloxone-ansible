@@ -18,4 +18,3 @@
          api_key: "{{ api }}"
          host: "{{ host }}"
          state: present
-         

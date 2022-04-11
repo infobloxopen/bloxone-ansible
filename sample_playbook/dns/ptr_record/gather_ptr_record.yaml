@@ -26,4 +26,4 @@
         state: gather
         filters: { "dname": "test.qa-zone-1.", "address": "22.11.11.21"}
       register: ptr_rec_lists
-    - debug: msg="{{ ptr_rec_lists }}"    
+    - debug: msg="{{ ptr_rec_lists }}"

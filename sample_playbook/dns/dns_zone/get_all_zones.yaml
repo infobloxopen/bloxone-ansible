@@ -16,4 +16,3 @@
         state: get
       register : dns_view_lists
     - debug: msg="{{ dns_view_lists }}"
-    

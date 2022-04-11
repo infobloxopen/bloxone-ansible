@@ -14,4 +14,3 @@
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: get
-        
