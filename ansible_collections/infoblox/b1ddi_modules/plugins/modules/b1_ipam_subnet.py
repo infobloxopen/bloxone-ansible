@@ -237,7 +237,13 @@ def create_subnet(data):
                     if ('results' in dhcp_host[2].keys() and len(dhcp_host[2]['results']) > 0):
                         payload['dhcp_host'] = dhcp_host[2]['results'][0]['id']
                     else:
-                        return (True, False, {'status': '400', 'response': 'Error in fetching On-prem host', 'data':data})
+                        # Search for HA_Group if DHCP host is not found.
+                        endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/ha_group?_filter=name==',data['dhcp_host'])
+                        dhcp_host = connector.get(endpoint)
+                        if ('results' in dhcp_host[2].keys() and len(dhcp_host[2]['results']) > 0):
+                            payload['dhcp_host'] = dhcp_host[2]['results'][0]['id']
+                        else:
+                            return (True, False, {'status': '400', 'response': 'Error in fetching On-prem hosts or host HA group', 'data':data})
                 payload['address'] = f"{p_data[0]}/{p_data[1]}"
                 payload['name'] = data['name'] if 'name' in data.keys() else ''
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
