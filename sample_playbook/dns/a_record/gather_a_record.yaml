@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Gather information of all A records
+    - name: Gather the tags  of an for a given IPSpace name
+      b1_a_record_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+      register: a_rec_lists
+    - debug: msg="{{ a_rec_lists }}"
+
+    #  Gather information of A records with multiple filters
+    - name: Gather the tags  of an for a given IPSpace name
+      b1_a_record_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        filters: {"address": "30.0.0.18", "name": "test-a-record1"}
+      register: a_rec_lists1
+    - debug: msg="{{ a_rec_lists1 }}"
