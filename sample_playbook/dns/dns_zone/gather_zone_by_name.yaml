@@ -14,6 +14,6 @@
         api_key: "{{ api }}"
         host: "{{ host }}"
         state : gather
-        name : "qa-zone-1"}
+        name : "qa-zone-1"
       register : dns_zone_lists
     - debug: msg="{{ dns_zone_lists }}"
