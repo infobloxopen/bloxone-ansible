@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    - name: Update an existing Subnet.
+      b1_ipam_subnet:
+        space: "qa-space-1"
+        address: '{"new_address": "40.0.0.0/25", "old_address": "40.0.0.0/26"}'
+        name: "qa-test-Subnet1-updated"
+        comment: "This is the updated subnet"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "Engineering"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

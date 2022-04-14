@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create a PTR Record
+      b1_ptr_record:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : absent
+        zone : "qa-zone-1"
+        tags:
+          - Name: "QA"
+        name : "test-ptr-updated"
+        address : "22.22.33.33"

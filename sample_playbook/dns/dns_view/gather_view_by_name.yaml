@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name : Gather View Information
+      b1_dns_view_gather:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : gather
+        fields : [ id, name, tags ]
+        filters: {'name': 'qa-view-1'}
+      register : dns_view_lists
+    - debug: msg="{{ dns_view_lists }}"

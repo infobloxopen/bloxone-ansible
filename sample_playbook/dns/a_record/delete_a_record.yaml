@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Delete an A Record
+      b1_a_record:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : absent
+        zone : "qa-zone-1"
+        name : "test-a-record2"
