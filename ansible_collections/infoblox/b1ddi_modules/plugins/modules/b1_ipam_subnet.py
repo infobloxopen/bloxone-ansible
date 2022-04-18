@@ -47,6 +47,10 @@ options:
     description:
       - Configures the name of subnet object to fetch, add, update or remove from the system. 
     type: str
+  dhcp_options:
+    description:
+      - Configures the DHCP options associated with the subnet.
+    type: list
   tags:
     description:
       - Configures the tags associated with the subnet object to add or update from the system.
@@ -80,6 +84,8 @@ EXAMPLES = '''
     name: "{{ subnet_name }}"
     dhcp_host: "{{ onprem_dhcp_host }}"
     tags:
+      - {{ key }}: "{{ value }}"
+    dhcp_options:
       - {{ key }}: "{{ value }}"
     comment: "{{ comment }}"
     api_key: "{{ api_token }}"
@@ -194,9 +200,34 @@ def update_subnet(data):
         if ('results' in dhcp_host[2].keys() and len(dhcp_host[2]['results']) > 0):
             payload['dhcp_host'] = dhcp_host[2]['results'][0]['id']
         else:
-            return (True, False, {'status': '400', 'response': 'Error in fetching On-prem host', 'data':data})
+            # Search for HA_Group if DHCP host is not found.
+            endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/ha_group?_filter=name==',data['dhcp_host'])
+            dhcp_host = connector.get(endpoint)
+            if ('results' in dhcp_host[2].keys() and len(dhcp_host[2]['results']) > 0):
+                payload['dhcp_host'] = dhcp_host[2]['results'][0]['id']
+            else:
+                return (True, False, {'status': '400', 'response': 'Error in fetching On-prem hosts or host HA group', 'data':data})
     if 'tags' in data.keys() and data['tags']!=None:
-        payload['tags']=helper.flatten_dict_object('tags',data) 
+        payload['tags']=helper.flatten_dict_object('tags',data)
+    if "dhcp_options" in data.keys() and data["dhcp_options"] != None:
+                    dhcp_option_codes = connector.get("/api/ddi/v1/dhcp/option_code")
+                    if (
+                        "results" in dhcp_option_codes[2].keys()
+                        and len(dhcp_option_codes[2]["results"]) > 0
+                    ):
+                        payload["dhcp_options"] = helper.dhcp_options(
+                            "dhcp_options", data, dhcp_option_codes[2]["results"]
+                        )
+                    else:
+                        return (
+                            True,
+                            False,
+                            {
+                                "status": "400",
+                                "response": "Error in fetching DHCP option codes",
+                                "data": data,
+                            },
+                        )
     endpoint = '{}{}'.format('/api/ddi/v1/',ref_id)
     return connector.update(endpoint, payload)
     
@@ -231,13 +262,19 @@ def create_subnet(data):
                     if ('results' in dhcp_host[2].keys() and len(dhcp_host[2]['results']) > 0):
                         payload['dhcp_host'] = dhcp_host[2]['results'][0]['id']
                     else:
-                        return (True, False, {'status': '400', 'response': 'Error in fetching On-prem host', 'data':data})
+                        # Search for HA_Group if DHCP host is not found.
+                        endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/ha_group?_filter=name==',data['dhcp_host'])
+                        dhcp_host = connector.get(endpoint)
+                        if ('results' in dhcp_host[2].keys() and len(dhcp_host[2]['results']) > 0):
+                            payload['dhcp_host'] = dhcp_host[2]['results'][0]['id']
+                        else:
+                            return (True, False, {'status': '400', 'response': 'Error in fetching On-prem hosts or host HA group', 'data':data})
                 payload['address'] = f"{p_data[0]}/{p_data[1]}"
                 payload['name'] = data['name'] if 'name' in data.keys() else ''
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
                 if 'tags' in data.keys() and data['tags']!=None:
                     payload['tags']=helper.flatten_dict_object('tags',data)                
-		if "dhcp_options" in data.keys() and data["dhcp_options"] != None:
+                if "dhcp_options" in data.keys() and data["dhcp_options"] != None:
                     dhcp_option_codes = connector.get("/api/ddi/v1/dhcp/option_code")
                     if (
                         "results" in dhcp_option_codes[2].keys()
@@ -334,7 +371,7 @@ def main():
         space=dict(type='str'),
         dhcp_host=dict(type='str'),
         comment=dict(type='str'),
-	dhcp_options=dict(type="list", elements="dict", default=[{}])
+        dhcp_options=dict(type="list", elements="dict", default=[{}]),
         tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','get'])
     )
