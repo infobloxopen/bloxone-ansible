@@ -4,10 +4,9 @@
   collections:
     - infoblox.b1ddi_modules
 
-  vars:
-  - host: "https://env-6.test.infoblox.com/"
-  - api: "a466f5ed8e37bd51b4f1814a73601466"
-
+ vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"s
 
   tasks:
     #  Gather Host
