@@ -6,7 +6,7 @@
 
  vars:
   - host: "{{ Host server to connect to }}"
-  - api: "{{ api key to access the server }}"s
+  - api: "{{ api key to access the server }}"
 
   tasks:
     #  Gather Host
