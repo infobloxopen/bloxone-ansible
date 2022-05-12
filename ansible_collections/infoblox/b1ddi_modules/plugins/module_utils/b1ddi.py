@@ -168,3 +168,19 @@ class Utilities(object):
                     payload.append(dhcp_option)
         return payload
 
+    def addresses(self, key, data, aspace):
+        """Create a Host"""
+        payload = []
+        for i in data[key]:
+            for k, v in i.items():
+                addr = {}
+                for item in aspace:
+                    if item["name"] == k:
+                        dhcp_option_code = item["id"]
+                        break
+                if dhcp_option_code:
+                    addr["space"] = dhcp_option_code
+                    addr["address"] = v
+                    payload.append(addr)
+        return payload
+
