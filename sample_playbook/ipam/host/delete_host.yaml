@@ -4,20 +4,15 @@
   collections:
     - infoblox.b1ddi_modules
 
-  vars:
+ vars:
   - host: "{{ Host server to connect to }}"
   - api: "{{ api key to access the server }}"
-
+  
   tasks:
-    #  Gather Host
-    - name: Gather Host
-      b1_ipam_host_gather:
+    # Delete the Host
+    - name: Delete Host
+      b1_ipam_host:
+        name: "host"
         host: "{{ host }}"
         api_key: "{{ api }}"
-        state: gather
-      register: hostlists
-    - name: printing hostlists
-      debug: 
-        msg: " {{ hostlists }} "
-
-
+        state: absent
