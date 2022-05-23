@@ -10,10 +10,10 @@ DOCUMENTATION = '''
 ---
 module: b1_ipam_ip_space
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
-short_description: Configure IP space on Infoblox BloxOne DDI
+short_description: Configure Option space on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
-  - Gather facts about IP spaces in Infoblox BloxOne DDI. This module manages the gather fact of IPAM IP space object using BloxOne REST APIs.
+  - Gather facts about Option spaces in Infoblox BloxOne DDI. This module manages the gather fact of IPAM Option space object using BloxOne REST APIs.
 requirements:
   - requests
 options:
@@ -53,19 +53,14 @@ options:
   
 EXAMPLES = '''
 
-    - name: Gather IP space
-      b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
+    - name: Gather Optionspace
+      b1_ipam_option_space_gather:
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
+      register: option_spaces
+    - debug: msg="{{ option_spaces }}"
 
-    - name: Gather the ID information of an for a given name
-      b1_ipam_ip_space_gather:
-        host: "{{ host_server }}"
-        api_key: "{{ api }}"
-        state: gather
-        fields: ['id' ]
-        filters: {'name': 'testIP1'}
 '''
 
 RETURN = ''' # '''

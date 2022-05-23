@@ -56,31 +56,32 @@ options:
 '''
 
 EXAMPLES = '''
-   - name: Create IP space
-     b1_ipam_option_space:
-        name: "Test-Ansible-Space"
+   - name: Create Optionspace
+      b1_ipam_option_space:
+        name: "test1"
         tags:
           - "Org": "Infoblox"
-          - "Dept": "Engineering"
-        comment: "This is a test IPSpace to validate Infoblox Ansible Collection"
-        host: "{{ host_server }}"
+          - "Dept": "QA"
+        comment: "This is a test Optionspace to validate Infoblox Ansible Collection"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: present
 
-   - name: Update the IPSpace
-     b1_ipam_option_space:
-        name: "Test-Ansible-Space"
-        tags:
-          - "Status": "Working"
-          - "GeoLoc": "India"
-        host: "{{ host_server }}"
-        api_key: "{{ api }}"
-        state: present
-
-   - name: Delete IP space
+   - name: Update Optionspace
       b1_ipam_option_space:
-        name: "Test-Ansible-Space"
-        host: "{{ host_server }}"
+        name: "test"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "QA"
+        comment: "Updating the Optionspace"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: present
+
+   - name: Delete Optionspaces
+      b1_ipam_option_space:
+        name: "test"
+        host: "{{ host }}"
         api_key: "{{ api }}"
         state: absent
 
@@ -122,7 +123,7 @@ def update_option_space(data):
     if('results' in reference[2].keys() and len(reference[2]['results']) > 0):
         ref_id = reference[2]['results'][0]['id']
     else:
-        return(True, False, {'status': '400', 'response': 'IP Space not found', 'data':data})
+        return(True, False, {'status': '400', 'response': 'Option Space not found', 'data':data})
     payload={}
     payload['name'] = new_name
     payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
