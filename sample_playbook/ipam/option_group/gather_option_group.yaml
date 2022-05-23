@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "https://env-6.test.infoblox.com/"
+  - api: "a466f5ed8e37bd51b4f1814a73601466"
+
+  tasks:
+    #  Gather optio Group
+    - name: Gather Option Group
+      b1_ipam_option_group_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+      register: option_groups
+    - debug: msg="{{ option_groups }}"
+    
