@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Update a Optionspace
+    - name: Update Optionspace
+      b1_ipam_option_space:
+        name: "test"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "QA"
+        comment: "Updating the Optionspace"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: present
+        
