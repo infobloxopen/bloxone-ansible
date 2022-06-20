@@ -12,7 +12,7 @@
     #  Update a Host 
     - name: Update Host
       b1_ipam_host:
-        name: "host2"
+        name: "host"
         comment: "Updating the comment"
         addresses:
           - "test1" : "10.0.0.3"

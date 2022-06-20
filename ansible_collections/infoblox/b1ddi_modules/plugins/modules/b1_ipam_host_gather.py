@@ -19,7 +19,7 @@ EXAMPLES = '''
 RETURN = ''' # '''
 
 def get_host(data):
-    '''Fetches the BloxOne DDI IP Space object
+    '''Fetches the BloxOne DDI IPAM Host object
     '''
     connector = Request(data['host'], data['api_key'])
     endpoint = f'/api/ddi/v1/ipam/host'

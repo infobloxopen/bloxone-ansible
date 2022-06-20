@@ -9,6 +9,7 @@ try:
     import requests
     import json
     import ipaddress
+    import logging 
 except:
     raise ImportError("Requests module not found")
 
@@ -168,18 +169,19 @@ class Utilities(object):
                     payload.append(dhcp_option)
         return payload
 
-    def addresses(self, key, data, aspace):
-        """Create a Host"""
+    def hostaddresses(self, key, data, aspace):
+        """This utility function is used to add address for IPAM host creation/updation"""
         payload = []
         for i in data[key]:
             for k, v in i.items():
+                logging.info("inside addresses kv pair",k,v)
                 addr = {}
                 for item in aspace:
                     if item["name"] == k:
-                        dhcp_option_code = item["id"]
+                        ipspace_id = item["id"]
                         break
-                if dhcp_option_code:
-                    addr["space"] = dhcp_option_code
+                if ipspace_id:
+                    addr["space"] = ipspace_id
                     addr["address"] = v
                     payload.append(addr)
         return payload

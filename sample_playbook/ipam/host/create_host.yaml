@@ -12,11 +12,10 @@
     #  Create a Host
     - name: Create Host
       b1_ipam_host:
-        name: "host2"
+        name: "host"
         comment: "This is created by QA"
         addresses:
           - "test1" : "10.0.0.1"
-          - "test2" : "10.0.0.2"
         tags:
           - "Org": "Infoblox"
           - "Dept": "Engineering"

@@ -9,7 +9,7 @@ __metaclass__ = type
 DOCUMENTATION = '''
 ---
 module: b1_ipam_host
-author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
+author: "Akhilesh Kabade (@akhilesh-kabade-infoblox), Sriram Kannan(@kannans)"
 short_description: Configure Host on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
@@ -29,13 +29,13 @@ options:
     required: true
   addresses:
     description:
-      - Configures the name of the IP Space
+      - Configures the name of IP Space and the associated Address for the Host
         When fetching, the address field can be in the form “a.b.c.d”. 
     type: list
     required: true
   name:
     description:
-      - Configures the name of object to fetch, add, update or remove from the system. User can also update the name as it is possible
+      - Configures the name of IPAM Host to fetch, add, update or remove from the system. User can also update the name as it is possible
         to pass a dict containing I(new_name), I(old_name).
     type: str
     required: true
@@ -145,7 +145,7 @@ def update_host(data):
                         "results" in aspace[2].keys()
                         and len(aspace[2]["results"]) > 0
                     ):
-                        payload["addresses"] = helper.addresses(
+                        payload["addresses"] = helper.hostaddresses(
                             "addresses", data, aspace[2]["results"]
                         )
                     else:
@@ -185,7 +185,7 @@ def create_host(data):
                         "results" in aspace[2].keys()
                         and len(aspace[2]["results"]) > 0
                     ):
-                        payload["addresses"] = helper.addresses(
+                        payload["addresses"] = helper.hostaddresses(
                             "addresses", data, aspace[2]["results"]
                         )
                     else:
