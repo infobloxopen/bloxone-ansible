@@ -8,8 +8,7 @@ from __future__ import (absolute_import, division, print_function)
 try: 
     import requests
     import json
-    import ipaddress
-    import logging 
+    import ipaddress 
 except:
     raise ImportError("Requests module not found")
 
@@ -174,7 +173,6 @@ class Utilities(object):
         payload = []
         for i in data[key]:
             for k, v in i.items():
-                logging.info("inside addresses kv pair",k,v)
                 addr = {}
                 for item in aspace:
                     if item["name"] == k:
