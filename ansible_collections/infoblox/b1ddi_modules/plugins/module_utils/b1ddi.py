@@ -8,7 +8,7 @@ from __future__ import (absolute_import, division, print_function)
 try: 
     import requests
     import json
-    import ipaddress
+    import ipaddress 
 except:
     raise ImportError("Requests module not found")
 
@@ -166,5 +166,21 @@ class Utilities(object):
                     dhcp_option["option_value"] = v
                     dhcp_option["type"] = "option"
                     payload.append(dhcp_option)
+        return payload
+
+    def hostaddresses(self, key, data, aspace):
+        """This utility function is used to add address for IPAM host creation/updation"""
+        payload = []
+        for i in data[key]:
+            for k, v in i.items():
+                addr = {}
+                for item in aspace:
+                    if item["name"] == k:
+                        ipspace_id = item["id"]
+                        break
+                if ipspace_id:
+                    addr["space"] = ipspace_id
+                    addr["address"] = v
+                    payload.append(addr)
         return payload
 

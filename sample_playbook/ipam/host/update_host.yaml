@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Update a Host 
+    - name: Update Host
+      b1_ipam_host:
+        name: "host"
+        comment: "Updating the comment"
+        addresses:
+          - "test1" : "10.0.0.3"
+          - "test2" : "10.0.0.4"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "Engineering"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present
