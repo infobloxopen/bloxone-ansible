@@ -4,13 +4,14 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import (absolute_import, division, print_function)
+from email.policy import default
 __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: b1_ipam_option_space
-author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
-short_description: Configure OptionSpace on Infoblox BloxOne DDI
+module: b1_dhcp_option_space
+author: "Akhilesh Kabade (@akhilesh-kabade-infoblox), Sriram Kannan(@kannans)"
+short_description: Configure DHCP Option Space on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
   -  Create, Update and Delete Option spaces on Infoblox BloxOne DDI. This module manages the IPAM Optionspace object using BloxOne REST APIs.
@@ -33,6 +34,10 @@ options:
         to pass a dict containing I(new_name), I(old_name).
     type: str
     required: true
+  protocol:
+    description:
+      - Configures the protocol,this field is mandatory. It should be either ip4 or ip6.
+    type: str
   tags:
     description:
       - Configures the tags associated with the object to add or update from the system.
@@ -56,9 +61,10 @@ options:
 '''
 
 EXAMPLES = '''
-   - name: Create Optionspace
-      b1_ipam_option_space:
+   - name: Create Option Space
+      b1_dhcp_option_space:
         name: "test1"
+        protocol: ip4/ip6
         tags:
           - "Org": "Infoblox"
           - "Dept": "QA"
@@ -67,8 +73,8 @@ EXAMPLES = '''
         api_key: "{{ api }}"
         state: present
 
-   - name: Update Optionspace
-      b1_ipam_option_space:
+   - name: Update Option Space
+      b1_dhcp_option_space:
         name: "test"
         tags:
           - "Org": "Infoblox"
@@ -78,8 +84,8 @@ EXAMPLES = '''
         api_key: "{{ api }}"
         state: present
 
-   - name: Delete Optionspaces
-      b1_ipam_option_space:
+   - name: Delete Option Space
+      b1_dhcp_option_space:
         name: "test"
         host: "{{ host }}"
         api_key: "{{ api }}"
@@ -94,7 +100,7 @@ from ..module_utils.b1ddi import Request, Utilities
 import json
 
 def get_option_space(data):
-    '''Fetches the BloxOne DDI OptionSpace object
+    '''Fetches the BloxOne DDI Option Space object
     '''
     connector = Request(data['host'], data['api_key'])
     if data['name'] == '':
@@ -104,7 +110,7 @@ def get_option_space(data):
         return connector.get(endpoint)
 
 def update_option_space(data):
-    '''Updates the existing BloxOne DDI OptionSpace object
+    '''Updates the existing BloxOne DDI Option Space object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
@@ -134,7 +140,7 @@ def update_option_space(data):
     return connector.update(endpoint, payload)
     
 def create_option_space(data):
-    '''Creates a new BloxOne DDI OptionSpace object
+    '''Creates a new BloxOne DDI Option Space object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
@@ -149,6 +155,10 @@ def create_option_space(data):
             else:
                 payload['name'] = data['name']
                 payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
+                if 'protocol' in data.keys() and (data['protocol'] == "ip4" or "ip6"):
+                    payload['protocol']= data['protocol']
+                else:
+                    return(True, False, {'status': '400', 'response': 'invalid protocol','data':data})      
                 if 'tags' in data.keys():
                     payload['tags']=helper.flatten_dict_object('tags',data)
                 
@@ -157,7 +167,7 @@ def create_option_space(data):
         return(True, False, {'status': '400', 'response': 'object name not defined','data':data})                
 
 def delete_option_space(data):
-    '''Delete a BloxOne DDI OptionSpace object
+    '''Delete a BloxOne DDI Option Space object
     '''
     if data['name'] != '':
         connector = Request(data['host'], data['api_key'])
@@ -176,6 +186,7 @@ def main():
     '''
     argument_spec = dict(
         name=dict(default='', type='str'),
+        protocol=dict(default='',type='str'),
         api_key=dict(required=True, type='str'),
         host=dict(required=True, type='str'),
         comment=dict(type='str'),

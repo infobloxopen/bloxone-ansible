@@ -10,10 +10,11 @@
 
   tasks:
     #  Gather ID for a given Optionspace
-    - name: Gather Optionspace
-      b1_ipam_option_space_gather:
+    - name: Gather Option Space
+      b1_dhcp_option_space_gather:
         host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
       register: option_spaces
     - debug: msg="{{ option_spaces }}"
+    

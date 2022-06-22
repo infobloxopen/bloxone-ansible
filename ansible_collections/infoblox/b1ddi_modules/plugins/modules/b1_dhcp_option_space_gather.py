@@ -8,8 +8,8 @@ __metaclass__ = type
 
 DOCUMENTATION = '''
 ---
-module: b1_ipam_ip_space
-author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
+module: b1_dhcp_option_space_gather
+author: "Akhilesh Kabade (@akhilesh-kabade-infoblox), Sriram Kannan(@kannans)"
 short_description: Configure Option space on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
@@ -53,8 +53,8 @@ options:
   
 EXAMPLES = '''
 
-    - name: Gather Optionspace
-      b1_ipam_option_space_gather:
+    - name: Gather Option Space
+      b1_dhcp_option_space_gather:
         host: "{{ host }}"
         api_key: "{{ api }}"
         state: gather
@@ -70,7 +70,7 @@ from ..module_utils.b1ddi import Request, Utilities
 import json
 
 def get_option_space(data):
-    '''Fetches the BloxOne DDI Optionspace object
+    '''Fetches the BloxOne DDI Option Space object
     '''
     
     connector = Request(data['host'], data['api_key'])

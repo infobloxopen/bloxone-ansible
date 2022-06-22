@@ -9,9 +9,9 @@
   - api: "{{ api key to access the server }}"
 
   tasks:
-    # Delete the Optionspace
-    - name: Delete Optionspaces
-      b1_ipam_option_space:
+    # Delete the Option Space
+    - name: Delete Option Space
+      b1_dhcp_option_space:
         name: "test"
         host: "{{ host }}"
         api_key: "{{ api }}"
