@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "https://env-6.test.infoblox.com/"
+  - api: "a466f5ed8e37bd51b4f1814a73601466"
+  
+  tasks:
+    # Delete Option Code
+    - name: Delete Option Code
+      b1_dhcp_option_code:
+        name: "abcde"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: absent
