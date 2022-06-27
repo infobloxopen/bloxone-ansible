@@ -80,7 +80,7 @@ EXAMPLES = '''
 
    - name: Update Option Code
      b1_dhcp_option_code:
-        name: "test"
+        name: '{"new_name":"test","old_name":"test1"}'
         type: "address4"
         code: 25
         comment: "Updating Option Code"
@@ -130,35 +130,31 @@ def update_option_code(data):
     else:
         new_name = data['name']
 
-    reference = get_option_code(data)
-    if('results' in reference[2].keys() and len(reference[2]['results']) > 0):
-        ref_id = reference[2]['results'][0]['id']
+    if "option_space" in data.keys() and data["option_space"] != None:
+        endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/option_space?_filter=name==',data['option_space'])
+        ospace = connector.get(endpoint)
+        if ('results' in ospace[2].keys() and len(ospace[2]['results']) > 0):
+            ref_id = ospace[2]['results'][0]['id']
+        else:
+            return (True,False,{ "status": "400", "response": "Error in fetching option_space","data": data})
+
+        endpoint1 = '{}\"{}\"{}\"{}\"'.format('/api/ddi/v1/dhcp/option_code?_filter=name==',data['name'],'&_option_space==',ref_id)
+        oc_obj = connector.get(endpoint1)
+    
+    if('results' in oc_obj[2].keys() and len(oc_obj[2]['results']) > 0):
+        ref_id = oc_obj[2]['results'][0]['id']
     else:
-        return(True, False, {'status': '400', 'response': 'Host not found', 'data':data})
+        return(True, False, {'status': '400', 'response': 'Option Code not found', 'data':data})
     payload={}
     payload['name'] = new_name
-    payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
-    if 'tags' in data.keys():
-        payload['tags']=helper.flatten_dict_object('tags',data)
-    if "addresses" in data.keys() and data["addresses"] != None:
-                    aspace = connector.get("/api/ddi/v1/dhcp/option_space")
-                    if (
-                        "results" in aspace[2].keys()
-                        and len(aspace[2]["results"]) > 0
-                    ):
-                        payload["option_space"] = aspace[2]["results"](
-                            "", data, aspace[2]["results"]
-                        )
-                    else:
-                        return (
-                            True,
-                            False,
-                            {
-                                "status": "400",
-                                "response": "Error in fetching addresses",
-                                "data": data,
-                            },
-                        )
+    if 'type' in data.keys():
+      payload['type'] = data['type']
+    if 'code' in data.keys():
+      payload['code'] = data['code']
+    if 'comment' in data.keys():
+      payload['comment']= data['comment']
+    payload['option_space'] = ospace[2]['results'][0]['id']
+        
     endpoint  = '{}{}'.format('/api/ddi/v1/',ref_id)
     return connector.update(endpoint, payload)
     
@@ -171,11 +167,27 @@ def create_option_code(data):
         if 'new_name' in data['name']:
             return update_option_code(data)
         else:
-            host_obj = get_option_code(data)
-            payload={}
-            if('results' in host_obj[2].keys() and len(host_obj[2]['results']) > 0):
+            if "option_space" in data.keys() and data["option_space"] != None:
+                endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/option_space?_filter=name==',data['option_space'])
+                ospace = connector.get(endpoint)
+                if ('results' in ospace[2].keys() and len(ospace[2]['results']) > 0):
+                    ref_id = ospace[2]['results'][0]['id']
+                else:
+                    return (True,False,
+                            {
+                                "status": "400",
+                                "response": "Error in fetching option_space",
+                                "data": data,
+                            },
+                        )
+
+            endpoint1 = '{}\"{}\"{}\"{}\"'.format('/api/ddi/v1/dhcp/option_code?_filter=name==',data['name'],'&_option_space==',ref_id)
+            oc_obj = connector.get(endpoint1)
+            
+            if('results' in oc_obj[2].keys() and len(oc_obj[2]['results']) > 0):
                 return update_option_code(data)
             else:
+                payload={}
                 if 'name' not in data.keys() or 'type' not in data.keys() or 'code' not in data.keys():
                     return(True, False, {'status': '400', 'response': 'invalid input','data':data})
                 if (data['name'] == '' or data['type']=='' or data['code']==''):
@@ -184,22 +196,10 @@ def create_option_code(data):
                 payload['type'] = data['type'] 
                 payload['code'] = data['code'] 
                 payload['comment']= data['comment'] if 'comment' in data.keys() else ''
-                if "option_space" in data.keys() and data["option_space"] != None:
-                    endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/option_space?_filter=name==',data['option_space'])
-                    ospace = connector.get(endpoint)
-                    if ('results' in ospace[2].keys() and len(ospace[2]['results']) > 0):
-                        payload['option_space'] = ospace[2]['results'][0]['id']
+                
+                payload['option_space'] = ospace[2]['results'][0]['id']
                         
-                    else:
-                        return (
-                            True,
-                            False,
-                            {
-                                "status": "400",
-                                "response": "Error in fetching option_space",
-                                "data": data,
-                            },
-                        )
+                   
                 return connector.create('/api/ddi/v1/dhcp/option_code', payload)
     else:
         return(True, False, {'status': '400', 'response': 'object name not defined','data':data})                
@@ -209,9 +209,9 @@ def delete_option_code(data):
     '''
     if data['name'] != '':
         connector = Request(data['host'], data['api_key'])
-        host_obj = get_option_code(data)
-        if('results' in host_obj[2].keys() and len(host_obj[2]['results']) > 0):
-            ref_id = host_obj[2]['results'][0]['id']
+        oc_obj = get_option_code(data)
+        if('results' in oc_obj[2].keys() and len(oc_obj[2]['results']) > 0):
+            ref_id = oc_obj[2]['results'][0]['id']
             endpoint = '{}{}'.format('/api/ddi/v1/', ref_id)
             return connector.delete(endpoint)
         else:

@@ -12,11 +12,11 @@
     #  Update Option Code
     - name: Update Option Code
       b1_dhcp_option_code:
-        name: "test"
+        name: '{"new_name":"test","old_name":"test1"}'
         type: "address4"
         code: 25
         comment: "Updating Option Code"
-        option_space: "test1" 
+        option_space: "test" 
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
