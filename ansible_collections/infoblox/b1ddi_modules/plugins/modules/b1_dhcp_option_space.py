@@ -36,7 +36,7 @@ options:
     required: true
   protocol:
     description:
-      - Configures the protocol,this field is mandatory. It should be either ip4 or ip6.
+      - Configures the protocol,this field is mandatory for only Create flow. It should be either ip4 or ip6.
     type: str
   tags:
     description:
@@ -62,8 +62,8 @@ options:
 
 EXAMPLES = '''
    - name: Create Option Space
-      b1_dhcp_option_space:
-        name: "test1"
+     b1_dhcp_option_space:
+        name: "test"
         protocol: ip4/ip6
         tags:
           - "Org": "Infoblox"
@@ -74,8 +74,8 @@ EXAMPLES = '''
         state: present
 
    - name: Update Option Space
-      b1_dhcp_option_space:
-        name: "test"
+     b1_dhcp_option_space:
+        name: '{"new_name": "test1", "old_name": "test"}'
         tags:
           - "Org": "Infoblox"
           - "Dept": "QA"
@@ -85,7 +85,7 @@ EXAMPLES = '''
         state: present
 
    - name: Delete Option Space
-      b1_dhcp_option_space:
+     b1_dhcp_option_space:
         name: "test"
         host: "{{ host }}"
         api_key: "{{ api }}"

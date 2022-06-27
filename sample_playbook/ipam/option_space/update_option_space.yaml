@@ -12,7 +12,7 @@
     #  Update a Option Space
     - name: Update Option Space
       b1_dhcp_option_space:
-        name: "test"
+        name: '{"new_name": "test1", "old_name": "test"}'
         tags:
           - "Org": "Infoblox"
           - "Dept": "QA"

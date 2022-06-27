@@ -12,7 +12,7 @@
     #  Create a Option Space
     - name: Create Option Space
       b1_dhcp_option_space:
-        name: "test1"
+        name: "test"
         protocol: "ip4" #protocol field is mandatory. It should be either ip4 or ip6.
         tags:
           - "Org": "Infoblox"
