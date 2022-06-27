@@ -68,30 +68,29 @@ options:
 
 EXAMPLES = '''
    - name: Create Option Code
-      b1_dhcp_option_code:
+     b1_dhcp_option_code:
         name: "test"
         type: "address4"
         code: 25
+        comment: "This is a test DHCP Option Code to validate Infoblox Ansible Collection"
         option_space: "test1" 
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
 
-   - name: Update Host 
-      b1_ipam_host:
-        name: "Test-Ansible-host"
-        comment: "This is created by QA"
-        addresses:
-          - "ip_space" : "{{address}}"
-        tags:
-          - "Org": "Infoblox"
-          - "Dept": "Engineering"
+   - name: Update Option Code
+     b1_dhcp_option_code:
+        name: "test"
+        type: "address4"
+        code: 25
+        comment: "Updating Option Code"
+        option_space: "test1" 
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
 
    - name: Delete Option Code
-      b1_dhcp_option_code:
+     b1_dhcp_option_code:
         name: "abcde"
         host: "{{ host }}"
         api_key: "{{ api }}"
@@ -106,7 +105,7 @@ from ..module_utils.b1ddi import Request, Utilities
 import json
 
 def get_option_code(data):
-    '''Fetches the BloxOne DDI Host object
+    '''Fetches the BloxOne DDI DHCP Option Code object
     '''
     connector = Request(data['host'], data['api_key'])
     if data['name'] == '':
@@ -115,8 +114,8 @@ def get_option_code(data):
         endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/option_code?_filter=name==',data['name'])
         return connector.get(endpoint)
 
-def update_host(data):
-    '''Updates the existing BloxOne DDI Host object
+def update_option_code(data):
+    '''Updates the existing BloxOne DDI DHCP Option Code object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
@@ -164,18 +163,18 @@ def update_host(data):
     return connector.update(endpoint, payload)
     
 def create_option_code(data):
-    '''Creates a new BloxOne DDI Host object
+    '''Creates a new BloxOne DDI DHCP Option COde object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
     if data['name'] != '':
         if 'new_name' in data['name']:
-            return update_host(data)
+            return update_option_code(data)
         else:
             host_obj = get_option_code(data)
             payload={}
             if('results' in host_obj[2].keys() and len(host_obj[2]['results']) > 0):
-                return update_host(data)
+                return update_option_code(data)
             else:
                 if 'name' not in data.keys() or 'type' not in data.keys() or 'code' not in data.keys():
                     return(True, False, {'status': '400', 'response': 'invalid input','data':data})
