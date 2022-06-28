@@ -29,23 +29,22 @@ options:
     required: true
   name:
     description:
-      - Configures the name of IPAM Host to fetch, add, update or remove from the system. User can also update the name as it is possible
-        to pass a dict containing I(new_name), I(old_name).
+      - Configures the name of the Option Code to fetch, add, update or remove from the system. 
     type: str
     required: true
   type:
     description:
-      -
+      - Configures the type of the Option Code.
     type: str
     required: true
   Code:
     description:
-      -
+      - Option Code value.
     type: str
     required: true
   option_space:
     description:
-      -
+      - Name of the Option Space.
     type: str
     required: true
   comment:
