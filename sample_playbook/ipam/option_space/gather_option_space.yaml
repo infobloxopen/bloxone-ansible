@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Gather ID for a given Optionspace
+    - name: Gather Option Space
+      b1_dhcp_option_space_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+      register: option_spaces
+    - debug: msg="{{ option_spaces }}"
+    

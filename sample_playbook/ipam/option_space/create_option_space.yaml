@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Create a Option Space
+    - name: Create Option Space
+      b1_dhcp_option_space:
+        name: "test"
+        protocol: "ip4" #protocol field is mandatory. It should be either ip4 or ip6.
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "QA"
+        comment: "This is a test Optionspace to validate Infoblox Ansible Collection"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: present
+        
