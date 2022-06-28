@@ -68,29 +68,29 @@ options:
 EXAMPLES = '''
    - name: Create Option Code
      b1_dhcp_option_code:
-        name: "test"
+        name: "option-code-1"
         type: "address4"
         code: 25
         comment: "This is a test DHCP Option Code to validate Infoblox Ansible Collection"
-        option_space: "test1" 
+        option_space: "test" 
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
 
    - name: Update Option Code
      b1_dhcp_option_code:
-        name: '{"new_name":"test","old_name":"test1"}'
+        name: '{"new_name":"option-code-2","old_name":"option-code-1"}'
         type: "address4"
         code: 25
         comment: "Updating Option Code"
-        option_space: "test1" 
+        option_space: "test" 
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present
 
    - name: Delete Option Code
      b1_dhcp_option_code:
-        name: "abcde"
+        name: "option-code-2"
         host: "{{ host }}"
         api_key: "{{ api }}"
         state: absent
