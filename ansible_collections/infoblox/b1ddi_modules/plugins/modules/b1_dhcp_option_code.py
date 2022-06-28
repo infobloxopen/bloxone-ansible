@@ -13,7 +13,7 @@ author: "Akhilesh Kabade (@akhilesh-kabade-infoblox), Sriram Kannan(@kannans)"
 short_description: Configure DHCP Option Code on Infoblox BloxOne DDI
 version_added: "1.0.1"
 description:
-  -  Create, Update and Delete DHCP Option Code on Infoblox BloxOne DDI. This module manages the IPAM Host object using BloxOne REST APIs.
+  -  Create, Update and Delete DHCP Option Code on Infoblox BloxOne DDI. This module manages the Option Code object using BloxOne REST APIs.
 requirements:
   - requests
 options:
@@ -158,7 +158,7 @@ def update_option_code(data):
     return connector.update(endpoint, payload)
     
 def create_option_code(data):
-    '''Creates a new BloxOne DDI DHCP Option COde object
+    '''Creates a new BloxOne DDI DHCP Option Code object
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()

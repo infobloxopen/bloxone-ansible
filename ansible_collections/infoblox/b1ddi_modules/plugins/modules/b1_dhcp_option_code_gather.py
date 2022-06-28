@@ -9,10 +9,12 @@ import json
 EXAMPLES = '''
 
 - name: Gather Option Code
-  b1_ipam_host_gather:
+  b1_dhcp_option_code_gather:
     host: "{{ host }}"
     api_key: "{{ api }}"
     state: gather
+  register: option_codes
+- debug: msg="{{ option_codes }}"
 
 '''
 

@@ -5,14 +5,14 @@
     - infoblox.b1ddi_modules
 
   vars:
-  - host: "https://env-6.test.infoblox.com/"
-  - api: "a466f5ed8e37bd51b4f1814a73601466"
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
 
   tasks:
     #  Update Option Code
     - name: Update Option Code
       b1_dhcp_option_code:
-        name: '{"new_name":"test","old_name":"test1"}'
+        name: '{"new_name":"option-code-2","old_name":"option-code-1"}'
         type: "address4"
         code: 25
         comment: "Updating Option Code"
