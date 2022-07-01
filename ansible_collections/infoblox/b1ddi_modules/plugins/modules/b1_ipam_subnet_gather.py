@@ -10,8 +10,9 @@ DOCUMENTATION = '''
 ---
 module: b1_ipam_ip_space
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
+contributor: "Chris Marrison (@ccmarris)"
 short_description: Configure IP space on Infoblox BloxOne DDI
-version_added: "1.0.1"
+version_added: "1.1.0"
 description:
   - Gather information about subnet object in Infoblox BloxOne DDI. This module manages the subnet object using BloxOne REST APIs.
 requirements:
@@ -35,6 +36,11 @@ options:
   filters:
     description:
       - Configure a list of filters to be applied on the search result.
+    type: dict
+    required: false
+  tfilters:
+    description:
+      - Configure a list of tag filters to be applied on the search result.
     type: dict
     required: false
   comment:
@@ -70,6 +76,14 @@ EXAMPLES = '''
     fields: ['id', 'name', 'dhcp_options', 'tags' ]
     filters: {'address': 'xx.xx.xx.xx'}
 
+- name: Get the Subnets with filtered by tag key/value pairs
+  b1_ipam_subnet_gather:
+    host: "{{ host }}"
+    api_key: "{{ api }}"
+    state: gather
+    fields: ['id', 'name', 'dhcp_options', 'tags' ]
+    tfilters: {'Owner': 'marrison'}
+
 '''
 
 RETURN = ''' # '''
@@ -89,6 +103,7 @@ def get_ip_space(data):
     flag=0
     fields=data['fields']
     filters=data['filters']
+    tfilters=data['filters']
     if fields!=None and isinstance(fields, list):
         temp_fields = ",".join(fields)
         endpoint = endpoint+"?_fields="+temp_fields
@@ -106,6 +121,20 @@ def get_ip_space(data):
             endpoint = endpoint+"&_filter="+res
         else:
             endpoint = endpoint+"?_filter="+res
+
+    if tfilters!={} and isinstance(tfilters,dict):
+        temp_tfilters = []
+        for k,v in tfilters.items():
+            if(str(v).isdigit()):
+                temp_tfilters.append(f'{k}=={v}')
+            else:
+                temp_tfilters.append(f'{k}==\'{v}\'')
+        res = " and ".join(temp_tfilters)
+        if(flag==1):
+            endpoint = endpoint+"&_tfilter="+res
+        else:
+            endpoint = endpoint+"?_tfilter="+res
+
     try:
         return connector.get(endpoint)
     except:
@@ -132,6 +161,7 @@ def main():
         comment=dict(type='str'),
         fields=dict(type='list'),
         filters=dict(type='dict', default={}),
+        tfilters=dict(type='dict', default={}),
         tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','gather'])
     )
