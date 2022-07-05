@@ -174,7 +174,7 @@ def update_subnet(data):
     helper = Utilities()
     if all(k in data['address'] and data['address']!=None for k in ('new_address', 'old_address')):
         try:
-            address = json.loads(data['address'])
+            address = json.loads(data['address'].replace("'", "\""))
         except:
             return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'data':data})    
         new_address = helper.normalize_ip(address['new_address'])
@@ -322,7 +322,10 @@ def next_available_subnet(data):
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
     try:   
-        subnet_data = json.loads(data['address'])['next_available_subnet']
+        subnet_data = json.loads(data['address'].replace("'", "\""))['next_available_subnet']
+    except:
+        return(True, False, {'status': 400, 'response': 'Address syntax error, failed to load json data', 'data': data})
+    try:
         if 'parent_block' and "cidr" not in subnet_data.keys():
             return(True, False, {'status': '400', 'response': 'Parent block and CIDR are mandatory fields','data':data})
         p_data = helper.normalize_ip(subnet_data['parent_block'])
