@@ -10,8 +10,9 @@ DOCUMENTATION = '''
 ---
 module: b1_ipam_subnet
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
+contributor: "Chris Marrison (@ccmarris)
 short_description: Configure Subnet on Infoblox BloxOne DDI
-version_added: "1.0.1"
+version_added: "1.1.1"
 description:
   - Create, Update and Delete Subnets on Infoblox BloxOne DDI. This module manages the IPAM Subnet object using BloxOne REST APIs.
 requirements:
