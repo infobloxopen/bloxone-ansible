@@ -143,29 +143,18 @@ def get_subnet(data):
         if ('results' in space[2].keys() and len(space[2]['results']) > 0):
             space_ref = space[2]['results'][0]['id']
             if 'address' in data.keys() and data['address']!=None:
-                if 'next' in data['address'] or 'new' in data['address']:
-                    try:
-                        address_dict = json.loads(data['address'].replace("'","\""))
-                    except:
-                        return(True, False, {'status': '400', 'response': 'Invalid Address Syntax', 'data':data})
-                    if 'next_available_subnet' in address_dict.keys():
-                        address = address_dict['next_available_subnet']['parent_block']
-                    elif 'old_address' in address_dict.keys():
-                        address = address_dict['old_address']
-                    elif 'new_address' in address_dict.keys():
-                        address = address_dict['new_address']
+                address = helper.normalize_address(data['address'])    
+                if address:
+                    p_data = helper.normalize_ip(address)
+                    if(p_data[0]!='' and p_data[1]!=''):
+                        endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}' and cidr=={p_data[1]}"
+                    elif(p_data[0]!='' and p_data[1]==''):
+                        endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}'"
                     else:
-                        address = None
+                        return(True, False, {'status': '400', 'response': 'Invalid Address', 'data':data})
                 else:
-                    address = data.get('address')
-                    
-                p_data = helper.normalize_ip(address)
-                if(p_data[0]!='' and p_data[1]!=''):
-                    endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}' and cidr=={p_data[1]}"
-                elif(p_data[0]!='' and p_data[1]==''):
-                    endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}'"
-                else:
-                    return(True, False, {'status': '400', 'response': 'Invalid Address', 'data':data})
+                    return(True, False, {'status': '400', 'response': 'Invalid Address Syntax', 'data':data})
+
             else:
                 endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}'"
             return connector.get(endpoint)  
