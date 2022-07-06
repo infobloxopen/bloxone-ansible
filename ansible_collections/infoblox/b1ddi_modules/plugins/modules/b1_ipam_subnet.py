@@ -12,7 +12,7 @@ module: b1_ipam_subnet
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
 contributor: "Chris Marrison (@ccmarris)
 short_description: Configure Subnet on Infoblox BloxOne DDI
-version_added: "1.1.1"
+version_added: "1.1.2"
 description:
   - Create, Update and Delete Subnets on Infoblox BloxOne DDI. This module manages the IPAM Subnet object using BloxOne REST APIs.
 requirements:
@@ -212,6 +212,7 @@ def update_subnet(data):
         return(True, False, {'status': '400', 'response': 'Subnet not found', 'data':data}) 
     payload={}
     payload['cidr'] = int(new_address[1])
+    # Ensure we don't overwrite existing name/comment
     if 'name' in data.keys() and data.get('name'):
         payload['name'] = data['name']
     if 'comment' in data.keys() and data.get('comment'):
