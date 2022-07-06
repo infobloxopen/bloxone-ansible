@@ -51,6 +51,7 @@ options:
   dhcp_options:
     description:
       - Configures the DHCP options associated with the subnet.
+      - note: routers option supports first|last as special command to assign IP based on subnec
     type: list
   tags:
     description:
@@ -87,6 +88,7 @@ EXAMPLES = '''
     tags:
       - {{ key }}: "{{ value }}"
     dhcp_options:
+      - routers: '<first|last|<IP Address>>'
       - {{ key }}: "{{ value }}"
     comment: "{{ comment }}"
     api_key: "{{ api_token }}"
