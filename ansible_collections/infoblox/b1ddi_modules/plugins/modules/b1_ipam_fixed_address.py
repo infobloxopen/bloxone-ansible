@@ -86,13 +86,13 @@ options:
 EXAMPLES = '''
 
 - name: GET all fixed address allocations
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     api_key: "{{ api_token }}"
     host: "{{ host_server }}"
     state: get
 
 - name: GET fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     space: "{{ IP_space }}"
     address: "{{ IP_address }}"  
     api_key: "{{ api_token }}"
@@ -100,7 +100,7 @@ EXAMPLES = '''
     state: get
 
 - name: Create fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: "{{ IP_address }}"
     space: "{{ IP_space }}"
     name: "{{ fixed_address_name }}"
@@ -114,7 +114,7 @@ EXAMPLES = '''
     state: present
 
 - name: Create fixed address using next available IP functionality
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: '{"next_available_ip": {"subnet": "<subnet>"}}'
     space: "{{ IP_space }}"
     name: "{{ fixed_address_name }}"
@@ -128,7 +128,7 @@ EXAMPLES = '''
     state: present
 
 - name: Update fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: '{"new_address": "{{ new IP address of the fixed address }}", "old_address": "{{ old IP address of the fixed address }}"}'
     name: "{{ fixed_address_name }}"
     space: "{{ ip_space }}"
@@ -142,7 +142,7 @@ EXAMPLES = '''
     state: present
 
 - name: Delete fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: "{{ IP_address }}"
     space: "{{ IP_space }}"
     api_key: "{{ api_token }}"
