@@ -11,8 +11,9 @@ DOCUMENTATION = '''
 ---
 lookup: bloxone
 author: "Vedant Sethia (@vedantsethia)"
+contributor: "Chris Marrison (@ccmarris)"
 short_description: Query Infoblox BloxOne DDI objects
-version_added: "1.0.1"
+version_added: "1.1.0"
 description:
   - Uses the BloxOne DDI REST API to fetch BloxOne specified objects.  This lookup
     supports adding additional keywords to filter the return data and specify
@@ -28,6 +29,8 @@ options:
       description: The list of field names to return for the specified object.
     filters:
       description: a dict object that is used to filter the return objects
+    tfilters:
+      description: a dict object that is used to filter the return objects based on tags
     provider:
       description: a dict object containing BloxOne host name and API key
 '''
@@ -35,7 +38,7 @@ options:
 EXAMPLES = """
 - name: fetch all IP Space objects
   ansible.builtin.set_fact:
-    ip_space: "{{ lookup('bloxone', '/ipam/ipspace' , filters={'name': 'vsethia-ip-space'}, fields=['id', 'name', 'comment'] , provider={'host': 'https://csp.infoblox.com', 'api_key': 'bd334826af3daff06e05765f1e444ffa'}) }}"
+    ip_space: "{{ lookup('bloxone', '/ipam/ipspace' , filters={'name': 'vsethia-ip-space'}, tfilters={'Tagname': '<value>'}, fields=['id', 'name', 'comment'] , provider={'host': 'https://csp.infoblox.com', 'api_key': 'bd334826af3daff06e05765f1e444ffa'}) }}"
 
 """
 
@@ -47,7 +50,7 @@ from ansible.module_utils.basic import *
 import requests
 import json
 
-def get_object(obj_type, provider ,filters, fields):
+def get_object(obj_type, provider ,filters, tfilters, fields):
     '''Creating the GET API request for lookup
     '''
     try:
@@ -74,7 +77,20 @@ def get_object(obj_type, provider ,filters, fields):
             endpoint = endpoint+"&_filter="+res
         else:
             endpoint = endpoint+"?_filter="+res
-            
+ 
+    if tfilters!={} and isinstance(tfilters,dict):
+        temp_tfilters = []
+        for k,v in tfilters.items():
+            if(str(v).isdigit()):
+                temp_tfilters.append(f'{k}=={v}')
+            else:
+                temp_tfilters.append(f'{k}==\'{v}\'')
+        res = " and ".join(temp_tfilters)
+        if(flag==1):
+            endpoint = endpoint+"&_tfilter="+res
+        else:
+            endpoint = endpoint+"?_tfilter="+res           
+
     # reproduced module_utils. Replace once published
     try:
         headers = {'Authorization': 'Token {}'.format(key)}
@@ -101,6 +117,7 @@ class LookupModule(LookupBase):
 
         fields = kwargs.pop('fields', None)
         filters = kwargs.pop('filters', {})
+        tfilters = kwargs.pop('tfilters', {})
         provider = kwargs.pop('provider', {})
-        res = get_object(obj_type, provider, filters, fields)
+        res = get_object(obj_type, provider, filters, tfilters, fields)
         return res
