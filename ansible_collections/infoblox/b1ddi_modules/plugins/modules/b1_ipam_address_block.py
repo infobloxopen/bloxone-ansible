@@ -285,8 +285,6 @@ def main():
         host=dict(required=True, type='str'),
         address=dict(type='str'),
         space=dict(type='str'),
-        comment=dict(type='str'),
-        tags=dict(type='list', elements='dict', default=[{}]),
         state=dict(type='str', default='present', choices=['present','absent','get'])
     )
 
