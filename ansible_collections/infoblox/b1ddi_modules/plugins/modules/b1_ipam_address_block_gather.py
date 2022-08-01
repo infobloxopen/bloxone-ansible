@@ -127,7 +127,7 @@ def get_address_block(data):
             if(str(v).isdigit()):
                 temp_tfilters.append(f'{k}=={v}')
             else:
-                temp_tfilters.append(f'{k}==\'{v}\'')
+                temp_tfilters.append(f'{k}=="{v}"')
         res = " and ".join(temp_tfilters)
         if(flag==1):
             endpoint = endpoint+"&_tfilter="+res

@@ -11,8 +11,9 @@ DOCUMENTATION = '''
 ---
 module: b1_dhcp_fixed_address
 author: "Amit Mishra (@amishra)"
+contributor: "Chris Marrison (@ccmarris)"
 short_description: Configure fixed address on Infoblox BloxOne DDI
-version_added: "1.0.1"
+version_added: "1.1.2"
 description:
   - Get, Create, Update and Delete fixed address on Infoblox BloxOne DDI. This module manages the fixed address object using BloxOne REST APIs.
 requirements:
@@ -86,13 +87,13 @@ options:
 EXAMPLES = '''
 
 - name: GET all fixed address allocations
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     api_key: "{{ api_token }}"
     host: "{{ host_server }}"
     state: get
 
 - name: GET fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     space: "{{ IP_space }}"
     address: "{{ IP_address }}"  
     api_key: "{{ api_token }}"
@@ -100,7 +101,7 @@ EXAMPLES = '''
     state: get
 
 - name: Create fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: "{{ IP_address }}"
     space: "{{ IP_space }}"
     name: "{{ fixed_address_name }}"
@@ -114,7 +115,7 @@ EXAMPLES = '''
     state: present
 
 - name: Create fixed address using next available IP functionality
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: '{"next_available_ip": {"subnet": "<subnet>"}}'
     space: "{{ IP_space }}"
     name: "{{ fixed_address_name }}"
@@ -128,7 +129,7 @@ EXAMPLES = '''
     state: present
 
 - name: Update fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: '{"new_address": "{{ new IP address of the fixed address }}", "old_address": "{{ old IP address of the fixed address }}"}'
     name: "{{ fixed_address_name }}"
     space: "{{ ip_space }}"
@@ -142,7 +143,7 @@ EXAMPLES = '''
     state: present
 
 - name: Delete fixed address
-  b1_dhcp_fixed_address:
+  b1_ipam_fixed_address:
     address: "{{ IP_address }}"
     space: "{{ IP_space }}"
     api_key: "{{ api_token }}"
@@ -196,7 +197,7 @@ def update_fixed_address(data):
     helper = Utilities()
     if all(k in data['address'] and data['address']!=None for k in ('new_address', 'old_address')):
         try:
-            address = json.loads(data['address'])
+            address = json.loads(data['address'].replace("'", "\""))
         except:
             return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'data':data})    
         new_address = helper.normalize_ip(address['new_address'])
@@ -230,7 +231,7 @@ def create_fixed_address(data):
         '''Implementation of the next available functionality'''
         if('next_available_ip' in data['address']):
             try:   
-                subnet = json.loads(data['address'])['next_available_ip']['subnet']
+                subnet = json.loads(data['address'].replace("'", "\""))['next_available_ip']['subnet']
                 p_data = helper.normalize_ip(subnet)
             except:
                 return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'data':data})

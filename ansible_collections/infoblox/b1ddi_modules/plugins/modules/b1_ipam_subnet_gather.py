@@ -12,7 +12,7 @@ module: b1_ipam_ip_space
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
 contributor: "Chris Marrison (@ccmarris)"
 short_description: Configure IP space on Infoblox BloxOne DDI
-version_added: "1.1.0"
+version_added: "1.1.2"
 description:
   - Gather information about subnet object in Infoblox BloxOne DDI. This module manages the subnet object using BloxOne REST APIs.
 requirements:
@@ -92,7 +92,7 @@ from ansible.module_utils.basic import *
 from ..module_utils.b1ddi import Request, Utilities
 import json
 
-def get_ip_space(data):
+def get_subnet(data):
     '''Fetches the BloxOne DDI IP Space object
     '''
     '''Fetches the BloxOne DDI IP Space object
@@ -103,7 +103,7 @@ def get_ip_space(data):
     flag=0
     fields=data['fields']
     filters=data['filters']
-    tfilters=data['filters']
+    tfilters=data['tfilters']
     if fields!=None and isinstance(fields, list):
         temp_fields = ",".join(fields)
         endpoint = endpoint+"?_fields="+temp_fields
@@ -112,10 +112,10 @@ def get_ip_space(data):
     if filters!={} and isinstance(filters,dict):
         temp_filters = []
         for k,v in filters.items():
-            if(str(v).isdigit()):
-                temp_filters.append(f'{k}=={v}')
-            else:
-                temp_filters.append(f'{k}==\'{v}\'')
+          if(str(v).isdigit()):
+              temp_filters.append(f'{k}=={v}')
+          else:
+              temp_filters.append(f'{k}==\'{v}\'')
         res = " and ".join(temp_filters)
         if(flag==1):
             endpoint = endpoint+"&_filter="+res
@@ -125,10 +125,10 @@ def get_ip_space(data):
     if tfilters!={} and isinstance(tfilters,dict):
         temp_tfilters = []
         for k,v in tfilters.items():
-            if(str(v).isdigit()):
-                temp_tfilters.append(f'{k}=={v}')
-            else:
-                temp_tfilters.append(f'{k}==\'{v}\'')
+          if(str(v).isdigit()):
+              temp_tfilters.append(f'{k}=={v}')
+          else:
+              temp_tfilters.append(f'{k}=="{v}"')
         res = " and ".join(temp_tfilters)
         if(flag==1):
             endpoint = endpoint+"&_tfilter="+res
@@ -167,7 +167,7 @@ def main():
     )
 
     choice_map = {
-                  'gather': get_ip_space
+                  'gather': get_subnet
                   }
 
     module = AnsibleModule(argument_spec=argument_spec)

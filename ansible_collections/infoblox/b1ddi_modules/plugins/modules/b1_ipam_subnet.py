@@ -10,8 +10,9 @@ DOCUMENTATION = '''
 ---
 module: b1_ipam_subnet
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
+contributor: "Chris Marrison (@ccmarris)
 short_description: Configure Subnet on Infoblox BloxOne DDI
-version_added: "1.0.1"
+version_added: "1.1.2"
 description:
   - Create, Update and Delete Subnets on Infoblox BloxOne DDI. This module manages the IPAM Subnet object using BloxOne REST APIs.
 requirements:
@@ -50,6 +51,7 @@ options:
   dhcp_options:
     description:
       - Configures the DHCP options associated with the subnet.
+      - note: routers option supports first|last as special command to assign IP based on subnet
     type: list
   tags:
     description:
@@ -86,6 +88,7 @@ EXAMPLES = '''
     tags:
       - {{ key }}: "{{ value }}"
     dhcp_options:
+      - routers: '<first|last|<IP Address>>'
       - {{ key }}: "{{ value }}"
     comment: "{{ comment }}"
     api_key: "{{ api_token }}"
@@ -142,13 +145,18 @@ def get_subnet(data):
         if ('results' in space[2].keys() and len(space[2]['results']) > 0):
             space_ref = space[2]['results'][0]['id']
             if 'address' in data.keys() and data['address']!=None:
-                p_data = helper.normalize_ip(data['address'])
-                if(p_data[0]!='' and p_data[1]!=''):
-                    endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}' and cidr=={p_data[1]}"
-                elif(p_data[0]!='' and p_data[1]==''):
-                    endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}'"
+                address = helper.normalize_address(data['address'])    
+                if address:
+                    p_data = helper.normalize_ip(address)
+                    if(p_data[0]!='' and p_data[1]!=''):
+                        endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}' and cidr=={p_data[1]}"
+                    elif(p_data[0]!='' and p_data[1]==''):
+                        endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}' and address=='{p_data[0]}'"
+                    else:
+                        return(True, False, {'status': '400', 'response': 'Invalid Address', 'data':data})
                 else:
-                    return(True, False, {'status': '400', 'response': 'Invalid Address', 'data':data})
+                    return(True, False, {'status': '400', 'response': 'Invalid Address Syntax', 'data':data})
+
             else:
                 endpoint = f"/api/ddi/v1/ipam/subnet?_filter=space=='{space_ref}'"
             return connector.get(endpoint)  
@@ -172,16 +180,19 @@ def update_subnet(data):
     '''
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
-    if all(k in data['address'] and data['address']!=None for k in ('new_address', 'old_address')):
+    if 'new_address' in data['address']:
         try:
-            address = json.loads(data['address'])
+            address = json.loads(data['address'].replace("'", "\""))
         except:
             return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'data':data})    
-        new_address = helper.normalize_ip(address['new_address'])
-        old_address = helper.normalize_ip(address['old_address'])
-        if new_address[0] != old_address[0]:
-            return(True, False, {'status': '400', 'response': 'Address mismatched. The address cannot be changed, only CIDR can be updated.', 'data':data})
-        data['address'] = f'{old_address[0]}/{old_address[1]}'
+        if 'old_address' in address.keys():
+            new_address = helper.normalize_ip(address['new_address'])
+            old_address = helper.normalize_ip(address['old_address'])
+            if new_address[0] != old_address[0]:
+                return(True, False, {'status': '400', 'response': 'Address mismatched. The address cannot be changed, only CIDR can be updated.', 'data':data})
+            data['address'] = f'{old_address[0]}/{old_address[1]}'
+        else:
+            new_address = helper.normalize_ip(address['new_address'])
     else:
         new_address = helper.normalize_ip(data['address'])
 
@@ -192,8 +203,11 @@ def update_subnet(data):
         return(True, False, {'status': '400', 'response': 'Subnet not found', 'data':data}) 
     payload={}
     payload['cidr'] = int(new_address[1])
-    payload['name'] = data['name'] if 'name' in data.keys() else ''
-    payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
+    # Ensure we don't overwrite existing name/comment
+    if 'name' in data.keys() and data.get('name'):
+        payload['name'] = data['name']
+    if 'comment' in data.keys() and data.get('comment'):
+        payload['comment'] = data['comment']
     if 'dhcp_host' in data.keys() and data['dhcp_host']!=None:
         endpoint = '{}\"{}\"'.format('/api/ddi/v1/dhcp/host?_filter=name==',data['dhcp_host'])
         dhcp_host = connector.get(endpoint)
@@ -322,7 +336,10 @@ def next_available_subnet(data):
     connector = Request(data['host'], data['api_key'])
     helper = Utilities()
     try:   
-        subnet_data = json.loads(data['address'])['next_available_subnet']
+        subnet_data = json.loads(data['address'].replace("'", "\""))['next_available_subnet']
+    except:
+        return(True, False, {'status': 400, 'response': 'Address syntax error, failed to load json data', 'data': data})
+    try:
         if 'parent_block' and "cidr" not in subnet_data.keys():
             return(True, False, {'status': '400', 'response': 'Parent block and CIDR are mandatory fields','data':data})
         p_data = helper.normalize_ip(subnet_data['parent_block'])
@@ -359,6 +376,7 @@ def next_available_subnet(data):
         return connector.create(endpoint,body=False)
     except:
         return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'data':data})
+
 
 def main():
     '''Main entry point for module execution

@@ -1,0 +1,31 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Find store address_block for named store using tags
+      b1_ipam_address_block_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        tfilters: {"Store": "London"}
+        fields: ['address', 'cidr', 'id']
+      register: address_block
+    - debug: msg="{{ address_block}}"
+
+    - name: Create Address Block using next-available subnet
+      b1_ipam_subnet:
+        space: "marrison-lab"
+        address: '{"next_available_subnet": {"cidr": "24", "count": "2", "parent_block": "{{ address_block.meta.results.0.address }}/{{ address_block.meta.results.0.cidr }}"}}'
+        name: "new-store"
+        comment: "Test nextavailable after gather"
+        tags: ['Owner': "marrison", "Location": "Hampshire, UK"]
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

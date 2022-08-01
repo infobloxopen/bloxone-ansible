@@ -163,11 +163,55 @@ class Utilities(object):
                         break
                 if dhcp_option_code:
                     dhcp_option["option_code"] = dhcp_option_code
+                    # Check for and calculate first|last router
+                    if k == 'routers':
+                        if v == 'first' or v == 'last':
+                            v = self.get_router_ip(data, v)
                     dhcp_option["option_value"] = v
                     dhcp_option["type"] = "option"
                     payload.append(dhcp_option)
         return payload
+    
 
+    def get_router_ip(self, data, command):
+        """Calculate router ip based on subnet"""
+        router = None
+        if 'address' in data.keys() and data['address']!=None:
+            address = self.normalize_address(data['address'])
+            subnet = ipaddress.ip_network(address)
+            if command == 'first':
+                router = str(subnet.network_address + 1)
+            elif command == 'last':
+                router = str(subnet.network_address - 2)
+            else:
+                router = None
+        else:
+            router = None
+        
+        return router
+
+    
+    def normalize_address(self, data_address):
+        """Get raw address from address argument"""
+        if 'next' in data_address or 'new' in data_address:
+            try:
+                address_dict = json.loads(data_address.replace("'","\""))
+            except:
+                address = None
+            if 'next_available_subnet' in address_dict.keys():
+                address = address_dict['next_available_subnet']['parent_block']
+            elif 'old_address' in address_dict.keys():
+                address = address_dict['old_address']
+            elif 'new_address' in address_dict.keys():
+                address = address_dict['new_address']
+            else:
+                address = None
+        else:
+            address = data_address
+        
+        return address
+
+         
     def hostaddresses(self, key, data, aspace):
         """This utility function is used to add address for IPAM host creation/updation"""
         payload = []
