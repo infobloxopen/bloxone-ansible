@@ -35,8 +35,8 @@ DNS
 IPAM/DHCP
 ------
 
-- `b1_ipam_ippace`: Module to create, update and delete an IPSpace in a BloxOne platform.
-- `b1_ipam_ippace_gather`: Module to gather information about an existing IPSpace
+- `b1_ipam_ipspace`: Module to create, update and delete an IPSpace in a BloxOne platform.
+- `b1_ipam_ipspace_gather`: Module to gather information about an existing IPSpace
 - `b1_ipam_address_block`: Module to create, update and delete an Address Block in a BloxOne platform.
 - `b1_ipam_address_block_gather`: Module to gather information about an existing Address Block.
 - `b1_ipam_subnet`: Module to create, update and delete a subnet in BloxOne platform.
