@@ -46,6 +46,10 @@ IPAM/DHCP
 - `b1_ipam_ipv4_reservation_gather`: Module to gather information about an ipv4 reservation address.
 - `b1_ipam_fixed_address`: Module to create, update and delete a ipv4 fixed address in BloxOne platform.
 - `b1_ipam_fixed_address_gather`: Module to gather information about an ipv4 fixed address. For instance mac-address of an address.
+- `b1_ipam_host_gather`: Module to gather information about an ipam host.
+- `b1_ipam_host`: Module to create, update and delete a ipam host in BloxOne platform.
+- `b1_ipam_host_gather`: Module to gather information about option space in B1DDI.
+- `b1_ipam_host`: Module to create, update and delete a option space in BloxOne platform.
 
 Plugins
 ----
@@ -96,12 +100,8 @@ License
 This code is published under `GPL v3.0`
 
 [COPYING](https://github.com/infobloxopen/infoblox-ansible/blob/master/COPYING) 
- 
-Author Information
-==================
- Amit Mishra (amishra2@infoblox.com)
- Sriram Kanan (kannans@infoblox.com)
- Vedant Sethia 
+
+
  
 
 
