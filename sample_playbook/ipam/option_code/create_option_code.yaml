@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Create a Host
+    - name: Create Option Code
+      b1_dhcp_option_code:
+        name: "option-code-1"
+        type: "address4"
+        code: 25
+        comment: "This is a test IPSpace to validate Infoblox Ansible Collection"
+        option_space: "test" 
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present
