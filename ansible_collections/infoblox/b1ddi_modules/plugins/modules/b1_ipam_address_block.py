@@ -256,6 +256,7 @@ def next_available_address_block(data):
         cidr = int(address_data['cidr'])
         name = data['name'] if 'name' in data.keys() else ''
         comment = data['comment'] if 'comment' in data.keys() else ''
+        tags = data['tags'] if 'tags' in data.keys() else ''
 
         data['address'] = address_data['parent_block']
         address_block = get_address_block(data)
@@ -271,7 +272,11 @@ def next_available_address_block(data):
         elif(name!='' and comment==''):
             endpoint = f'/api/ddi/v1/{ref_id}/nextavailableaddressblock?count={count}&cidr={cidr}&name={name}'
         else:
-            endpoint = f'/api/ddi/v1/{ref_id}/nextavailableaddressblock?count={count}&cidr={cidr}'
+            endpoint = f'/api/ddi/v1/{ref_id}/nextavailableaddressblock?count={count}&cidr={cidr}'          
+        if tags:
+            # Convert tags list of dictionaries to URL query string
+            tags_str = '&'.join([f"{k}={v}" for tag in tags for k, v in tag.items()])
+            endpoint += f'&{tags_str}'          
         return connector.create(endpoint,body=False)
     except:
         return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'data':data})
