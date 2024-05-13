@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Gather information of all PTR records
+    - name: gather PTR record
+      b1_ptr_record_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+      register: ptr_rec_lists
+    - debug: msg="{{ ptr_rec_lists }}"
+
+    #  Gather information of PTR records with multiple filters
+    - name: gather PTR record
+      b1_ptr_record_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        filters: { "dname": "test.qa-zone-1.", "address": "22.11.11.21"}
+      register: ptr_rec_lists
+    - debug: msg="{{ ptr_rec_lists }}"

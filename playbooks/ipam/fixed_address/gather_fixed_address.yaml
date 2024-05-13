@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Gather ID for a given IP space
+    - name: Gather the ID information of an for a given name
+      b1_ipam_fixed_address_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        fields: ['id', 'tags', 'name' ]
+        filters: {'name': 'Test-Address-18'}
+      register: ip_spaces_id
+    - debug: msg="{{ ip_spaces_id }}"

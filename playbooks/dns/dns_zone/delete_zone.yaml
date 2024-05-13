@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Delete DNS Authoritative Zone
+      b1_dns_auth_zone:
+        fqdn: "qa-zone-1"
+        view: "qa-view-1"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: absent

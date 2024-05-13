@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    - name: Update ipv4 reserved address in a given IP Space
+      b1_ipam_fixed_address:
+        space: "qa-space-1"
+        address: '{"new_address": "40.0.0.20", "old_address": "40.0.0.15"}'
+        name: "qa-fa-updated"
+        comment: "This is the test address-mod"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "Engineering"
+        match_type : mac
+        match_value : "aa:ab:cd:aa:aa:aa"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

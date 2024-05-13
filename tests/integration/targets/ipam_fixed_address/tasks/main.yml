@@ -1,0 +1,49 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - name: "Create a fixed address (check mode)"
+      infoblox.bloxone.ipam_fixed_address:
+        address: "10.0.0.14"
+        ip_space: "{{ _ip_space.id}}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:03"
+        state: "present"
+      check_mode: true
+    - name: "Create a fixed address"
+      infoblox.bloxone.ipam_fixed_address:
+        address: "10.0.0.14"
+        ip_space: "{{ _ip_space.id}}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:03"
+        state: "present"
+      register: fixed_address
+    - name: "Create a fixed address (idempotency)"
+      infoblox.bloxone.ipam_fixed_address:
+        address: "10.0.0.14"
+        ip_space: "{{ _ip_space.id}}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:03"
+        state: "present"
+    - name: "Delete a fixed address (check mode)"
+      infoblox.bloxone.ipam_fixed_address:
+        id: "{{ fixed_address.id }}"
+        state: "absent"
+      check_mode: true
+    - name: "Delete a fixed address"
+      infoblox.bloxone.ipam_fixed_address:
+        id: "{{ fixed_address.id }}"
+        state: "absent"
+    - name: "Delete a fixed address (idempotency)"
+      infoblox.bloxone.ipam_fixed_address:
+        id: "{{ fixed_address.id }}"
+        state: "absent"
+
+  always:
+    - name: "Delete IP Space"
+      infoblox.bloxone.ipam_ip_space:
+        id: "{{ _ip_space.id }}"
+        state: "absent"
+      ignore_errors: true

@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create Site Subnets in BloxOne
+      b1_ipam_subnet:
+        space: "qa-space-1"
+        address: '{"next_available_subnet": {"cidr": "28", "count": "2", "parent_block": "40.0.0.0/24"}}'
+        name: "qa-test-nextAvailable"
+        comment: "This is the test subnet creation with DHCP options"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present
+        dhcp_options:
+          - routers: '10.98.36.1'
+          - log-servers: '10.98.36.2'

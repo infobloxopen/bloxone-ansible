@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: GET all DNS Authoritative Zones
+      b1_dns_auth_zone:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: get
+      register : dns_view_lists
+    - debug: msg="{{ dns_view_lists }}"

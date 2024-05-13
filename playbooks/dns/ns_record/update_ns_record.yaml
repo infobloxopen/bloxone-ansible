@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Update a NS Record
+      b1_ns_record:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : present
+        zone : "qa-zone-1"
+        tags:
+          - Name: "QA"
+        comment : "NS record updated by QA"
+        name : "qa-ns"
+        name: '{"new_name": "test-ns-updated", "old_name": "qa-ns"}'

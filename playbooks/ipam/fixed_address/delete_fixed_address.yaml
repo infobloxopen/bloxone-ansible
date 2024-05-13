@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Delete fixed address
+      b1_ipam_fixed_address:
+        space: "qa-space-1"
+        address: '40.0.0.15'
+        name: "Test-Address-18"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: absent

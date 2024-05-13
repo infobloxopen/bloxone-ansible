@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    #  Gather information of with multiple filters
+    - name: Gather the tags  of an for a given IPSpace name
+      b1_ns_record_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        filters: {"dname": "test-ns1.qa-zone-1.", "name": "qa-ns-11"}
+      register: a_rec_lists
+    - debug: msg="{{ a_rec_lists }}"

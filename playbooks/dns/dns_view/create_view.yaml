@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create DNS View
+      b1_dns_view:
+        name: "qa-view-1"
+        tags:
+          - "org": "Infoblox"
+          - "dept" : "QA"
+        comment: "This is  created by QA"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    #  Create a Range in a given subnet
+    - name: Create Range in a given IP Space
+      b1_ipam_range:
+        space: "qa-space-1"
+        name: "qa-range-1"
+        start: "40.0.0.15"
+        end: "40.0.0.50"
+        comment: "Range created by QA"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

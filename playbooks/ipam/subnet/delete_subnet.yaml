@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+  #  Delete the Subnet in a given IP space
+    - name: Delete an existing Subnet.
+      b1_ipam_subnet:
+        space: "qa-space-1"
+        address: '40.0.0.0/25'
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: absent

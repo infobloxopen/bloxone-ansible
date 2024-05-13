@@ -1,0 +1,22 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+# Update the IP space
+    - name: Update the IPSpace
+      b1_ipam_ip_space:
+        name: "qa-apace-1"
+        tags:
+          - "Status": "Working"
+          - "GeoLoc": "India"
+          - "Custom": "Works"
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: present

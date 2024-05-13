@@ -1,0 +1,13 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  vars:
+    name: "{{ 65535 | random | string }}-space"
+  block:
+    - name: "Create an IP space"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        state: "present"
+      register: _ip_space

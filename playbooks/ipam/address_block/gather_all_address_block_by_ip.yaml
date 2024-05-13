@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    #  Gather ID, Name, Dhcp Options for a given AddressBlock
+    - name: Gather the ID information of an for a given name
+      b1_ipam_address_block_gather:
+        host: "{{ host }}"
+        api_key: "{{ api }}"
+        state: gather
+        fields: ['id', 'name', 'dhcp_options' ]
+        filters: {'address': '40.0.0.0'}
+      register: address_block_id
+    - debug: msg="{{ address_block_id }}"

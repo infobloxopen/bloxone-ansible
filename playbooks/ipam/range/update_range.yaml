@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    #  Update the Range in a given IP space
+    - name: Update an existing Range.
+      b1_ipam_range:
+        space: "qa-space-1"
+        start: '{"new_address": "40.0.0.60", "old_address": "40.0.0.15"}'
+        end: '{"new_address": "40.0.0.80", "old_address": "40.0.0.50"}'
+        name: "qa-range-1-updated"
+        comment: "This is updated by QA"
+        tags:
+          - "Org": "Infoblox"
+          - "Dept": "Engineering"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

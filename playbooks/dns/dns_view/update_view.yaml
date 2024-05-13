@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Update DNS View 
+      b1_dns_view:
+         name: '{"new_name": "qa-view-updated", "old_name": "qa-view-1"}'
+         tags:
+           - Test: "Value1"
+         comment: "This is an update"
+         api_key: "{{ api }}"
+         host: "{{ host }}"
+         state: present

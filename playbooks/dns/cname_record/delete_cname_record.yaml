@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Create a CNAME Record
+      b1_cname_record:
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state : absent
+        zone : "qa-zone-1"
+        tags:
+          - Name: "QA"
+        name : "test-a-record"
+        comment : "CNAME record created by QA"

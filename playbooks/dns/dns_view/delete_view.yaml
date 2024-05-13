@@ -1,0 +1,17 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+
+  tasks:
+    - name: Delete DNS View
+      b1_dns_view:
+         name: "qa-view-updated"
+         api_key: "{{ api }}"
+         host: "{{ host }}"
+         state: absent

@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+  collections:
+    - infoblox.b1ddi_modules
+
+  vars:
+  - host: "{{ Host server to connect to }}"
+  - api: "{{ api key to access the server }}"
+  
+  tasks:
+    #  Create a ipv4 reserved address in a given IP space
+    - name: Create ipv4 reserved address in a given IP Space
+      b1_ipam_ipv4_reservation:
+        space: "qa-space-1"
+        address: "40.0.0.100"
+        name: "qa-res-1"
+        comment: "This is reserved by QA"
+        tags:
+          - "Org": "Infoblox"
+        api_key: "{{ api }}"
+        host: "{{ host }}"
+        state: present

@@ -1,0 +1,9 @@
+action_groups:
+  all:
+    - metadata:
+        extend_group:
+          - ipam
+  ipam:
+    - ipam_fixed_address
+    - ipam_ip_space
+    - ipam_subnet
