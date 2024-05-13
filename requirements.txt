@@ -1,0 +1,2 @@
+requests >= 2.22.0
+bloxone-python-client @ git+https://github.com/infobloxopen/bloxone-python-client@fac16a90

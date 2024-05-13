@@ -1,5 +1,0 @@
-
-[all:vars]
-api_key=<api key for access>
-host_server=< Host server >
-
