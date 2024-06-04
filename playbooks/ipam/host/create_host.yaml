@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -15,7 +15,7 @@
         name: "host"
         comment: "This is created by QA"
         addresses:
-          - "test1": "10.0.0.1"
+          - "test1" : "10.0.0.1"
         tags:
           - "Org": "Infoblox"
           - "Dept": "Engineering"

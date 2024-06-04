@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -13,10 +13,10 @@
       b1_cname_record:
         api_key: "{{ api }}"
         host: "{{ host }}"
-        state: present
-        zone: "qa-zone-1"
+        state : present
+        zone : "qa-zone-1"
         tags:
           - Name: "QA"
-        name: "test-name-record"
-        comment: "CNAME record created by QA"
-        can_name: "test-b-record"
+        name : "test-name-record"
+        comment : "CNAME record created by QA"
+        can_name : "test-b-record"

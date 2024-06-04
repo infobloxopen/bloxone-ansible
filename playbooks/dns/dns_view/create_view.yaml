@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -14,7 +14,7 @@
         name: "qa-view-1"
         tags:
           - "org": "Infoblox"
-          - "dept": "QA"
+          - "dept" : "QA"
         comment: "This is  created by QA"
         api_key: "{{ api }}"
         host: "{{ host }}"

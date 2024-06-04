@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -14,5 +14,5 @@
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: get
-      register: dns_view_lists
+      register : dns_view_lists
     - debug: msg="{{ dns_view_lists }}"

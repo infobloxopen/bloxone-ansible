@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -15,8 +15,8 @@
         address: '40.0.0.15'
         name: "Test-Address-18"
         comment: "This is the test Fixed address "
-        match_type: mac
-        match value: "aa:ab:cd:aa:aa:aa"
+        match_type : mac
+        match value : "aa:ab:cd:aa:aa:aa"
         tags:
           - "Org": "Infoblox"
         api_key: "{{ api }}"

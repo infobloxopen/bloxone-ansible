@@ -3,11 +3,10 @@
 # Copyright (c) 2021 Infoblox, Inc.
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
+from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = '''
 ---
 module: b1_ptr_record_gather
 author: "amishra2@infoblox"
@@ -53,81 +52,96 @@ options:
     choices:
       - gather
     required: true
-"""
+'''
 
+  
+EXAMPLES = '''
 
-EXAMPLES = """
+'''
 
-"""
+RETURN = ''' # '''
 
-RETURN = """ # """
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request
-
+from ansible.module_utils.basic import *
+from ..module_utils.b1ddi import Request, Utilities
+import json
 
 def get_ptr_record_gather(data):
-    """Fetches the BloxOne DDI IP Space object"""
-    """Fetches the BloxOne DDI IP Space object
-    """
-    connector = Request(data["host"], data["api_key"])
+    '''Fetches the BloxOne DDI IP Space object
+    '''
+    '''Fetches the BloxOne DDI IP Space object
+    '''
+    connector = Request(data['host'], data['api_key'])
 
-    endpoint = "/api/ddi/v1/dns/record"
+    endpoint = f'/api/ddi/v1/dns/record'
 
-    flag = 0
-    fields = data["fields"]
-    filters = data["filters"]
-    if "address" in filters:
-        filters["dns_name_in_zone"] = filters.pop("address")
-    if "dname" in filters:
-        filters["dns_rdata"] = filters.pop("dname")
-    if fields is not None and isinstance(fields, list):
+    flag=0
+    fields=data['fields']
+    filters=data['filters']
+    if 'address' in filters:
+        filters['dns_name_in_zone'] = filters.pop('address')
+    if 'dname' in filters:
+        filters['dns_rdata'] = filters.pop('dname')
+    if fields!=None and isinstance(fields, list):
         temp_fields = ",".join(fields)
-        endpoint = endpoint + "?_fields=" + temp_fields
-        flag = 1
+        endpoint = endpoint+"?_fields="+temp_fields
+        flag=1
 
-    if filters != {} and isinstance(filters, dict):
+    if filters!={} and isinstance(filters,dict):
         temp_filters = []
-        for k, v in filters.items():
-            if str(v).isdigit():
-                temp_filters.append(f"{k}=={v}")
+        for k,v in filters.items():
+            if(str(v).isdigit()):
+                temp_filters.append(f'{k}=={v}')
             else:
-                temp_filters.append(f"{k}=='{v}'")
+                temp_filters.append(f'{k}==\'{v}\'')
         res = " and ".join(temp_filters)
-        if flag == 1:
-            endpoint = endpoint + "&_filter=" + res
+        if(flag==1):
+            endpoint = endpoint+"&_filter="+res
         else:
-            endpoint = endpoint + "?_filter=" + res
+            endpoint = endpoint+"?_filter="+res
 
     try:
         return connector.get(endpoint)
-    except Exception:
+    except:
         raise Exception(endpoint)
 
 
+
+    if result.status_code in [200,201,204]:
+        meta = {'status': result.status_code,'url': url, 'response': result.json()} 
+        return (False, False, meta)
+    elif result.status_code == 401:
+        meta = {'status': result.status_code,'url': url, 'response': result.json()}
+        return (True, False, meta)
+    else:
+        meta = {'status': result.status_code,'url': url, 'response': result.json()}
+        return (True, False, meta)
+
+
 def main():
-    """Main entry point for module execution"""
+    '''Main entry point for module execution
+    '''
     argument_spec = dict(
-        name=dict(default="", type="str"),
-        api_key=dict(required=True, type="str"),
-        host=dict(required=True, type="str"),
-        comment=dict(type="str"),
-        fields=dict(type="list"),
-        filters=dict(type="dict", default={"type": "PTR"}),
-        tags=dict(type="list", elements="dict", default=[{}]),
-        state=dict(type="str", default="present", choices=["present", "absent", "gather"]),
+        name=dict(default='', type='str'),
+        api_key=dict(required=True, type='str'),
+        host=dict(required=True, type='str'),
+        comment=dict(type='str'),
+        fields=dict(type='list'),
+        filters=dict(type='dict', default={"type": "PTR"}),
+        tags=dict(type='list', elements='dict', default=[{}]),
+        state=dict(type='str', default='present', choices=['present','absent','gather'])
     )
 
-    choice_map = {"gather": get_ptr_record_gather}
+    choice_map = {
+                  'gather': get_ptr_record_gather
+                  }
 
     module = AnsibleModule(argument_spec=argument_spec)
-    (is_error, has_changed, result) = choice_map.get(module.params["state"])(module.params)
+    (is_error, has_changed, result) = choice_map.get(module.params['state'])(module.params)
 
     if not is_error:
         module.exit_json(changed=has_changed, meta=result)
     else:
-        module.fail_json(msg="Operation failed", meta=result)
+        module.fail_json(msg='Operation failed', meta=result)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

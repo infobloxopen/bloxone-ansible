@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -15,8 +15,8 @@
         name: "host"
         comment: "Updating the comment"
         addresses:
-          - "test1": "10.0.0.3"
-          - "test2": "10.0.0.4"
+          - "test1" : "10.0.0.3"
+          - "test2" : "10.0.0.4"
         tags:
           - "Org": "Infoblox"
           - "Dept": "Engineering"

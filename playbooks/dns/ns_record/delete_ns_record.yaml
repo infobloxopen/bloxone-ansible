@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -13,6 +13,6 @@
       b1_ns_record:
         api_key: "{{ api }}"
         host: "{{ host }}"
-        state: absent
-        zone: "qa-zone-1"
-        name: "test-ns-updated"
+        state : absent
+        zone : "qa-zone-1"
+        name : "test-ns-updated"

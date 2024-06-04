@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -15,7 +15,7 @@
         view: "qa-view-1"
         primary_type: "cloud"
         internal_secondaries: 
-          - "ZTP_NIOS_TEST_4_14_8888544975683345166"
+          -  "ZTP_NIOS_TEST_4_14_8888544975683345166"
         tags:
           - Name: "QA"
         comment: "This zone is created by QA"

@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -19,3 +19,5 @@
     - name: printing hostlists
       debug: 
         msg: " {{ hostlists }} "
+
+

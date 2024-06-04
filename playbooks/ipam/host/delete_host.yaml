@@ -2,12 +2,12 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
-  vars:
+ vars:
   - host: "{{ Host server to connect to }}"
   - api: "{{ api key to access the server }}"
-
+  
   tasks:
     # Delete the Host
     - name: Delete Host

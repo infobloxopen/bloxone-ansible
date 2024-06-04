@@ -3,11 +3,10 @@
 # Copyright (c) 2021 Infoblox, Inc.
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
+from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = '''
 ---
 module: b1_ns_record
 author: "Amit Mishra , amishra@infobloc.com"
@@ -30,13 +29,13 @@ options:
     required: true
   fqdn:
     description:
-      - Configures the fqdn of the DNS Authoritative Zone to fetch, add, update or remove from the system.
-        The fqdn of the DNS Authoritative Zone can be in forward or reverse domain name.
+      - Configures the fqdn of the DNS Authoritative Zone to fetch, add, update or remove from the system. 
+        The fqdn of the DNS Authoritative Zone can be in forward or reverse domain name. 
     type: str
     required: true
   internal_secondaries:
     description:
-      - Configures the DNS Server configured on Bloxone for the DNS Authoritative Zone to fetch, add, update or remove from the system.
+      - Configures the DNS Server configured on Bloxone for the DNS Authoritative Zone to fetch, add, update or remove from the system. 
     type: list
     required: true
   external_primaries:
@@ -45,8 +44,8 @@ options:
     type: list
   view:
     description:
-      - Configures the name of DNS View containing the DNS Authoritative Zone to fetch, add, update or remove from the system.
-    type: str
+      - Configures the name of DNS View containing the DNS Authoritative Zone to fetch, add, update or remove from the system. 
+    type: str 
   primary_type:
     description:
       - Configures the type of the DNS Authoritative Zone object to fetch, add, update or remove from the system. Default is set to 'cloud'.
@@ -75,232 +74,183 @@ options:
       - absent
       - get
     required: true
-"""  # noqa: E501
+'''
+
+  
+EXAMPLES = '''
+   - name: GET all NS record
+      b1_ns_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        state: get
+
+    - name: GET all NS record of a zone
+      b1_ns_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        zone: "{{ Zone_name }}"
+        state: get
+
+    - name: GET specific record
+      b1_ns_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        zone: "{{ Zone_name }}"
+        name: "{{ Name of the NS record }}"
+        state: get
+
+    - name: Create NS
+      b1_ns_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        zone: "{{ Zone_name }}"
+        ns_server: "{{ Name server of NS record }}"
+        name: "amit-test"
+        state: present
 
 
-EXAMPLES = """
-  - name: GET all NS record
-    b1_ns_record:
-      api_key: "{{ api_key }}"
-      host: "{{ host }}"
-      state: get
+    - name: Update NS record #Only update of Name is supported in this release
+      b1_ns_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        zone: "{{ Zone_name }}"
+        ns_server: "{{ Name server of NS record }}"
+        name: '{"new_name": "New name of NS record", "old_name": "Old name of NS record"}'
+        state: present
 
-  - name: GET all NS record of a zone
-    b1_ns_record:
-      api_key: "{{ api_key }}"
-      host: "{{ host }}"
-      zone: "{{ Zone_name }}"
-      state: get
 
-  - name: GET specific record
-    b1_ns_record:
-      api_key: "{{ api_key }}"
-      host: "{{ host }}"
-      zone: "{{ Zone_name }}"
-      name: "{{ Name of the NS record }}"
-      state: get
+    - name: Delete NS
+      b1_ns_record:
+        api_key: "{{ api_key }}"
+        host: "{{ host }}"
+        zone: "{{ Zone_name }}"
+        name: "{{ Name server of NS record }}"
+        state: absent
+'''
 
-  - name: Create NS
-    b1_ns_record:
-      api_key: "{{ api_key }}"
-      host: "{{ host }}"
-      zone: "{{ Zone_name }}"
-      ns_server: "{{ Name server of NS record }}"
-      name: "amit-test"
-      state: present
+RETURN = ''' # '''
 
-  - name: Update NS record #Only update of Name is supported in this release
-    b1_ns_record:
-      api_key: "{{ api_key }}"
-      host: "{{ host }}"
-      zone: "{{ Zone_name }}"
-      ns_server: "{{ Name server of NS record }}"
-      name: '{"new_name": "New name of NS record", "old_name": "Old name of NS record"}'
-      state: present
-
-  - name: Delete NS
-    b1_ns_record:
-      api_key: "{{ api_key }}"
-      host: "{{ host }}"
-      zone: "{{ Zone_name }}"
-      name: "{{ Name server of NS record }}"
-      state: absent
-
-"""
-
-RETURN = """ # """
-
-import json
-
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request, Utilities
-
+from ansible.module_utils.basic import *
+from ..module_utils.b1ddi import Request, Utilities
 
 def get_ns_record(data):
-    """Fetches the BloxOne DDI DNS Authoritative Zone object"""
-    connector = Request(data["host"], data["api_key"])
-    if "zone" in data.keys() and data["zone"] is not None:
-        zone_endpoint = f"/api/ddi/v1/dns/auth_zone?_filter=fqdn==\"{data['zone']}\""
+    '''Fetches the BloxOne DDI DNS Authoritative Zone object
+    '''
+    connector = Request(data['host'], data['api_key'])
+    if 'zone' in data.keys() and data['zone']!=None:
+        zone_endpoint = '{}\"{}\"'.format('/api/ddi/v1/dns/auth_zone?_filter=fqdn==',data['zone'])
         zone = connector.get(zone_endpoint)
-        if "results" in zone[2].keys() and len(zone[2]["results"]) > 0:
-            zone_ref = zone[2]["results"][0]["id"]
-            if "name" in data.keys() and data["name"] is not None:
-                endpoint = f"/api/ddi/v1/dns/record?_filter=zone=='{zone_ref}' and name_in_zone=='{data['name']}' and type=='NS'"
+        if ('results' in zone[2].keys() and len(zone[2]['results']) > 0):
+            zone_ref = zone[2]['results'][0]['id']
+            if 'name' in data.keys() and data['name']!=None:
+               endpoint = f"/api/ddi/v1/dns/record?_filter=zone=='{zone_ref}' and name_in_zone=='{data['name']}' and type=='NS'"
             else:
                 endpoint = f"/api/ddi/v1/dns/record?_filter=zone=='{zone_ref}' and type=='NS'"
-            return connector.get(endpoint)
+            return connector.get(endpoint)  
         else:
-            return (
-                True,
-                False,
-                {
-                    "status": "400",
-                    "response": "Error in fetching DNS Zone",
-                    "data": data,
-                    "zone": zone,
-                },
-            )
-    else:
-        endpoint = "/api/ddi/v1/dns/record?_filter=type=='NS'"
-        return connector.get(endpoint)
-
+            return(True, False, {'status': '400', 'response': 'Error in fetching DNS Zone', 'data':data, 'zone': zone})
+    else: 
+            endpoint = f"/api/ddi/v1/dns/record?_filter=type=='NS'"
+            return connector.get(endpoint)
 
 def update_ns_record(data):
-    """Updates the existing BloxOne DDI DNS Authoritative Zone object"""
-    connector = Request(data["host"], data["api_key"])
+    '''Updates the existing BloxOne DDI DNS Authoritative Zone object
+    '''
+    connector = Request(data['host'], data['api_key'])
     helper = Utilities()
-    payload = {}
-    if all(k in data["name"] and data["name"] is not None for k in ("new_name", "old_name")):
+    payload={}
+    if all(k in data['name'] and data['name']!=None for k in ('new_name', 'old_name')): 
         try:
-            name = json.loads(data["name"])
-        except Exception:
-            return (
-                True,
-                False,
-                {
-                    "status": "400",
-                    "response": "Invalid Syntax",
-                    "where": "i am in update",
-                    "data": data,
-                },
-            )
-        new_name = name["new_name"]
-        old_name = name["old_name"]
-        data["name"] = old_name
-        payload["name_in_zone"] = new_name
-        data["name"] = old_name
-        payload["comment"] = data["comment"] if "comment" in data.keys() else ""
+            name = json.loads(data['name'])
+        except:
+            return(True, False, {'status': '400', 'response': 'Invalid Syntax', 'where': "i am in update",  'data':data})
+        new_name = name['new_name']
+        old_name = name['old_name']
+        data['name'] = old_name
+        payload['name_in_zone'] = new_name
+        data['name'] = old_name 
+        payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
     reference = get_ns_record(data)
-    if "results" in reference[2].keys() and len(reference[2]["results"]) > 0:
-        ref_id = reference[2]["results"][0]["id"]
+    if('results' in reference[2].keys() and len(reference[2]['results']) > 0):
+        ref_id = reference[2]['results'][0]['id']
     else:
-        return (
-            True,
-            False,
-            {"status": "400", "response": "Address Block not found", "data": data},
-        )
-    if "tags" in data.keys() and data["tags"] is not None:
-        payload["tags"] = helper.flatten_dict_object("tags", data)
-    endpoint = f"/api/ddi/v1/{ref_id}"
+        return(True, False, {'status': '400', 'response': 'Address Block not found', 'data':data})
+    if 'tags' in data.keys() and data['tags']!=None:
+        payload['tags']=helper.flatten_dict_object('tags',data) 
+    endpoint = '{}{}'.format('/api/ddi/v1/',ref_id)
     return connector.update(endpoint, payload)
-
-
+    
 def create_ns_record(data):
-    """Creates a new BloxOne DDI DNS Authoritative Zone object"""
-    connector = Request(data["host"], data["api_key"])
+    '''Creates a new BloxOne DDI DNS Authoritative Zone object
+    '''
+    connector = Request(data['host'], data['api_key'])
     helper = Utilities()
-    if all(k in data and data[k] is not None for k in ("name", "zone")):
-        if "new_name" in data["name"]:
+    if all(k in data and data[k]!=None for k in ('name','zone')): 
+       if('new_name' in data['name']):
+           return update_ns_record(data)
+       else:       
+          auth_zone = get_ns_record(data)
+          payload={}
+          if('results' in auth_zone[2].keys() and len(auth_zone[2]['results']) > 0):
             return update_ns_record(data)
-        else:
-            auth_zone = get_ns_record(data)
-            payload = {}
-            if "results" in auth_zone[2].keys() and len(auth_zone[2]["results"]) > 0:
-                return update_ns_record(data)
+          else:
+            zone_endpoint = '{}\"{}\"'.format('/api/ddi/v1/dns/auth_zone?_filter=fqdn==',data['zone'])
+            zone = connector.get(zone_endpoint)
+            if('results' in zone[2].keys() and len(zone[2]['results']) > 0):
+                payload['zone'] = zone[2]['results'][0]['id']
+                payload['name_in_zone'] = data['name']
+                payload['rdata'] = {'dname': data['ns_server']}
+                payload['type'] = "NS"
+                payload['comment'] = data['comment'] if 'comment' in data.keys() else ''
+                if 'tags' in data.keys() and data['tags']!=None:
+                    payload['tags']=helper.flatten_dict_object('tags',data) 
+                return connector.create('/api/ddi/v1/dns/record', payload) 
             else:
-                zone_endpoint = f"/api/ddi/v1/dns/auth_zone?_filter=fqdn==\"{data['zone']}\""
-                zone = connector.get(zone_endpoint)
-                if "results" in zone[2].keys() and len(zone[2]["results"]) > 0:
-                    payload["zone"] = zone[2]["results"][0]["id"]
-                    payload["name_in_zone"] = data["name"]
-                    payload["rdata"] = {"dname": data["ns_server"]}
-                    payload["type"] = "NS"
-                    payload["comment"] = data["comment"] if "comment" in data.keys() else ""
-                    if "tags" in data.keys() and data["tags"] is not None:
-                        payload["tags"] = helper.flatten_dict_object("tags", data)
-                    return connector.create("/api/ddi/v1/dns/record", payload)
-                else:
-                    return (
-                        True,
-                        False,
-                        {
-                            "status": "400",
-                            "response": "Error in fetching DNS Zone",
-                            "data": data,
-                        },
-                    )
+                   return (True, False, {'status': '400', 'response': 'Error in fetching DNS Zone', 'data':data}) 
     else:
-        return (
-            True,
-            False,
-            {
-                "status": "400",
-                "response": "Zone or Record Name not defined",
-                "data": data,
-            },
-        )
-
+        return(True, False, {'status': '400', 'response': 'Zone or Record Name not defined','data':data})                
 
 def delete_ns_record(data):
-    """Delete a BloxOne DDI DNS Authoritative Zone object"""
-    if all(k in data and data[k] is not None for k in ("name", "zone")):
-        connector = Request(data["host"], data["api_key"])
+    '''Delete a BloxOne DDI DNS Authoritative Zone object
+    '''
+    if all(k in data and data[k]!=None for k in ('name','zone')):
+        connector = Request(data['host'], data['api_key'])
         auth_zone = get_ns_record(data)
-        if "results" in auth_zone[2].keys() and len(auth_zone[2]["results"]) > 0:
-            ref_id = auth_zone[2]["results"][0]["id"]
-            endpoint = f"/api/ddi/v1/{ref_id}"
+        if('results' in auth_zone[2].keys() and len(auth_zone[2]['results']) > 0):
+            ref_id = auth_zone[2]['results'][0]['id']
+            endpoint = '{}{}'.format('/api/ddi/v1/', ref_id)
             return connector.delete(endpoint)
         else:
-            return (
-                True,
-                False,
-                {"status": "400", "response": "Object not found", "data": data},
-            )
+            return(True, False, {'status': '400', 'response': 'Object not found','data':data})
     else:
-        return (
-            True,
-            False,
-            {"status": "400", "response": "FQDN or DNS View not defined", "data": data},
-        )
+        return(True, False, {'status': '400', 'response': 'FQDN or DNS View not defined','data':data}) 
 
 
 def main():
-    """Main entry point for module execution"""
+    '''Main entry point for module execution
+    '''
     argument_spec = dict(
-        zone=dict(type="str"),
-        api_key=dict(required=True, type="str"),
-        host=dict(required=True, type="str"),
-        name=dict(type="str"),
-        ns_server=dict(type="str"),
-        comment=dict(type="str"),
-        tags=dict(type="list", elements="dict", default=[{}]),
-        state=dict(type="str", default="present", choices=["present", "absent", "get"]),
+        zone=dict(type='str'),
+        api_key=dict(required=True, type='str'),
+        host=dict(required=True, type='str'),
+        name=dict(type='str'),
+        ns_server=dict(type='str'),
+        comment=dict(type='str'),
+        tags=dict(type='list', elements='dict', default=[{}]),
+        state=dict(type='str', default='present', choices=['present','absent','get'])
     )
 
-    choice_map = {
-        "present": create_ns_record,
-        "get": get_ns_record,
-        "absent": delete_ns_record,
-    }
+    choice_map = {'present': create_ns_record,
+                  'get': get_ns_record,
+                  'absent': delete_ns_record}
 
     module = AnsibleModule(argument_spec=argument_spec)
-    (is_error, has_changed, result) = choice_map.get(module.params["state"])(module.params)
+    (is_error, has_changed, result) = choice_map.get(module.params['state'])(module.params)
 
     if not is_error:
         module.exit_json(changed=has_changed, meta=result)
     else:
-        module.fail_json(msg="Operation failed", meta=result)
+        module.fail_json(msg='Operation failed', meta=result)
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

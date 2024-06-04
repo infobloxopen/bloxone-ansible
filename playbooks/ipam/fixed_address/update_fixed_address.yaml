@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -18,8 +18,8 @@
         tags:
           - "Org": "Infoblox"
           - "Dept": "Engineering"
-        match_type: mac
-        match_value: "aa:ab:cd:aa:aa:aa"
+        match_type : mac
+        match_value : "aa:ab:cd:aa:aa:aa"
         api_key: "{{ api }}"
         host: "{{ host }}"
         state: present

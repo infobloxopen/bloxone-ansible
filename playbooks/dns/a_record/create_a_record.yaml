@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.b1ddi_modules
 
   vars:
   - host: "{{ Host server to connect to }}"
@@ -13,10 +13,10 @@
       b1_a_record:
         api_key: "{{ api }}"
         host: "{{ host }}"
-        state: present
-        zone: "qa-zone-1"
-        address: "30.0.0.15"
+        state : present
+        zone : "qa-zone-1"
+        address : "30.0.0.15"
         tags:
           - Name: "QA"
-        name: "test-a-record"
-        comment: "A record created by QA"
+        name : "test-a-record"
+        comment : "A record created by QA"
