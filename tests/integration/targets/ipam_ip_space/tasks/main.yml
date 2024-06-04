@@ -1,0 +1,125 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create a random IP space name to avoid conflicts
+    - ansible.builtin.set_fact:
+        name: "test-ip-space-{{ 999999 | random | string }}"
+
+    # Basic tests for IP space
+    - name: "Create an IP space (check mode)"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        state: "present"
+      check_mode: true
+      register: ip_space
+    - name: Get information about the IP space
+      infoblox.bloxone.ipam_ip_space_info:
+        filters:
+          name: "{{ name }}"
+      register: ip_space_info
+    - assert:
+        that:
+          - ip_space is changed
+          - ip_space is not failed
+          - ip_space_info.results | length == 0
+
+    - name: "Create an IP space"
+      infoblox.bloxone.ipam_ip_space:
+          name: "{{ name }}"
+          state: "present"
+      register: ip_space
+    - name: Get information about the IP space
+      infoblox.bloxone.ipam_ip_space_info:
+        filters:
+          name: "{{ name }}"
+      register: ip_space_info
+    - assert:
+        that:
+          - ip_space is not failed
+          - ip_space_info.results | length == 1
+          - ip_space_info.results[0].id == ip_space.id
+          - ip_space_info.results[0].name == ip_space.item.name
+
+    - name: "Create an IP space (idempotent)"
+      infoblox.bloxone.ipam_ip_space:
+          name: "{{ name }}"
+          state: "present"
+      register: ip_space
+    - assert:
+        that:
+          - ip_space is not changed
+          - ip_space is not failed
+
+    - name: "Delete IP Space (check mode)"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        state: "absent"
+      check_mode: true
+      register: ip_space
+    - name: Get information about the IP space
+      infoblox.bloxone.ipam_ip_space_info:
+        filters:
+          name: "{{ name }}"
+      register: ip_space_info
+    - assert:
+        that:
+          - ip_space is changed
+          - ip_space is not failed
+          - ip_space_info.results | length == 1
+
+    - name: "Delete IP Space"
+      infoblox.bloxone.ipam_ip_space:
+          name: "{{ name }}"
+          state: "absent"
+      register: ip_space
+    - name: Get information about the IP space
+      infoblox.bloxone.ipam_ip_space_info:
+          filters:
+            name: "{{ name }}"
+      register: ip_space_info
+    - assert:
+        that:
+          - ip_space is changed
+          - ip_space is not failed
+          - ip_space_info.results | length == 0
+
+    - name: "Delete IP Space (idempotent)"
+      infoblox.bloxone.ipam_ip_space:
+          name: "{{ name }}"
+          state: "absent"
+      register: ip_space
+    - assert:
+        that:
+          - ip_space is not changed
+          - ip_space is not failed
+
+    # Create an IP space with tags
+    - name: "Create an IP space with tags"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        tags:
+          location: "site-1"
+        state: "present"
+      register: ip_space
+    - name: Get information about the IP space
+      infoblox.bloxone.ipam_ip_space_info:
+        filters:
+          name: "{{ name }}"
+      register: ip_space_info
+    - assert:
+        that:
+          - ip_space is not failed
+          - ip_space_info.results | length == 1
+          - ip_space_info.results[0].id == ip_space.id
+          - ip_space_info.results[0].tags.location == "site-1"
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete IP Space"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        state: "absent"
+      ignore_errors: true
