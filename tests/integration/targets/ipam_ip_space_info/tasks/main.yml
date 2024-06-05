@@ -22,8 +22,8 @@
       register: ip_space_info
     - assert:
         that:
-          - ip_space_info.results | length == 1
-          - ip_space_info.results[0].name == ip_space.item.name
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].name == ip_space.object.name
 
     - name: Get IP Space information by filters (name)
       infoblox.bloxone.ipam_ip_space_info:
@@ -32,16 +32,16 @@
       register: ip_space_info
     - assert:
         that:
-          - ip_space_info.results | length == 1
-          - ip_space_info.results[0].id == ip_space.id
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].id == ip_space.id
 
     - name: Get IP Space information by filter query
       infoblox.bloxone.ipam_ip_space_info:
         filter_query: "name=='{{ name }}'"
     - assert:
         that:
-          - ip_space_info.results | length == 1
-          - ip_space_info.results[0].id == ip_space.id
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].id == ip_space.id
 
     - name: Get IP Space information by tag filters
       infoblox.bloxone.ipam_ip_space_info:
@@ -49,8 +49,8 @@
           location: "{{ tag_value }}"
     - assert:
         that:
-          - ip_space_info.results | length == 1
-          - ip_space_info.results[0].id == ip_space.id
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].id == ip_space.id
 
   always:
     # Cleanup if the test fails

@@ -2695,7 +2695,7 @@ class IpSpaceModule(BloxoneAnsibleModule):
         IpSpaceApi(self.client).delete(self.existing.id)
 
     def run_command(self):
-        result = dict(changed=False, item={}, id=None)
+        result = dict(changed=False, object={}, id=None)
 
         # based on the state that is passed in, we will execute the appropriate
         # functions
@@ -2724,7 +2724,7 @@ class IpSpaceModule(BloxoneAnsibleModule):
                 before=self.existing.model_dump(by_alias=True, exclude_none=True) if self.existing is not None else {},
                 after=item,
             )
-            result["item"] = item
+            result["object"] = item
             result["id"] = (
                 self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
             )
@@ -2735,7 +2735,9 @@ class IpSpaceModule(BloxoneAnsibleModule):
 
 
 def main():
-    object_args = dict(
+    module_args = dict(
+        id=dict(type="str", required=False),
+        state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
         asm_config=dict(
             type="dict",
             options=dict(
@@ -3044,12 +3046,6 @@ def main():
         tags=dict(type="dict"),
         vendor_specific_option_option_space=dict(type="str"),
     )
-
-    module_args = dict(
-        id=dict(type="str", required=False),
-        state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
-    )
-    module_args.update(object_args)
 
     module = IpSpaceModule(
         argument_spec=module_args,

@@ -24,7 +24,7 @@
         that:
           - ip_space is changed
           - ip_space is not failed
-          - ip_space_info.results | length == 0
+          - ip_space_info.objects | length == 0
 
     - name: "Create an IP space"
       infoblox.bloxone.ipam_ip_space:
@@ -39,9 +39,9 @@
     - assert:
         that:
           - ip_space is not failed
-          - ip_space_info.results | length == 1
-          - ip_space_info.results[0].id == ip_space.id
-          - ip_space_info.results[0].name == ip_space.item.name
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].id == ip_space.id
+          - ip_space_info.objects[0].name == ip_space.object.name
 
     - name: "Create an IP space (idempotent)"
       infoblox.bloxone.ipam_ip_space:
@@ -68,7 +68,7 @@
         that:
           - ip_space is changed
           - ip_space is not failed
-          - ip_space_info.results | length == 1
+          - ip_space_info.objects | length == 1
 
     - name: "Delete IP Space"
       infoblox.bloxone.ipam_ip_space:
@@ -84,7 +84,7 @@
         that:
           - ip_space is changed
           - ip_space is not failed
-          - ip_space_info.results | length == 0
+          - ip_space_info.objects | length == 0
 
     - name: "Delete IP Space (idempotent)"
       infoblox.bloxone.ipam_ip_space:
@@ -112,9 +112,9 @@
     - assert:
         that:
           - ip_space is not failed
-          - ip_space_info.results | length == 1
-          - ip_space_info.results[0].id == ip_space.id
-          - ip_space_info.results[0].tags.location == "site-1"
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].id == ip_space.id
+          - ip_space_info.objects[0].tags.location == "site-1"
 
   always:
     # Cleanup if the test fails

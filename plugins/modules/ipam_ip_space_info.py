@@ -82,7 +82,7 @@ id:
         - ID of the IpSpace object
     type: str
     returned: Always
-results:
+objects:
     description:
         - IpSpace object
     type: list
@@ -1844,7 +1844,7 @@ class IpSpaceInfoModule(BloxoneAnsibleModule):
         while True:
             try:
                 resp = IpSpaceApi(self.client).list(
-                    filter=filter_str, tfilter=tag_filter_str, inherit="full", offset=offset, limit=self._limit
+                    offset=offset, limit=self._limit, filter=filter_str, tfilter=tag_filter_str, inherit="full"
                 )
                 all_results.extend(resp.results)
 
@@ -1855,11 +1855,10 @@ class IpSpaceInfoModule(BloxoneAnsibleModule):
             except ApiException as e:
                 self.fail_json(msg=f"Failed to execute command: {e.status} {e.reason} {e.body}")
 
-        resp = IpSpaceApi(self.client).list(filter=filter_str, tfilter=tag_filter_str, inherit="full")
-        return resp.results
+        return all_results
 
     def run_command(self):
-        result = dict(results=[])
+        result = dict(objects=[])
 
         if self.check_mode:
             self.exit_json(**result)
@@ -1870,7 +1869,7 @@ class IpSpaceInfoModule(BloxoneAnsibleModule):
         for r in find_results:
             all_results.append(r.model_dump(by_alias=True, exclude_none=True))
 
-        result["results"] = all_results
+        result["objects"] = all_results
         self.exit_json(**result)
 
 
