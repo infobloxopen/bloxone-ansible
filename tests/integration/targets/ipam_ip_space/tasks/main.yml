@@ -116,6 +116,50 @@
           - ip_space_info.objects[0].id == ip_space.id
           - ip_space_info.objects[0].tags.location == "site-1"
 
+    # Create an IP space with DHCP configuration value overridden
+    - name: "Create an IP space with DHCP configuration value overridden"
+      infoblox.bloxone.ipam_ip_space:
+          name: "{{ name }}"
+          dhcp_config:
+              lease_time: 3600
+          inheritance_sources:
+              dhcp_config:
+                  lease_time:
+                    action: override
+                  # The API currently requires all fields inside the inheritance config to be explicitly provided,
+                  # or it fails with error 'The value of an inheritance action field is not valid'.
+                  abandoned_reclaim_time:
+                    action: inherit
+                  abandoned_reclaim_time_v6:
+                    action: inherit
+                  allow_unknown:
+                      action: inherit
+                  allow_unknown_v6:
+                    action: inherit
+                  echo_client_id:
+                    action: inherit
+                  filters:
+                    action: inherit
+                  filters_v6:
+                    action: inherit
+                  ignore_client_uid:
+                    action: inherit
+                  ignore_list:
+                    action: inherit
+                  lease_time_v6:
+                    action: inherit
+    - name: Get information about the IP space
+      infoblox.bloxone.ipam_ip_space_info:
+        filters:
+          name: "{{ name }}"
+      register: ip_space_info
+    - assert:
+        that:
+          - ip_space is not failed
+          - ip_space_info.objects | length == 1
+          - ip_space_info.objects[0].dhcp_config.lease_time == 3600
+          - ip_space_info.objects[0].inheritance_sources.dhcp_config.lease_time.action == "override"
+
   always:
     # Cleanup if the test fails
     - name: "Delete IP Space"

@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_ip_space
-short_description: Manage IpSpace
+short_description: Manage IP Space.
 description:
-    - Manage IpSpace
+    - Manage IP Space.
+    - The IP Space object represents an entire address space
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -88,6 +89,13 @@ options:
             - "* I(over_client_update): Same as I(server). DHCP server always updates DNS, overriding an update request from the client, unless the client requests no updates."
             - "* I(over_no_update): DHCP server updates DNS even if the client requests that no updates be done. If the client requests to do the update, DHCP server allows it."
             - "Defaults to I(client)."
+        choices:
+            - client
+            - server
+            - ignore
+            - over_client_update
+            - over_no_update
+        default: client
         type: str
     ddns_conflict_resolution_mode:
         description:
@@ -98,27 +106,37 @@ options:
             - "* I(check_exists_with_dhcid): This will check if there is an existing DHCID record but does not verify the value of the record matches the update. This will also update the DHCID record for the entry."
             - "* I(no_check_without_dhcid): This ignores conflict detection and will not add a DHCID record when creating/updating a DDNS entry."
             - "Defaults to I(check_with_dhcid)."
+        choices:
+            - check_with_dhcid
+            - no_check_with_dhcid
+            - check_exists_with_dhcid
+            - no_check_without_dhcid
+        default: check_with_dhcid
         type: str
     ddns_domain:
         description:
             - "The domain suffix for DDNS updates. FQDN, may be empty."
             - "Defaults to empty."
         type: str
+        default: ""
     ddns_generate_name:
         description:
             - "Indicates if DDNS needs to generate a hostname when not supplied by the client."
             - "Defaults to I(false)."
         type: bool
+        default: false
     ddns_generated_prefix:
         description:
             - "The prefix used in the generation of an FQDN."
             - "When generating a name, DHCP server will construct the name in the format: [ddns-generated-prefix]-[address-text].[ddns-qualifying-suffix]. where address-text is simply the lease IP address converted to a hyphenated string."
             - "Defaults to &quot;myhost&quot;."
         type: str
+        default: "myhost"
     ddns_send_updates:
         description:
             - "Determines if DDNS updates are enabled at the IP space level. Defaults to I(true)."
         type: bool
+        default: true
     ddns_ttl_percent:
         description:
             - "DDNS TTL value - to be calculated as a simple percentage of the lease&#x27;s lifetime, using the parameter&#x27;s value as the percentage. It is specified as a percentage (e.g. 25, 75). Defaults to unspecified."
@@ -128,12 +146,14 @@ options:
             - "Instructs the DHCP server to always update the DNS information when a lease is renewed even if its DNS information has not changed."
             - "Defaults to I(false)."
         type: bool
+        default: false
     ddns_use_conflict_resolution:
         description:
             - "When true, DHCP server will apply conflict resolution, as described in RFC 4703, when attempting to fulfill the update request."
             - "When false, DHCP server will simply attempt to update the DNS entries per the request, regardless of whether or not they conflict with existing entries owned by other DHCP4 clients."
             - "Defaults to I(true)."
         type: bool
+        default: true
     dhcp_config:
         description:
             - "The shared DHCP configuration for the IP space that controls how leases are issued."
@@ -181,10 +201,11 @@ options:
                 suboptions:
                     type:
                         description:
-                            - "Type of ignore matching: client to ignore by client identifier (client hex or client text) or hardware to ignore by hardware identifier (MAC address). It can have one of the following values:"
-                            - "* I(client_hex),"
-                            - "* I(client_text),"
-                            - "* I(hardware)."
+                            - "Type of ignore matching: client to ignore by client identifier (client hex or client text) or hardware to ignore by hardware identifier (MAC address)."
+                        choices:
+                            - client_hex
+                            - client_text
+                            - hardware
                         type: str
                     value:
                         description:
@@ -206,11 +227,11 @@ options:
         suboptions:
             group:
                 description:
-                    - "The resource identifier."
+                    - "The DHCP Option Group resource identifier."
                 type: str
             option_code:
                 description:
-                    - "The resource identifier."
+                    - "The DHCP option code resource identifier."
                 type: str
             option_value:
                 description:
@@ -219,9 +240,9 @@ options:
             type:
                 description:
                     - "The type of item."
-                    - "Valid values are:"
-                    - "* I(group)"
-                    - "* I(option)"
+                choices:
+                    - group
+                    - option
                 type: str
     dhcp_options_v6:
         description:
@@ -231,11 +252,11 @@ options:
         suboptions:
             group:
                 description:
-                    - "The resource identifier."
+                    - "The DHCP Option Group resource identifier."
                 type: str
             option_code:
                 description:
-                    - "The resource identifier."
+                    - "The DHCP option code resource identifier."
                 type: str
             option_value:
                 description:
@@ -244,9 +265,9 @@ options:
             type:
                 description:
                     - "The type of item."
-                    - "Valid values are:"
-                    - "* I(group)"
-                    - "* I(option)"
+                choices:
+                    - group
+                    - option
                 type: str
     header_option_filename:
         description:
@@ -266,17 +287,20 @@ options:
             - "Any single ASCII character or no character if the invalid characters should be removed without replacement."
             - "Defaults to &quot;-&quot;."
         type: str
+        default: "-"
     hostname_rewrite_enabled:
         description:
             - "Indicates if client supplied hostnames will be rewritten prior to DDNS update by replacing every character that does not match I(hostname_rewrite_regex) by I(hostname_rewrite_char)."
             - "Defaults to I(false)."
         type: bool
+        default: false
     hostname_rewrite_regex:
         description:
             - "The regex bracket expression to match valid characters."
             - "Must begin with &quot;[&quot; and end with &quot;]&quot; and be a compilable POSIX regex."
             - "Defaults to &quot;[^a-zA-Z0-9_.]&quot;."
         type: str
+        default: "[^a-zA-Z0-9_.]"
     inheritance_sources:
         description:
             - "The inheritance configuration."
@@ -295,10 +319,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     asm_growth_block:
                         description:
@@ -308,10 +332,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     asm_threshold:
                         description:
@@ -321,10 +345,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     forecast_period:
                         description:
@@ -334,10 +358,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     history:
                         description:
@@ -347,10 +371,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     min_total:
                         description:
@@ -360,10 +384,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     min_unused:
                         description:
@@ -373,10 +397,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
             ddns_client_update:
                 description:
@@ -386,10 +410,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_conflict_resolution_mode:
                 description:
@@ -399,10 +423,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_enabled:
                 description:
@@ -412,10 +436,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_hostname_block:
                 description:
@@ -425,10 +449,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_ttl_percent:
                 description:
@@ -438,10 +462,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_update_block:
                 description:
@@ -451,10 +475,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_update_on_renew:
                 description:
@@ -464,10 +488,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             ddns_use_conflict_resolution:
                 description:
@@ -477,10 +501,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             dhcp_config:
                 description:
@@ -495,10 +519,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     abandoned_reclaim_time_v6:
                         description:
@@ -508,10 +532,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     allow_unknown:
                         description:
@@ -521,10 +545,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     allow_unknown_v6:
                         description:
@@ -534,10 +558,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     echo_client_id:
                         description:
@@ -547,10 +571,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     filters:
                         description:
@@ -560,16 +584,11 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
-                            value:
-                                description:
-                                    - "The resource identifier."
-                                type: list
-                                elements: str
                     filters_v6:
                         description:
                             - "The inheritance configuration for I(filters_v6) field from I(DHCPConfig) object."
@@ -578,16 +597,11 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
-                            value:
-                                description:
-                                    - "The resource identifier."
-                                type: list
-                                elements: str
                     ignore_client_uid:
                         description:
                             - "The inheritance configuration for I(ignore_client_uid) field from I(DHCPConfig) object."
@@ -596,10 +610,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     ignore_list:
                         description:
@@ -609,10 +623,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     lease_time:
                         description:
@@ -622,10 +636,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
                     lease_time_v6:
                         description:
@@ -635,10 +649,10 @@ options:
                             action:
                                 description:
                                     - "The inheritance setting for a field."
-                                    - "Valid values are:"
-                                    - "* I(inherit): Use the inherited value."
-                                    - "* I(override): Use the value set in the object."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - override
+                                default: inherit
                                 type: str
             dhcp_options:
                 description:
@@ -652,6 +666,10 @@ options:
                             - "* I(inherit): Use the inherited value."
                             - "* I(block): Don&#x27;t use the inherited value."
                             - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - block
+                        default: inherit
                         type: str
                     value:
                         description:
@@ -665,7 +683,10 @@ options:
                                     - "Valid values are:"
                                     - "* I(inherit): Use the inherited value."
                                     - "* I(block): Don&#x27;t use the inherited value."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - block
+                                default: inherit
                                 type: str
             dhcp_options_v6:
                 description:
@@ -678,7 +699,10 @@ options:
                             - "Valid values are:"
                             - "* I(inherit): Use the inherited value."
                             - "* I(block): Don&#x27;t use the inherited value."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - block
+                        default: inherit
                         type: str
                     value:
                         description:
@@ -692,7 +716,10 @@ options:
                                     - "Valid values are:"
                                     - "* I(inherit): Use the inherited value."
                                     - "* I(block): Don&#x27;t use the inherited value."
-                                    - "Defaults to I(inherit)."
+                                choices:
+                                    - inherit
+                                    - block
+                                default: inherit
                                 type: str
             header_option_filename:
                 description:
@@ -702,10 +729,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             header_option_server_address:
                 description:
@@ -715,10 +742,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             header_option_server_name:
                 description:
@@ -728,10 +755,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             hostname_rewrite_block:
                 description:
@@ -741,10 +768,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
             vendor_specific_option_option_space:
                 description:
@@ -754,14 +781,10 @@ options:
                     action:
                         description:
                             - "The inheritance setting for a field."
-                            - "Valid values are:"
-                            - "* I(inherit): Use the inherited value."
-                            - "* I(override): Use the value set in the object."
-                            - "Defaults to I(inherit)."
-                        type: str
-                    value:
-                        description:
-                            - "The resource identifier."
+                        choices:
+                            - inherit
+                            - override
+                        default: inherit
                         type: str
     name:
         description:
@@ -773,7 +796,7 @@ options:
         type: dict
     vendor_specific_option_option_space:
         description:
-            - "The resource identifier."
+            - "The DHCP Option Space resource identifier."
         type: str
 
 extends_documentation_fragment:
@@ -792,6 +815,39 @@ EXAMPLES = r"""
       tags:
         location: "my-location"
 
+  - name: "Create an IP space with DHCP configuration value overridden"
+    infoblox.bloxone.ipam_ip_space:
+        name: "my-ip-space"
+        dhcp_config:
+            abandoned_reclaim_time: 3600
+        inheritance_sources:
+            dhcp_config:
+                lease_time:
+                    action: override
+
+                # The API currently requires all fields inside the inheritance config to be explicitly provided,
+                # or it fails with error 'The value of an inheritance action field is not valid'.
+                abandoned_reclaim_time:
+                    action: inherit
+                abandoned_reclaim_time_v6:
+                    action: inherit
+                allow_unknown:
+                      action: inherit
+                allow_unknown_v6:
+                    action: inherit
+                echo_client_id:
+                    action: inherit
+                filters:
+                    action: inherit
+                filters_v6:
+                    action: inherit
+                ignore_client_uid:
+                    action: inherit
+                ignore_list:
+                    action: inherit
+                lease_time_v6:
+                    action: inherit
+
   - name: "Delete an IP space"
     infoblox.bloxone.ipam_ip_space:
       name: "my-ip-space"
@@ -801,12 +857,12 @@ EXAMPLES = r"""
 RETURN = r"""
 id:
     description:
-        - ID of the IpSpace object
+        - ID of the IP Space object
     type: str
     returned: Always
 item:
     description:
-        - IpSpace object
+        - IP Space object
     type: complex
     returned: Always
     contains:
@@ -2435,9 +2491,9 @@ except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
 
-class IpSpaceModule(BloxoneAnsibleModule):
+class IPSpaceModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
-        super(IpSpaceModule, self).__init__(*args, **kwargs)
+        super(IPSpaceModule, self).__init__(*args, **kwargs)
 
         exclude = ["state", "csp_url", "api_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
@@ -2566,15 +2622,21 @@ def main():
             ),
         ),
         comment=dict(type="str"),
-        ddns_client_update=dict(type="str"),
-        ddns_conflict_resolution_mode=dict(type="str"),
-        ddns_domain=dict(type="str"),
-        ddns_generate_name=dict(type="bool"),
-        ddns_generated_prefix=dict(type="str"),
-        ddns_send_updates=dict(type="bool"),
+        ddns_client_update=dict(
+            type="str", choices=["client", "server", "ignore", "over_client_update", "over_no_update"], default="client"
+        ),
+        ddns_conflict_resolution_mode=dict(
+            type="str",
+            choices=["check_with_dhcid", "no_check_with_dhcid", "check_exists_with_dhcid", "no_check_without_dhcid"],
+            default="check_with_dhcid",
+        ),
+        ddns_domain=dict(type="str", default=""),
+        ddns_generate_name=dict(type="bool", default=False),
+        ddns_generated_prefix=dict(type="str", default="myhost"),
+        ddns_send_updates=dict(type="bool", default=True),
         ddns_ttl_percent=dict(type="float"),
-        ddns_update_on_renew=dict(type="bool"),
-        ddns_use_conflict_resolution=dict(type="bool"),
+        ddns_update_on_renew=dict(type="bool", default=False),
+        ddns_use_conflict_resolution=dict(type="bool", default=True),
         dhcp_config=dict(
             type="dict",
             options=dict(
@@ -2590,7 +2652,7 @@ def main():
                     type="list",
                     elements="dict",
                     options=dict(
-                        type=dict(type="str"),
+                        type=dict(type="str", choices=["client_hex", "client_text", "hardware"]),
                         value=dict(type="str"),
                     ),
                 ),
@@ -2605,7 +2667,7 @@ def main():
                 group=dict(type="str"),
                 option_code=dict(type="str"),
                 option_value=dict(type="str"),
-                type=dict(type="str"),
+                type=dict(type="str", choices=["group", "option"]),
             ),
         ),
         dhcp_options_v6=dict(
@@ -2615,15 +2677,15 @@ def main():
                 group=dict(type="str"),
                 option_code=dict(type="str"),
                 option_value=dict(type="str"),
-                type=dict(type="str"),
+                type=dict(type="str", choices=["group", "option"]),
             ),
         ),
         header_option_filename=dict(type="str"),
         header_option_server_address=dict(type="str"),
         header_option_server_name=dict(type="str"),
-        hostname_rewrite_char=dict(type="str"),
-        hostname_rewrite_enabled=dict(type="bool"),
-        hostname_rewrite_regex=dict(type="str"),
+        hostname_rewrite_char=dict(type="str", default="-"),
+        hostname_rewrite_enabled=dict(type="bool", default=False),
+        hostname_rewrite_regex=dict(type="str", default="[^a-zA-Z0-9_.]"),
         inheritance_sources=dict(
             type="dict",
             options=dict(
@@ -2633,43 +2695,43 @@ def main():
                         asm_enable_block=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         asm_growth_block=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         asm_threshold=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         forecast_period=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         history=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         min_total=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         min_unused=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                     ),
@@ -2677,49 +2739,49 @@ def main():
                 ddns_client_update=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_conflict_resolution_mode=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_enabled=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_hostname_block=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_ttl_percent=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_update_block=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_update_on_renew=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 ddns_use_conflict_resolution=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 dhcp_config=dict(
@@ -2728,69 +2790,67 @@ def main():
                         abandoned_reclaim_time=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         abandoned_reclaim_time_v6=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         allow_unknown=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         allow_unknown_v6=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         echo_client_id=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         filters=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
-                                value=dict(type="list", elements="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         filters_v6=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
-                                value=dict(type="list", elements="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         ignore_client_uid=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         ignore_list=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         lease_time=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                         lease_time_v6=dict(
                             type="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                             ),
                         ),
                     ),
@@ -2798,12 +2858,12 @@ def main():
                 dhcp_options=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "block"], default="inherit"),
                         value=dict(
                             type="list",
                             elements="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "block"], default="inherit"),
                             ),
                         ),
                     ),
@@ -2811,12 +2871,12 @@ def main():
                 dhcp_options_v6=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "block"], default="inherit"),
                         value=dict(
                             type="list",
                             elements="dict",
                             options=dict(
-                                action=dict(type="str"),
+                                action=dict(type="str", choices=["inherit", "block"], default="inherit"),
                             ),
                         ),
                     ),
@@ -2824,32 +2884,31 @@ def main():
                 header_option_filename=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 header_option_server_address=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 header_option_server_name=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 hostname_rewrite_block=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
                 vendor_specific_option_option_space=dict(
                     type="dict",
                     options=dict(
-                        action=dict(type="str"),
-                        value=dict(type="str"),
+                        action=dict(type="str", choices=["inherit", "override"], default="inherit"),
                     ),
                 ),
             ),
@@ -2859,7 +2918,7 @@ def main():
         vendor_specific_option_option_space=dict(type="str"),
     )
 
-    module = IpSpaceModule(
+    module = IPSpaceModule(
         argument_spec=module_args,
         supports_check_mode=True,
         required_if=[("state", "present", ["name"])],

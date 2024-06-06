@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_ip_space_info
-short_description: Manage IpSpace
+short_description: Retrieves information about existing IP Spaces.
 description:
-    - Manage IpSpace
+    - Retrieves information about existing IP Spaces.
+    - The IP Space object represents an entire address space
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -1714,9 +1715,9 @@ except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
 
-class IpSpaceInfoModule(BloxoneAnsibleModule):
+class IPSpaceInfoModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
-        super(IpSpaceInfoModule, self).__init__(*args, **kwargs)
+        super(IPSpaceInfoModule, self).__init__(*args, **kwargs)
         self._existing = None
         self._limit = 1000
 
@@ -1789,7 +1790,7 @@ def main():
         tag_filter_query=dict(type="str", required=False),
     )
 
-    module = IpSpaceInfoModule(
+    module = IPSpaceInfoModule(
         argument_spec=module_args,
         supports_check_mode=True,
         mutually_exclusive=[
