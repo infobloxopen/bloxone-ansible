@@ -15,7 +15,8 @@ short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.0.1"
 deprecated:
   removed_in: 3.0.0
-  alternative: Use M(ipam_ip_space) instead.
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(infoblox.bloxone.ipam_ip_space) instead.
+  alternative: Use M(infoblox.bloxone.ipam_ip_space) instead.
 description:
   -  Create, Update and Delete IP spaces on Infoblox BloxOne DDI. This module manages the IPAM IP space object using BloxOne REST APIs.
 requirements:
