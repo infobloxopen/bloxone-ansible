@@ -1,0 +1,3 @@
+deprecated_features:
+  - b1_ipam_ip_space - is deprecated in favor of `ipam_ip_space`.
+  - b1_ipam_ip_space_gather - is deprecated in favor of `ipam_ip_space_info`.

@@ -13,6 +13,9 @@ module: b1_ipam_ip_space
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
 short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.0.1"
+deprecated:
+  removed_in: 3.0.0
+  alternative: Use M(ipam_ip_space) instead.
 description:
   -  Create, Update and Delete IP spaces on Infoblox BloxOne DDI. This module manages the IPAM IP space object using BloxOne REST APIs.
 requirements:
