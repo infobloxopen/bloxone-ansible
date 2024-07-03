@@ -13,6 +13,10 @@ module: b1_dns_view_gather
 author: "amishra2@infoblox, Sriram kanan"
 short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.0.1"
+deprecated:
+  removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(infoblox.bloxone.dns_view) instead.
+  alternative: Use M(infoblox.bloxone.dns_view) instead.
 description:
   - Get, Create, Update and Delete IP spaces on Infoblox BloxOne DDI. This module manages the IPAM IP space object using BloxOne REST APIs.
 requirements:

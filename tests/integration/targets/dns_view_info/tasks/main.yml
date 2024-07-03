@@ -18,16 +18,6 @@
         state: present
       register: view
 
-    - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
-        filters:
-          name: "{{ name }}"
-      register: view_info
-    - assert:
-        that:
-          - view_info.objects | length == 1
-          - view_info.objects[0].name == view.object.name
-
     - name: Get View information by filters (name)
       infoblox.bloxone.dns_view_info:
         filters:

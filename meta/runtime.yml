@@ -3,8 +3,8 @@ action_groups:
     - metadata:
         extend_group:
           - ipam
-          - dns_config
-  dns_config:
+          - dns
+  dns:
     - dns_view
     - dns_view_info
   ipam:

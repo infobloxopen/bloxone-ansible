@@ -1194,9 +1194,24 @@ EXAMPLES = r"""
       name: "view1"
       state: "present"
 
-  - name: Create a view with tags
+  - name: Create a view with Additional Fields
     infoblox.bloxone.dns_view:
       name: "view1"
+      comment: "Example DNS View"
+      custom_root_ns:
+        - address: "192.168.10.10"
+          fqdn: "ns1.example.com"
+      custom_root_ns_enabled: true
+      dtc_config:
+        default_ttl: 400
+      edns_udp_size: 4096
+      gss_tsig_enabled: true
+      lame_ttl: 3600
+      match_clients_acl:
+        - access: "allow"
+          element: "ip"
+          address: "192.168.11.11"
+          notify: true
       state: "present"
       tags:
         location: "my-location"
