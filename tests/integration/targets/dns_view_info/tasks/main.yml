@@ -28,6 +28,16 @@
           - view_info.objects | length == 1
           - view_info.objects[0].id == view.id
 
+    - name: Get View information by filters (Id)
+      infoblox.bloxone.dns_view_info:
+        filters:
+          id: "{{ view.id }}"
+      register: view_info
+    - assert:
+        that:
+          - view_info.objects | length == 1
+          - view_info.objects[0].id == view.id
+
     - name: Get View information by filter query
       infoblox.bloxone.dns_view_info:
         filter_query: "name=='{{ name }}'"
