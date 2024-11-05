@@ -123,11 +123,6 @@ def main():
     choice_map = {"gather": get_fixed_address}
 
     module = AnsibleModule(argument_spec=argument_spec)
-    module.deprecate(
-        "This module is being deprecated and will be removed in version 3.0.0. Use the M(ipam_fixed_address_info) module instead.",
-        version="3.0.0",
-        collection_name="infoblox.bloxone",
-    )
     (is_error, has_changed, result) = choice_map.get(module.params["state"])(module.params)
 
     if not is_error:
