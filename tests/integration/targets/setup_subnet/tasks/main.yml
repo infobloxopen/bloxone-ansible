@@ -1,0 +1,17 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create a random View name to avoid conflicts
+    - ansible.builtin.set_fact:
+        name: "test-view-{{ 999999 | random | string }}"
+
+    # Create a subnet
+    - name: "Create a Subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ _ip_space.id }}"
+        state: "present"
+      register: _subnet
