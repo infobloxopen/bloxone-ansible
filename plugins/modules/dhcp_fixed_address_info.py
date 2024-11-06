@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: ipam_fixed_address_info
+module: dhcp_fixed_address_info
 short_description: Manage FixedAddress
 description:
     - Manage FixedAddress
@@ -54,9 +54,42 @@ options:
 
 extends_documentation_fragment:
     - infoblox.bloxone.common
-"""  # noqa: E501
+"""
 
 EXAMPLES = r"""
+- name: Retrieve a fixed address by ID
+  dhcp_fixed_address_info:
+    id: "fixed_address_id"
+  register: result
+
+- name: Retrieve fixed addresses with specific filters
+  dhcp_fixed_address_info:
+    filters:
+      address: "192.168.1.10"
+      hostname: "example-host"
+  register: result
+
+- name: Retrieve fixed addresses using a filter query
+  dhcp_fixed_address_info:
+    filter_query: "address=='192.168.1.10' and hostname=='example-host'"
+  register: result
+
+- name: Retrieve fixed addresses with tag filters
+  dhcp_fixed_address_info:
+    tag_filters:
+      environment: "production"
+      role: "webserver"
+  register: result
+
+- name: Retrieve fixed addresses using a tag filter query
+  dhcp_fixed_address_info:
+    tag_filter_query: "environment=='production' and role=='webserver'"
+  register: result
+
+- name: Retrieve fixed addresses with partial inheritance
+  dhcp_fixed_address_info:
+    inherit: "partial"
+  register: result
 """
 
 RETURN = r"""
@@ -396,7 +429,7 @@ objects:
                 - "Time when the object has been updated. Equals to I(created_at) if not updated after creation."
             type: str
             returned: Always
-"""  # noqa: E501
+"""
 
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 

@@ -9,7 +9,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: ipam_fixed_address
+module: dhcp_fixed_address
 short_description: Manage FixedAddress
 description:
     - Manage FixedAddress
@@ -190,57 +190,32 @@ options:
 
 extends_documentation_fragment:
     - infoblox.bloxone.common
-"""  # noqa: E501
+"""
 
 EXAMPLES = r"""
 - name: Create a fixed address
-  infoblox.bloxone.ipam_fixed_address:
+  infoblox.bloxone.dhcp_fixed_address:
     address: "10.0.0.1"
     ip_space: "example_ip_space"
     match_type: "mac"
     match_value: "00:00:00:00:00:00"
-    state: "present"
+    state: "present
 
-- name: Create a fixed address with all parameters
-  infoblox.bloxone.ipam_fixed_address:
-    id: "fixed_address_id"
-    state: "present"
-    address: "10.0.0.1"
-    comment: "This is a fixed address"
-    dhcp_options:
-      - group: "group1"
-        option_code: "code1"
-        option_value: "value1"
-        type: "option"
-    disable_dhcp: false
-    header_option_filename: "filename"
-    header_option_server_address: "server_address"
-    header_option_server_name: "server_name"
-    hostname: "hostname.example.com"
-    inheritance_parent: "parent_id"
-    inheritance_sources:
-      dhcp_options:
-        action: "inherit"
-        value:
-          - action: "inherit"
-      header_option_filename:
-        action: "inherit"
-      header_option_server_address:
-        action: "inherit"
-      header_option_server_name:
-        action: "inherit"
-    ip_space: "example_ip_space"
+- name: Create a fixed address with generally used params
+  infoblox.bloxone.dhcp_fixed_address:
+    address: "10.0.0.2"
+    ip_space: "{{ _ip_space.id }}"
     match_type: "mac"
-    match_value: "00:00:00:00:00:00"
-    name: "fixed_address_name"
-    parent: "parent_id"
-    tags:
-      key1: "value1"
-      key2: "value2"
+    match_value: "00:00:00:00:00:01"
+    comment: "test comment"
+    disable_dhcp: true
+    hostname: "test-host-name"
+    state: "present"
 
 - name: Delete a fixed address
-  infoblox.bloxone.ipam_fixed_address:
-    id: "fixed_address_id"
+  infoblox.bloxone.dhcp_fixed_address:
+    address: "10.0.01"
+    ip_space: "example_ip_space"
     match_type: "mac"
     match_value: "00:00:00:00:00:00"
     state: "absent"
@@ -582,7 +557,7 @@ item:
                 - "Time when the object has been updated. Equals to I(created_at) if not updated after creation."
             type: str
             returned: Always
-"""  # noqa: E501
+"""
 
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
@@ -695,9 +670,7 @@ class FixedAddressModule(BloxoneAnsibleModule):
                 after=item,
             )
             result["object"] = item
-            result["id"] = (
-                self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
-            )
+            result["id"] = self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
         except ApiException as e:
             self.fail_json(msg=f"Failed to execute command: {e.status} {e.reason} {e.body}")
 
@@ -710,64 +683,42 @@ def main():
         state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
         address=dict(type="str"),
         comment=dict(type="str"),
-        dhcp_options=dict(
-            type="list",
-            elements="dict",
-            options=dict(
-                group=dict(type="str"),
-                option_code=dict(type="str"),
-                option_value=dict(type="str"),
-                type=dict(type="str"),
-            ),
-        ),
+        dhcp_options=dict(type="list", elements="dict", options=dict(
+            group=dict(type="str"),
+            option_code=dict(type="str"),
+            option_value=dict(type="str"),
+            type=dict(type="str"),
+        )),
         disable_dhcp=dict(type="bool"),
         header_option_filename=dict(type="str"),
         header_option_server_address=dict(type="str"),
         header_option_server_name=dict(type="str"),
         hostname=dict(type="str"),
         inheritance_parent=dict(type="str"),
-        inheritance_sources=dict(
-            type="dict",
-            options=dict(
-                dhcp_options=dict(
-                    type="dict",
-                    options=dict(
-                        action=dict(type="str"),
-                        value=dict(
-                            type="list",
-                            elements="dict",
-                            options=dict(
-                                action=dict(type="str"),
-                            ),
-                        ),
-                    ),
-                ),
-                header_option_filename=dict(
-                    type="dict",
-                    options=dict(
-                        action=dict(type="str"),
-                    ),
-                ),
-                header_option_server_address=dict(
-                    type="dict",
-                    options=dict(
-                        action=dict(type="str"),
-                    ),
-                ),
-                header_option_server_name=dict(
-                    type="dict",
-                    options=dict(
-                        action=dict(type="str"),
-                    ),
-                ),
-            ),
-        ),
+        inheritance_sources=dict(type="dict", options=dict(
+            dhcp_options=dict(type="dict", options=dict(
+                action=dict(type="str"),
+                value=dict(type="list", elements="dict", options=dict(
+                    action=dict(type="str"),
+                )),
+            )),
+            header_option_filename=dict(type="dict", options=dict(
+                action=dict(type="str"),
+            )),
+            header_option_server_address=dict(type="dict", options=dict(
+                action=dict(type="str"),
+            )),
+            header_option_server_name=dict(type="dict", options=dict(
+                action=dict(type="str"),
+            )),
+        )),
         ip_space=dict(type="str"),
         match_type=dict(type="str"),
         match_value=dict(type="str"),
         name=dict(type="str"),
         parent=dict(type="str"),
         tags=dict(type="dict"),
+
     )
 
     module = FixedAddressModule(

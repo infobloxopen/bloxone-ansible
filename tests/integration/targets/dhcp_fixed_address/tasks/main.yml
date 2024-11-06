@@ -11,7 +11,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Create a Fixed Address"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
         name: "test_fixed_address_ansible"
         match_type: "mac"
@@ -19,14 +19,12 @@
         ip_space: "{{_ip_space.id }}"
         state: "present"
       register: fixed_address
-
     - name: Get information about the Fixed Address
-      infoblox.bloxone.ipam_fixed_address_info:
+      infoblox.bloxone.dhcp_fixed_address_info:
         filters:
           address: "10.0.0.1"
           ip_space: "{{ _ip_space.id }}"
       register: fixed_address_info
-
     - assert:
         that:
           - fixed_address is not failed
@@ -35,7 +33,7 @@
           - fixed_address_info.objects[0].address == fixed_address.object.address
 
     - name: "Create a Fixed Address (idempotent)"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
         match_type: "mac"
         match_value: "00:00:00:00:00:00"
@@ -48,7 +46,7 @@
           - fixed_address is not failed
 
     - name: "Delete a Fixed Address"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -59,11 +57,10 @@
         that:
           - fixed_address is changed
           - fixed_address is not failed
-
     - name: Get information about the Fixed Address
-      infoblox.bloxone.ipam_fixed_address_info:
+      infoblox.bloxone.dhcp_fixed_address_info:
         filters:
-          address: "10.0.0.10"
+          address: "10.0.0.1"
           ip_space: "{{ _ip_space.id }}"
       register: fixed_address_info
     - assert:
@@ -73,7 +70,7 @@
           - fixed_address_info.objects | length == 0
 
     - name: "Delete a Fixed Address (idempotent)"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -86,14 +83,13 @@
           - fixed_address is not failed
 
     - name: "Create a Fixed Address with Comment"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.2"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:01"
         comment: "test comment"
         state: "present"
-
       register: fixed_address_comment
     - assert:
         that:
@@ -106,7 +102,7 @@
           - fixed_address_comment.object.ip_space == _ip_space.id
 
     - name: "Delete a Fixed Address with Comment"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.2"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -114,7 +110,7 @@
         state: "absent"
 
     - name: "Create a Fixed Address with disable dhcp"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.2"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -136,7 +132,7 @@
           - fixed_address_disable_dhcp.object.disable_dhcp == true
 
     - name: "Delete a Fixed Address with disable dhcp"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.2"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -144,7 +140,7 @@
         state: "absent"
 
     - name: "Create a Fixed Address with host name"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.2"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -167,7 +163,7 @@
           - fixed_address_hostname.object.hostname == "test-host-name"
 
     - name: "Delete a Fixed Address with host name"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.2"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
@@ -176,7 +172,7 @@
 
   always:
     - name: "Delete Fixed Address"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"

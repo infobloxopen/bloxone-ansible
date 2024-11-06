@@ -4,6 +4,7 @@ action_groups:
         extend_group:
           - ipam
           - dns
+          - dhcp
   dns:
     - dns_view
     - dns_view_info
@@ -18,8 +19,9 @@ action_groups:
     - ipam_subnet_info
     - ipam_address_block
     - ipam_address_block_info
-    - ipam_fixed_address
-    - ipam_fixed_address_info
+  dhcp:
+    - dhcp_fixed_address
+    - dhcp_fixed_address_info
 
 plugin_routing:
     modules:
@@ -71,8 +73,8 @@ plugin_routing:
         b1_ipam_fixed_address:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_fixed_address instead.
+            warning_text: Use infoblox.bloxone.dhcp_fixed_address instead.
         b1_ipam_fixed_address_gather:
             deprecation:
               removal_version: 3.0.0
-              warning_text: Use infoblox.bloxone.ipam_fixed_address_info instead.
+              warning_text: Use infoblox.bloxone.dhcp_fixed_address_info instead.

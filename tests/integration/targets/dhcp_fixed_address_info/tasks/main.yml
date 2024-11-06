@@ -10,39 +10,24 @@
         name: "test-ip-space-{{ 999999 | random | string }}"
         tag_value: "site-{{ 999999 | random | string }}"
 
-    # Basic tests for IP Space and Subnet
-    - name: "Create an IP space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "present"
-      register: ip_space
-
-    - name: "Create a Subnet"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ ip_space.id }}"
-        state: "present"
-      register: subnet
-
     # Create a Fixed Address
     - name: "Create a Fixed Address"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
         name: "test_fixed_address_ansible"
         match_type: "mac"
         match_value: "00:00:00:00:00:00"
-        ip_space: "{{ ip_space.id }}"
+        ip_space: "{{ _ip_space.id }}"
         state: "present"
       register: fixed_address
 
     # Get information about the Fixed Address
     - name: Get information about the Fixed Address
-      infoblox.bloxone.ipam_fixed_address_info:
+      infoblox.bloxone.dhcp_fixed_address_info:
         filters:
           address: "10.0.0.1"
-          ip_space: "{{ ip_space.id }}"
+          ip_space: "{{ _ip_space.id }}"
       register: fixed_address_info
-
     - assert:
         that:
           - fixed_address_info.objects | length == 1
@@ -51,10 +36,10 @@
 
     # Test idempotency of Fixed Address Info
     - name: "Get Fixed Address Info (idempotent)"
-      infoblox.bloxone.ipam_fixed_address_info:
+      infoblox.bloxone.dhcp_fixed_address_info:
         filters:
           address: "10.0.0.1"
-          ip_space: "{{ ip_space.id }}"
+          ip_space: "{{ _ip_space.id }}"
       register: fixed_address_info
     - assert:
         that:
@@ -64,9 +49,9 @@
 
     # Delete the Fixed Address
     - name: "Delete a Fixed Address"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
-        ip_space: "{{ ip_space.id }}"
+        ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:00"
         state: "absent"
@@ -74,10 +59,10 @@
 
     # Verify the Fixed Address is deleted
     - name: Get information about the Fixed Address
-      infoblox.bloxone.ipam_fixed_address_info:
+      infoblox.bloxone.dhcp_fixed_address_info:
         filters:
           address: "10.0.0.1"
-          ip_space: "{{ ip_space.id }}"
+          ip_space: "{{ _ip_space.id }}"
       register: fixed_address_info
     - assert:
         that:
@@ -85,9 +70,9 @@
 
   always:
     - name: "Delete Fixed Address"
-      infoblox.bloxone.ipam_fixed_address:
+      infoblox.bloxone.dhcp_fixed_address:
         address: "10.0.0.1"
-        ip_space: "{{ ip_space.id }}"
+        ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:00"
         state: "absent"
@@ -96,7 +81,7 @@
     - name: "Delete Subnet"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "absent"
       ignore_errors: true
 
