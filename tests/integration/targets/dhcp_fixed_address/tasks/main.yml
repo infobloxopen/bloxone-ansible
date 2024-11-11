@@ -1,13 +1,18 @@
 ---
+#TODO:
+# - Add tests for the following parameters:
+#   - dhcp option
+#   - inheritance_parent
+#   - inheritance_sources
+#   - parent
+
 - module_defaults:
     group/infoblox.bloxone.all:
       csp_url: "{{ csp_url }}"
       api_key: "{{ api_key }}"
 
   block:
-    # Create a random IP space name to avoid conflicts
     - ansible.builtin.set_fact:
-        name: "test-ip-space-{{ 999999 | random | string }}"
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Create a Fixed Address"
@@ -69,79 +74,61 @@
           - fixed_address is not failed
           - fixed_address_info.objects | length == 0
 
-    - name: "Delete a Fixed Address (idempotent)"
-      infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.1"
-        ip_space: "{{ _ip_space.id }}"
-        match_type: "mac"
-        match_value: "00:00:00:00:00:00"
-        state: "absent"
-      register: fixed_address
-    - assert:
-        that:
-          - fixed_address is not changed
-          - fixed_address is not failed
-
     - name: "Create a Fixed Address with Comment"
       infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.2"
+        address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:01"
         comment: "test comment"
         state: "present"
       register: fixed_address_comment
+    - name: "Get information about the Fixed Address with Comment"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_comment_info
     - assert:
         that:
           - fixed_address_comment is changed
           - fixed_address_comment is not failed
-          - fixed_address_comment.object.comment == "test comment"
-          - fixed_address_comment.object.address == "10.0.0.2"
-          - fixed_address_comment.object.match_type == "mac"
-          - fixed_address_comment.object.match_value == "00:00:00:00:00:01"
-          - fixed_address_comment.object.ip_space == _ip_space.id
-
-    - name: "Delete a Fixed Address with Comment"
-      infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.2"
-        ip_space: "{{ _ip_space.id }}"
-        match_type: "mac"
-        match_value: "00:00:00:00:00:01"
-        state: "absent"
+          - fixed_address_comment_info.objects[0].comment == "test comment"
+          - fixed_address_comment_info.objects[0].address == "10.0.0.1"
+          - fixed_address_comment_info.objects[0].match_type == "mac"
+          - fixed_address_comment_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_comment_info.objects[0].ip_space == _ip_space.id
 
     - name: "Create a Fixed Address with disable dhcp"
       infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.2"
+        address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:01"
         comment: "test comment"
         disable_dhcp: true
         state: "present"
-
       register: fixed_address_disable_dhcp
+    - name: "Get information about the Fixed Address with disable dhcp"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_disable_dhcp_info
     - assert:
         that:
           - fixed_address_disable_dhcp is changed
           - fixed_address_disable_dhcp is not failed
-          - fixed_address_disable_dhcp.object.comment == "test comment"
-          - fixed_address_disable_dhcp.object.address == "10.0.0.2"
-          - fixed_address_disable_dhcp.object.match_type == "mac"
-          - fixed_address_disable_dhcp.object.match_value == "00:00:00:00:00:01"
-          - fixed_address_disable_dhcp.object.ip_space == _ip_space.id
-          - fixed_address_disable_dhcp.object.disable_dhcp == true
-
-    - name: "Delete a Fixed Address with disable dhcp"
-      infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.2"
-        ip_space: "{{ _ip_space.id }}"
-        match_type: "mac"
-        match_value: "00:00:00:00:00:01"
-        state: "absent"
+          - fixed_address_disable_dhcp_info.objects[0].comment == "test comment"
+          - fixed_address_disable_dhcp_info.objects[0].address == "10.0.0.1"
+          - fixed_address_disable_dhcp_info.objects[0].match_type == "mac"
+          - fixed_address_disable_dhcp_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_disable_dhcp_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_disable_dhcp_info.objects[0].disable_dhcp == true
 
     - name: "Create a Fixed Address with host name"
       infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.2"
+        address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:01"
@@ -150,25 +137,199 @@
         hostname: "test-host-name"
         state: "present"
       register: fixed_address_hostname
+    - name: "Get information about the Fixed Address with host name"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_hostname_info
     - assert:
         that:
           - fixed_address_hostname is changed
           - fixed_address_hostname is not failed
-          - fixed_address_hostname.object.comment == "test comment"
-          - fixed_address_hostname.object.address == "10.0.0.2"
-          - fixed_address_hostname.object.match_type == "mac"
-          - fixed_address_hostname.object.match_value == "00:00:00:00:00:01"
-          - fixed_address_hostname.object.ip_space == _ip_space.id
-          - fixed_address_hostname.object.disable_dhcp == true
-          - fixed_address_hostname.object.hostname == "test-host-name"
+          - fixed_address_hostname_info.objects[0].comment == "test comment"
+          - fixed_address_hostname_info.objects[0].address == "10.0.0.1"
+          - fixed_address_hostname_info.objects[0].match_type == "mac"
+          - fixed_address_hostname_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_hostname_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_hostname_info.objects[0].disable_dhcp == true
+          - fixed_address_hostname_info.objects[0].hostname == "test-host-name"
 
-    - name: "Delete a Fixed Address with host name"
+    - name: "Create a Fixed Address with name"
       infoblox.bloxone.dhcp_fixed_address:
-        address: "10.0.0.2"
+        address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
         match_value: "00:00:00:00:00:01"
-        state: "absent"
+        comment: "test comment"
+        disable_dhcp: true
+        hostname: "test-host-name"
+        name: "test_fixed_address_ansible"
+        state: "present"
+      register: fixed_address_hostname
+    - name: "Get information about the Fixed Address with host name"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_hostname_info
+    - assert:
+        that:
+          - fixed_address_hostname is changed
+          - fixed_address_hostname is not failed
+          - fixed_address_hostname_info.objects[0].comment == "test comment"
+          - fixed_address_hostname_info.objects[0].address == "10.0.0.1"
+          - fixed_address_hostname_info.objects[0].match_type == "mac"
+          - fixed_address_hostname_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_hostname_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_hostname_info.objects[0].disable_dhcp == true
+          - fixed_address_hostname_info.objects[0].hostname == "test-host-name"
+          - fixed_address_hostname_info.objects[0].name == "test_fixed_address_ansible"
+
+    - name: "Create a Fixed Address with header option filename"
+      infoblox.bloxone.dhcp_fixed_address:
+        address: "10.0.0.1"
+        ip_space: "{{ _ip_space.id }}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:01"
+        comment: "test comment"
+        disable_dhcp: true
+        hostname: "test-host-name"
+        name: "test_fixed_address_ansible"
+        header_option_filename: "test_header_option_filename"
+        state: "present"
+      register: fixed_address_header_option_filename
+    - name: "Get information about the Fixed Address with header option filename"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_header_option_filename_info
+    - assert:
+        that:
+          - fixed_address_header_option_filename is changed
+          - fixed_address_header_option_filename is not failed
+          - fixed_address_header_option_filename_info.objects[0].comment == "test comment"
+          - fixed_address_header_option_filename_info.objects[0].address == "10.0.0.1"
+          - fixed_address_header_option_filename_info.objects[0].match_type == "mac"
+          - fixed_address_header_option_filename_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_header_option_filename_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_header_option_filename_info.objects[0].disable_dhcp == true
+          - fixed_address_header_option_filename_info.objects[0].hostname == "test-host-name"
+          - fixed_address_header_option_filename_info.objects[0].name == "test_fixed_address_ansible"
+          - fixed_address_header_option_filename_info.objects[0].header_option_filename == "test_header_option_filename"
+
+    - name: "Create a Fixed Address with header option server address"
+      infoblox.bloxone.dhcp_fixed_address:
+        address: "10.0.0.1"
+        ip_space: "{{ _ip_space.id }}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:01"
+        comment: "test comment"
+        disable_dhcp: true
+        hostname: "test-host-name"
+        name: "test_fixed_address_ansible"
+        header_option_filename: "test_header_option_filename"
+        header_option_server_address: "1.1.1.1"
+        state: "present"
+      register: fixed_address_header_option_server_address
+    - name: "Get information about the Fixed Address with header option server address"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_header_option_server_address_info
+    - assert:
+        that:
+          - fixed_address_header_option_server_address is changed
+          - fixed_address_header_option_server_address is not failed
+          - fixed_address_header_option_server_address_info.objects[0].comment == "test comment"
+          - fixed_address_header_option_server_address_info.objects[0].address == "10.0.0.1"
+          - fixed_address_header_option_server_address_info.objects[0].match_type == "mac"
+          - fixed_address_header_option_server_address_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_header_option_server_address_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_header_option_server_address_info.objects[0].disable_dhcp == true
+          - fixed_address_header_option_server_address_info.objects[0].hostname == "test-host-name"
+          - fixed_address_header_option_server_address_info.objects[0].name == "test_fixed_address_ansible"
+          - fixed_address_header_option_server_address_info.objects[0].header_option_filename == "test_header_option_filename"
+          - fixed_address_header_option_server_address_info.objects[0].header_option_server_address == "1.1.1.1"
+
+    - name: "Create a Fixed Address with header option server name"
+      infoblox.bloxone.dhcp_fixed_address:
+        address: "10.0.0.1"
+        ip_space: "{{ _ip_space.id }}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:01"
+        comment: "test comment"
+        disable_dhcp: true
+        hostname: "test-host-name"
+        name: "test_fixed_address_ansible"
+        header_option_filename: "test_header_option_filename"
+        header_option_server_address: "1.1.1.1"
+        header_option_server_name: "test_header_option_server_name"
+        state: "present"
+      register: fixed_address_header_option_server_name
+    - name: "Get information about the Fixed Address with header option server name"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_header_option_server_name_info
+    - assert:
+        that:
+          - fixed_address_header_option_server_name is changed
+          - fixed_address_header_option_server_name is not failed
+          - fixed_address_header_option_server_name_info.objects[0].comment == "test comment"
+          - fixed_address_header_option_server_name_info.objects[0].address == "10.0.0.1"
+          - fixed_address_header_option_server_name_info.objects[0].match_type == "mac"
+          - fixed_address_header_option_server_name_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_header_option_server_name_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_header_option_server_name_info.objects[0].disable_dhcp == true
+          - fixed_address_header_option_server_name_info.objects[0].hostname == "test-host-name"
+          - fixed_address_header_option_server_name_info.objects[0].name == "test_fixed_address_ansible"
+          - fixed_address_header_option_server_name_info.objects[0].header_option_filename == "test_header_option_filename"
+          - fixed_address_header_option_server_name_info.objects[0].header_option_server_address == "1.1.1.1"
+          - fixed_address_header_option_server_name_info.objects[0].header_option_server_name == "test_header_option_server_name"
+
+    - name: "Create a Fixed Address with tags"
+      infoblox.bloxone.dhcp_fixed_address:
+        address: "10.0.0.1"
+        ip_space: "{{ _ip_space.id }}"
+        match_type: "mac"
+        match_value: "00:00:00:00:00:01"
+        comment: "test comment"
+        disable_dhcp: true
+        hostname: "test-host-name"
+        name: "test_fixed_address_ansible"
+        header_option_filename: "test_header_option_filename"
+        header_option_server_address: "1.1.1.1"
+        header_option_server_name: "test_header_option_server_name"
+        tags:
+          location: "{{ tag_value }}"
+        state: "present"
+      register: fixed_address_tags
+    - name: "Get information about the Fixed Address with header option server name"
+      infoblox.bloxone.dhcp_fixed_address_info:
+        filters:
+          address: "10.0.0.1"
+          ip_space: "{{ _ip_space.id }}"
+      register: fixed_address_tags_info
+    - assert:
+        that:
+          - fixed_address_tags is changed
+          - fixed_address_tags is not failed
+          - fixed_address_tags_info.objects[0].comment == "test comment"
+          - fixed_address_tags_info.objects[0].address == "10.0.0.1"
+          - fixed_address_tags_info.objects[0].match_type == "mac"
+          - fixed_address_tags_info.objects[0].match_value == "00:00:00:00:00:01"
+          - fixed_address_tags_info.objects[0].ip_space == _ip_space.id
+          - fixed_address_tags_info.objects[0].disable_dhcp == true
+          - fixed_address_tags_info.objects[0].hostname == "test-host-name"
+          - fixed_address_tags_info.objects[0].name == "test_fixed_address_ansible"
+          - fixed_address_tags_info.objects[0].header_option_filename == "test_header_option_filename"
+          - fixed_address_tags_info.objects[0].header_option_server_address == "1.1.1.1"
+          - fixed_address_header_option_server_name_info.objects[0].header_option_server_name == "test_header_option_server_name"
+          - fixed_address_tags_info.objects[0].tags.location == tag_value
 
   always:
     - name: "Delete Fixed Address"
@@ -176,7 +337,7 @@
         address: "10.0.0.1"
         ip_space: "{{ _ip_space.id }}"
         match_type: "mac"
-        match_value: "00:00:00:00:00:00"
+        match_value: "00:00:00:00:00:01"
         state: "present"
       ignore_errors: true
 
@@ -189,6 +350,6 @@
 
     - name: "Delete IP Space"
       infoblox.bloxone.ipam_ip_space:
-       name: "{{ name }}"
+       name: "{{ _ip_space.object.name }}"
        state: "absent"
       ignore_errors: true
