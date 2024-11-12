@@ -199,7 +199,7 @@ EXAMPLES = r"""
     ip_space: "example_ip_space"
     match_type: "mac"
     match_value: "00:00:00:00:00:00"
-    state: "present
+    state: "present"
 
 - name: Create a fixed address with generally used params
   infoblox.bloxone.dhcp_fixed_address:
