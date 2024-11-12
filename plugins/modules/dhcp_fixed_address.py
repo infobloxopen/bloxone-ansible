@@ -670,7 +670,9 @@ class FixedAddressModule(BloxoneAnsibleModule):
                 after=item,
             )
             result["object"] = item
-            result["id"] = self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
+            result["id"] = (
+                self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
+            )
         except ApiException as e:
             self.fail_json(msg=f"Failed to execute command: {e.status} {e.reason} {e.body}")
 
@@ -683,42 +685,64 @@ def main():
         state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
         address=dict(type="str"),
         comment=dict(type="str"),
-        dhcp_options=dict(type="list", elements="dict", options=dict(
-            group=dict(type="str"),
-            option_code=dict(type="str"),
-            option_value=dict(type="str"),
-            type=dict(type="str"),
-        )),
+        dhcp_options=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                group=dict(type="str"),
+                option_code=dict(type="str"),
+                option_value=dict(type="str"),
+                type=dict(type="str"),
+            ),
+        ),
         disable_dhcp=dict(type="bool"),
         header_option_filename=dict(type="str"),
         header_option_server_address=dict(type="str"),
         header_option_server_name=dict(type="str"),
         hostname=dict(type="str"),
         inheritance_parent=dict(type="str"),
-        inheritance_sources=dict(type="dict", options=dict(
-            dhcp_options=dict(type="dict", options=dict(
-                action=dict(type="str"),
-                value=dict(type="list", elements="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-            )),
-            header_option_filename=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            header_option_server_address=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-            header_option_server_name=dict(type="dict", options=dict(
-                action=dict(type="str"),
-            )),
-        )),
+        inheritance_sources=dict(
+            type="dict",
+            options=dict(
+                dhcp_options=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                        value=dict(
+                            type="list",
+                            elements="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                    ),
+                ),
+                header_option_filename=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                header_option_server_address=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+                header_option_server_name=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                    ),
+                ),
+            ),
+        ),
         ip_space=dict(type="str"),
         match_type=dict(type="str"),
         match_value=dict(type="str"),
         name=dict(type="str"),
         parent=dict(type="str"),
         tags=dict(type="dict"),
-
     )
 
     module = FixedAddressModule(
