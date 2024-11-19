@@ -276,7 +276,7 @@ def main():
     """Main entry point for module execution"""
     argument_spec = dict(
         zone=dict(type="str"),
-        api_key=dict(required=True, type="str"),
+        api_key=dict(required=True, type="str", no_log=True),
         host=dict(required=True, type="str"),
         name=dict(type="str"),
         can_name=dict(type="str"),

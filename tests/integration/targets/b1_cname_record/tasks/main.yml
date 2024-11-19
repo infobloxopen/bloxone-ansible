@@ -1,0 +1,81 @@
+---
+# Integration tests for b1_cname_record
+- name: Create CNAME record
+  infoblox.bloxone.b1_cname_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_cname_record.zone }}"
+    name: "{{ test_bloxone_dns_cname_record.name }}"
+    can_name: "{{ test_bloxone_dns_cname_record.can_name }}"
+    state: present
+  delegate_to: localhost
+  register: create_cname_01
+
+- name: Create CNAME record (idempotence)
+  infoblox.bloxone.b1_cname_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_cname_record.zone }}"
+    name: "{{ test_bloxone_dns_cname_record.name }}"
+    can_name: "{{ test_bloxone_dns_cname_record.can_name }}"
+    state: present
+  delegate_to: localhost
+  register: create_cname_02
+
+- name: Assert record was created
+  ansible.builtin.assert:
+    that:
+      - create_cname_01.meta.result.dns_rdata is match(test_bloxone_dns_cname_record.can_name)
+      - create_cname_01.meta.result.dns_name_in_zone == test_bloxone_dns_cname_record.name | string
+      - create_cname_01.meta.result.dns_absolute_zone_name is match(test_bloxone_dns_cname_record.zone)
+      - create_cname_01.meta.result.type == "CNAME"
+      - create_cname_01.changed
+      - not create_cname_02.changed
+
+- name: Get CNAME record
+  infoblox.bloxone.b1_cname_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_cname_record.zone }}"
+    name: "{{ test_bloxone_dns_cname_record.name }}"
+    can_name: "{{ test_bloxone_dns_cname_record.can_name }}"
+    state: get
+  delegate_to: localhost
+  register: get_cname_record_01
+
+- name: Assert that record exists
+  ansible.builtin.assert:
+    that:
+      - get_cname_record_01.meta.results[0].dns_rdata is match(test_bloxone_dns_cname_record.can_name)
+      - get_cname_record_01.meta.results[0].dns_name_in_zone == test_bloxone_dns_cname_record.name | string
+      - get_cname_record_01.meta.results[0].dns_absolute_zone_name is match(test_bloxone_dns_cname_record.zone)
+      - not get_cname_record_01.changed
+
+- name: Delete CNAME record
+  infoblox.bloxone.b1_cname_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_cname_record.zone }}"
+    name: "{{ test_bloxone_dns_cname_record.name }}"
+    can_name: "{{ test_bloxone_dns_cname_record.can_name }}"
+    state: absent
+  delegate_to: localhost
+  register: delete_cname_record_01
+
+- name: Delete CNAME record (idempotence)
+  infoblox.bloxone.b1_cname_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_cname_record.zone }}"
+    name: "{{ test_bloxone_dns_cname_record.name }}"
+    can_name: "{{ test_bloxone_dns_cname_record.can_name }}"
+    state: absent
+  delegate_to: localhost
+  register: delete_cname_record_02
+
+- name: Assert that record was deleted
+  ansible.builtin.assert:
+    that:
+      - delete_cname_record_01.changed
+      - not delete_cname_record_02.changed
+...
