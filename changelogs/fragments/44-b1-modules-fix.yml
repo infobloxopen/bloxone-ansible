@@ -1,0 +1,7 @@
+bugfixes:
+  - fix previous commit for lint/sanity fixes breaking legacy b1 modules "missing required positional argument 'data'"
+  - fix deleting record returning failed status when record doesn't exist on legacy b1 modules
+  - fix "get" state returning "changed" for legacy b1 modules
+minor_changes:
+  - implement idempotence for b1_a_record and b1_cname_record
+  - implement updating address for b1_a_record, and can_name for b1_cname_record
