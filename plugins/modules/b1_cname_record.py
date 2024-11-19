@@ -163,7 +163,7 @@ def get_cname_record(data):
         return connector.get(endpoint)
 
 
-def update_cname_record(data):
+def update_cname_record_name(data):
     """Updates the existing BloxOne DDI DNS Authoritative Zone object"""
     connector = Request(data["host"], data["api_key"])
     helper = Utilities()
@@ -203,18 +203,37 @@ def update_cname_record(data):
     return connector.update(endpoint, payload)
 
 
+def update_cname_record(connector, data, reference):
+    """Updates the existing BloxOne DDI DNS Authoritative Zone object"""
+    helper = Utilities()
+    payload = {}
+    old_data = reference[2]["results"][0]
+    ref_id = old_data["id"]
+    if old_data["rdata"]["cname"] != data["can_name"]:
+        payload["rdata"] = {"cname": data["can_name"]}
+    endpoint = f"/api/ddi/v1/{ref_id}"
+    if payload:
+        return connector.update(endpoint, payload)
+    else:
+        return False
+
+
 def create_cname_record(data):
     """Creates a new BloxOne DDI DNS Authoritative Zone object"""
     connector = Request(data["host"], data["api_key"])
     helper = Utilities()
     if all(k in data and data[k] is not None for k in ("name", "zone")):
         if "new_name" in data["name"]:
-            return update_cname_record(data)
+            return update_cname_record_name(data)
         else:
             auth_zone = get_cname_record(data)
             payload = {}
             if "results" in auth_zone[2].keys() and len(auth_zone[2]["results"]) > 0:
-                return auth_zone
+                updated = update_cname_record(connector, data, auth_zone)
+                if updated:
+                    return updated
+                else:
+                    return auth_zone
             else:
                 zone_endpoint = f"/api/ddi/v1/dns/auth_zone?_filter=fqdn==\"{data['zone']}\""
                 zone = connector.get(zone_endpoint)

@@ -51,6 +51,23 @@
       - get_cname_record_01.meta.results[0].dns_absolute_zone_name is match(test_bloxone_dns_cname_record.zone)
       - not get_cname_record_01.changed
 
+- name: Update CNAME record Canonical Name
+  infoblox.bloxone.b1_cname_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_cname_record.zone }}"
+    name: "{{ test_bloxone_dns_cname_record.name }}"
+    can_name: "{{ test_bloxone_dns_cname_record.can_name_update }}"
+    state: present
+  delegate_to: localhost
+  register: update_cname_record_01
+
+- name: Assert that record updated
+  ansible.builtin.assert:
+    that:
+      - update_cname_record_01.meta.result.rdata.cname == test_bloxone_dns_cname_record.can_name_update
+      - update_cname_record_01.changed
+
 - name: Delete CNAME record
   infoblox.bloxone.b1_cname_record:
     host: "{{ csp_url }}"
