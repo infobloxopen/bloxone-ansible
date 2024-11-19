@@ -1,3 +1,3 @@
 deprecated_features:
   - b1_dns_auth_zone - is deprecated in favor of `dns_auth_zone`.
-  - b1_dns_auth_zone_gather - is deprecated in favor of `dns_auth_zone_info`.
+  - b1_dns_zone_gather - is deprecated in favor of `dns_auth_zone_info`.

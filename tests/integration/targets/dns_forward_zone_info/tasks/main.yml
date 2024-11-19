@@ -1,0 +1,63 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create a random Forward Zone name to avoid conflicts
+    - ansible.builtin.set_fact:
+        fqdn: "test-forward_zone-{{ 999999 | random | string }}.com."
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic Test for Forward Zone
+    - name: Create an Forward Zone
+      infoblox.bloxone.dns_forward_zone:
+        fqdn: "{{ fqdn }}"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: forward_zone
+
+    - name: Get Information about the Forward Zone
+      infoblox.bloxone.dns_forward_zone_info:
+        filters:
+          fqdn: "{{ fqdn }}"
+      register: forward_zone_info
+    - assert:
+        that:
+          - forward_zone_info.objects | length == 1
+          - forward_zone_info.objects[0].fqdn == forward_zone.object.fqdn
+
+    - name: Get Forward Zone information by filters (FQDN)
+      infoblox.bloxone.dns_forward_zone_info:
+        filters:
+          fqdn: "{{ fqdn }}"
+      register: forward_zone_info
+    - assert:
+        that:
+          - forward_zone_info.objects | length == 1
+          - forward_zone_info.objects[0].id == forward_zone.id
+
+    - name: Get Forward Zone information by filter query
+      infoblox.bloxone.dns_forward_zone_info:
+        filter_query: "fqdn=='{{ fqdn }}'"
+    - assert:
+        that:
+          - forward_zone_info.objects | length == 1
+          - forward_zone_info.objects[0].id == forward_zone.id
+
+    - name: Get Forward Zone information by tag filters
+      infoblox.bloxone.dns_forward_zone_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - forward_zone_info.objects | length == 1
+          - forward_zone_info.objects[0].id == forward_zone.id
+  always:
+    # Cleanup if the test fails
+    - name: "Delete Forward Zone"
+      infoblox.bloxone.dns_forward_zone:
+        fqdn: "{{ fqdn }}"
+        state: "absent"
+      ignore_errors: false

@@ -15,6 +15,7 @@ short_description: Configure Address Block on Infoblox BloxOne DDI
 version_added: "1.0.1"
 deprecated:
   removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(ipam_address_block) instead.
   alternative: Use M(ipam_address_block) instead.
 description:
   - Create, Update and Delete Address Block on Infoblox BloxOne DDI. This module manages the IPAM Address Block object using BloxOne REST APIs.

@@ -16,7 +16,9 @@ short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.1.2"
 deprecated:
   removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(ipam_subnet_info) instead.
   alternative: Use M(ipam_subnet_info) instead.
+
 description:
   - Gather information about subnet object in Infoblox BloxOne DDI. This module manages the subnet object using BloxOne REST APIs.
 requirements:

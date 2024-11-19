@@ -16,6 +16,7 @@ short_description: Configure Subnet on Infoblox BloxOne DDI
 version_added: "1.1.2"
 deprecated:
   removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(ipam_subnet) instead.
   alternative: Use M(ipam_subnet) instead.
 description:
   - Create, Update and Delete Subnets on Infoblox BloxOne DDI. This module manages the IPAM Subnet object using BloxOne REST APIs.
@@ -54,8 +55,8 @@ options:
     type: str
   dhcp_options:
     description:
-      - Configures the DHCP options associated with the subnet.
-      - note: routers option supports first|last as special command to assign IP based on subnet
+      - Configures the DHCP options associated with the subnet. Routers option supports first|last
+        as special command to assign IP based on subnet
     type: list
   tags:
     description:

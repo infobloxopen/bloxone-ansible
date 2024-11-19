@@ -161,3 +161,6 @@ cython_debug/
 # OpenAPI Generator files
 .openapi-generator/
 .openapi-generator-ignore
+
+# Ignore the metadata files
+**/.DS_Store
