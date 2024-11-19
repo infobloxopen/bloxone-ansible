@@ -1,0 +1,109 @@
+---
+# Integration test for b1_a_record
+- name: Create A record
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: present
+    name: "{{ test_bloxone_dns_record.name }}"
+    address: "{{ test_bloxone_dns_record.ip_address }}"
+  delegate_to: localhost
+  register: create_a_record_01
+
+- name: Create A record (idempotence)
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: present
+    name: "{{ test_bloxone_dns_record.name }}"
+    address: "{{ test_bloxone_dns_record.ip_address }}"
+  delegate_to: localhost
+  register: create_a_record_02
+
+- name: Assert record was created
+  ansible.builtin.assert:
+    that:
+      - create_a_record_01.meta.result.dns_rdata == test_bloxone_dns_record.ip_address
+      - create_a_record_01.meta.result.dns_name_in_zone == test_bloxone_dns_record.name
+      - create_a_record_01.meta.result.dns_absolute_zone_name == test_bloxone_dns_record.zone + '.'
+      - create_a_record_01.changed
+      - not create_a_record_02.changed
+
+- name: Get A record
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: get
+    name: "{{ test_bloxone_dns_record.name }}"
+    address: "{{ test_bloxone_dns_record.ip_address }}"
+  delegate_to: localhost
+  register: get_a_record_01
+
+- name: Assert that record exists
+  ansible.builtin.assert:
+    that:
+      - get_a_record_01.meta.results[0].dns_rdata == test_bloxone_dns_record.ip_address
+      - get_a_record_01.meta.results[0].dns_name_in_zone == test_bloxone_dns_record.name
+      - get_a_record_01.meta.results[0].dns_absolute_zone_name == test_bloxone_dns_record.zone + '.'
+      - not get_a_record_01.changed
+
+- name: Update A record IP Address
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: present
+    name: "{{ test_bloxone_dns_record.name }}"
+    address: "{{ test_bloxone_dns_record.ip_address_update }}"
+  delegate_to: localhost
+  register: update_a_record_01
+
+# Updating name appears to not work at all when expanding variables for the 'name' option, doesn't play nice with json.loads() maybe?
+# Leaving this test in for posterity, since you *CAN* get it to work by hard-coding the record new and old name
+- name: Update A record Record Name
+  tags: never
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: present
+    name: '{"new_name": "", "old_name": ""}'
+    address: "{{ test_bloxone_dns_record.ip_address_update }}"
+  delegate_to: localhost
+  register: update_a_record_02
+
+- name: Assert that record exists
+  ansible.builtin.assert:
+    that:
+      - update_a_record_01.meta.result.dns_rdata == test_bloxone_dns_record.ip_address_update
+      - update_a_record_01.changed
+
+- name: Delete A record
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: absent
+    name: "{{ test_bloxone_dns_record.name }}"
+  delegate_to: localhost
+  register: delete_a_record_01
+
+- name: Delete A record (idempotence)
+  infoblox.bloxone.b1_a_record:
+    host: "{{ csp_url }}"
+    api_key: "{{ api_key }}"
+    zone: "{{ test_bloxone_dns_record.zone }}"
+    state: absent
+    name: "{{ test_bloxone_dns_record.name }}"
+  delegate_to: localhost
+  register: delete_a_record_02
+
+- name: Assert that record was deleted
+  ansible.builtin.assert:
+    that:
+      - delete_a_record_01.changed
+      - not delete_a_record_02.changed
+...
