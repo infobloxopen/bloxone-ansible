@@ -67,3 +67,8 @@ plugin_routing:
           deprecation:
             removal_version: 3.0.0
             warning_text: Use infoblox.bloxone.dns_auth_zone_info instead.
+
+        b1_ipam_range:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_range instead.

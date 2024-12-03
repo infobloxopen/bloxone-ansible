@@ -1,0 +1,2 @@
+deprecated_features:
+  - b1_ipam_range - is deprecated in favor of `ipam_range`.
