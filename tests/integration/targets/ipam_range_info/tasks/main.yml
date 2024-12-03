@@ -1,0 +1,84 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create a random IP space name to avoid conflicts
+    - ansible.builtin.set_fact:
+        tag_value: "site-{{ 999999 | random | string }}"
+        range_start: "10.0.0.1"
+        range_end: "10.0.0.254"
+
+    - name: "Create an IP Range"
+      infoblox.bloxone.ipam_range:
+        start: "{{ range_start }}"
+        end: "{{ range_end }}"
+        space: "{{ _ip_space.id }}"
+        tags:
+          location: "{{ tag_value }}"
+        state: "present"
+      register: ip_range
+
+    - name: Get IP Range information by ID
+      infoblox.bloxone.ipam_range_info:
+        id: "{{ ip_range.id }}"
+      register: range_info
+    - assert:
+        that:
+          - range_info.objects | length == 1
+          - range_info.objects[0].name == ip_range.object.name
+
+    - name: Get IP Range information by filters
+      infoblox.bloxone.ipam_range_info:
+        filters:
+          start: "{{ range_start }}"
+          end: "{{ range_end }}"
+          space: "{{ _ip_space.id }}"
+      register: range_info
+    - assert:
+        that:
+          - range_info.objects | length == 1
+          - range_info.objects[0].id == ip_range.id
+
+    - name: Get IP Range information by filter query
+      infoblox.bloxone.ipam_range_info:
+        filter_query: "start=='{{ range_start }}' and end=='{{ range_end }}' and space=='{{ _ip_space.id }}'"
+      register: range_info
+    - assert:
+        that:
+          - range_info.objects | length == 1
+          - range_info.objects[0].id == ip_range.id
+
+    - name: Get IP Range information by tag filters
+      infoblox.bloxone.ipam_range_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+      register: range_info
+    - assert:
+        that:
+          - range_info.objects | length == 1
+          - range_info.objects[0].id == ip_range.id
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete IP Range"
+      infoblox.bloxone.ipam_range:
+        start: "{{ range_start }}"
+        end: "{{ range_end }}"
+        space: "{{ _ip_space.id }}"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ _ip_space.id }}"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete IP Space"
+      infoblox.bloxone.ipam_ip_space:
+        name: "{{ name }}"
+        state: "absent"
+      ignore_errors: true

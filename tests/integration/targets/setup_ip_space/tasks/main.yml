@@ -6,7 +6,7 @@
   block:
     # Create a random View name to avoid conflicts
     - ansible.builtin.set_fact:
-        name: "test-view-{{ 999999 | random | string }}"
+        name: "test-space-{{ 999999 | random | string }}"
 
     # Create an Ip Space
     - name: "Create an IP space"

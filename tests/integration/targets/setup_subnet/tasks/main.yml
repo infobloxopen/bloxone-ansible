@@ -4,10 +4,6 @@
       csp_url: "{{ csp_url }}"
       api_key: "{{ api_key }}"
   block:
-    # Create a random View name to avoid conflicts
-    - ansible.builtin.set_fact:
-        name: "test-view-{{ 999999 | random | string }}"
-
     # Create a subnet
     - name: "Create a Subnet"
       infoblox.bloxone.ipam_subnet:

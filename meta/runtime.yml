@@ -20,6 +20,8 @@ action_groups:
     - ipam_address_block_info
     - ipam_fixed_address
     - ipam_fixed_address_info
+    - ipam_range
+    - ipam_range_info
 
 plugin_routing:
     modules:
