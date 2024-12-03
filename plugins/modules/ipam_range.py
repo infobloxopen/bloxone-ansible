@@ -651,7 +651,9 @@ class RangeModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            filter = f"start=='{self.params['start']}' and end=='{self.params['end']}' and space=='{self.params['space']}'"
+            filter = (
+                f"start=='{self.params['start']}' and end=='{self.params['end']}' and space=='{self.params['space']}'"
+            )
             resp = RangeApi(self.client).list(filter=filter, inherit="full")
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -713,7 +715,9 @@ class RangeModule(BloxoneAnsibleModule):
                 after=item,
             )
             result["object"] = item
-            result["id"] = self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
+            result["id"] = (
+                self.existing.id if self.existing is not None else item["id"] if (item and "id" in item) else None
+            )
         except ApiException as e:
             self.fail_json(msg=f"Failed to execute command: {e.status} {e.reason} {e.body}")
 
@@ -726,44 +730,68 @@ def main():
         state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
         comment=dict(type="str"),
         dhcp_host=dict(type="str"),
-        dhcp_options=dict(type="list", elements="dict", options=dict(
-            group=dict(type="str"),
-            option_code=dict(type="str"),
-            option_value=dict(type="str"),
-            type=dict(type="str"),
-        )),
+        dhcp_options=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                group=dict(type="str"),
+                option_code=dict(type="str"),
+                option_value=dict(type="str"),
+                type=dict(type="str"),
+            ),
+        ),
         disable_dhcp=dict(type="bool"),
         end=dict(type="str"),
-        exclusion_ranges=dict(type="list", elements="dict", options=dict(
-            comment=dict(type="str"),
-            end=dict(type="str"),
-            start=dict(type="str"),
-        )),
-        filters=dict(type="list", elements="dict", options=dict(
-            access=dict(type="str"),
-            hardware_filter_id=dict(type="str"),
-            option_filter_id=dict(type="str"),
-        )),
+        exclusion_ranges=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                comment=dict(type="str"),
+                end=dict(type="str"),
+                start=dict(type="str"),
+            ),
+        ),
+        filters=dict(
+            type="list",
+            elements="dict",
+            options=dict(
+                access=dict(type="str"),
+                hardware_filter_id=dict(type="str"),
+                option_filter_id=dict(type="str"),
+            ),
+        ),
         inheritance_parent=dict(type="str"),
-        inheritance_sources=dict(type="dict", options=dict(
-            dhcp_options=dict(type="dict", options=dict(
-                action=dict(type="str"),
-                value=dict(type="list", elements="dict", options=dict(
-                    action=dict(type="str"),
-                )),
-            )),
-        )),
+        inheritance_sources=dict(
+            type="dict",
+            options=dict(
+                dhcp_options=dict(
+                    type="dict",
+                    options=dict(
+                        action=dict(type="str"),
+                        value=dict(
+                            type="list",
+                            elements="dict",
+                            options=dict(
+                                action=dict(type="str"),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
         name=dict(type="str"),
         parent=dict(type="str"),
         space=dict(type="str"),
         start=dict(type="str"),
         tags=dict(type="dict"),
-        threshold=dict(type="dict", options=dict(
-            enabled=dict(type="bool"),
-            high=dict(type="int"),
-            low=dict(type="int"),
-        )),
-
+        threshold=dict(
+            type="dict",
+            options=dict(
+                enabled=dict(type="bool"),
+                high=dict(type="int"),
+                low=dict(type="int"),
+            ),
+        ),
     )
 
     module = RangeModule(
