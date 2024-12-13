@@ -6,7 +6,6 @@
       api_key: "{{ api_key }}"
   block:
 
-    # Create a random IP space name to avoid conflicts
     - ansible.builtin.set_fact:
         tag_value: "site-{{ 999999 | random | string }}"
         range_start: "10.0.0.1"
@@ -184,7 +183,6 @@
           - range_info.objects | length == 1
           - range_info.objects[0].tags.location == tag_value
 
-    # Test case for creating a range with a name
     - name: "Create a Range with name"
       infoblox.bloxone.ipam_range:
         start: "{{ range_start }}"
@@ -206,7 +204,6 @@
           - range_info.objects | length == 1
           - range_info.objects[0].name == "Test Range"
 
-    # Test case for creating a range with exclusion ranges
     - name: "Create a Range with exclusion ranges"
       infoblox.bloxone.ipam_range:
         start: "{{ range_start }}"
@@ -233,7 +230,6 @@
           - range_info.objects[0].exclusion_ranges[0].end == "10.0.0.20"
           - range_info.objects[0].exclusion_ranges[0].comment == "Exclude this range"
 
-    # Test case for creating a range with a threshold
     - name: "Create a Range with threshold"
       infoblox.bloxone.ipam_range:
         start: "{{ range_start }}"
@@ -260,8 +256,31 @@
           - range_info.objects[0].threshold.high == 90
           - range_info.objects[0].threshold.low == 10
 
+    - name: "Create a Range with inheritance sources"
+      infoblox.bloxone.ipam_range:
+        start: "{{ range_start }}"
+        end: "{{ range_end }}"
+        space: "{{ _ip_space.id }}"
+        inheritance_sources:
+          dhcp_options:
+            action: "block"
+        state: "present"
+      register: range
+    - name: Get information about the Range
+      infoblox.bloxone.ipam_range_info:
+        filters:
+          start: "{{ range_start }}"
+          end: "{{ range_end }}"
+          space: "{{ _ip_space.id }}"
+      register: range_info
+    - assert:
+        that:
+          - range is not failed
+          - range_info.objects | length == 1
+          - range_info.objects[0].inheritance_sources.dhcp_options.action == "block"
+
+
   always:
-    # Cleanup if the test fails
     - name: "Delete a Range"
       infoblox.bloxone.ipam_range:
         start: "{{ range_start }}"
@@ -269,15 +288,10 @@
         space: "{{ _ip_space.id }}"
         state: "absent"
 
-    - name: "Delete Subnet"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ _ip_space.id }}"
-        state: "absent"
-      ignore_errors: true
+    - ansible.builtin.include_role:
+        name: "setup_subnet"
+        tasks_from: "cleanup.yml"
 
-    - name: "Delete IP Space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "absent"
-      ignore_errors: true
+    - ansible.builtin.include_role:
+        name: "setup_ip_space"
+        tasks_from: "cleanup.yml"
