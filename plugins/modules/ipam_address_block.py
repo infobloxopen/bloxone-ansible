@@ -147,14 +147,6 @@ options:
             - "The shared DHCP configuration that controls how leases are issued for the address block."
         type: dict
         suboptions:
-            abandoned_reclaim_time:
-                description:
-                    - "The abandoned reclaim time in seconds for IPV4 clients."
-                type: int
-            abandoned_reclaim_time_v6:
-                description:
-                    - "The abandoned reclaim time in seconds for IPV6 clients."
-                type: int
             allow_unknown:
                 description:
                     - "Disable to allow leases only for known IPv4 clients, those for which a fixed address is configured."
@@ -162,10 +154,6 @@ options:
             allow_unknown_v6:
                 description:
                     - "Disable to allow leases only for known IPV6 clients, those for which a fixed address is configured."
-                type: bool
-            echo_client_id:
-                description:
-                    - "Enable/disable to include/exclude the client id when responding to discover or request."
                 type: bool
             filters:
                 description:
@@ -974,16 +962,6 @@ item:
             type: dict
             returned: Always
             contains:
-                abandoned_reclaim_time:
-                    description:
-                        - "The abandoned reclaim time in seconds for IPV4 clients."
-                    type: int
-                    returned: Always
-                abandoned_reclaim_time_v6:
-                    description:
-                        - "The abandoned reclaim time in seconds for IPV6 clients."
-                    type: int
-                    returned: Always
                 allow_unknown:
                     description:
                         - "Disable to allow leases only for known IPv4 clients, those for which a fixed address is configured."
@@ -992,11 +970,6 @@ item:
                 allow_unknown_v6:
                     description:
                         - "Disable to allow leases only for known IPV6 clients, those for which a fixed address is configured."
-                    type: bool
-                    returned: Always
-                echo_client_id:
-                    description:
-                        - "Enable/disable to include/exclude the client id when responding to discover or request."
                     type: bool
                     returned: Always
                 filters:
@@ -2384,6 +2357,13 @@ class AddressBlockModule(BloxoneAnsibleModule):
         exclude = ["state", "csp_url", "api_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = AddressBlock.from_dict(self._payload_params)
+
+        # Unset unsupported DHCP configuration attributes
+        if self._payload.dhcp_config:
+            self._payload.dhcp_config.abandoned_reclaim_time = None
+            self._payload.dhcp_config.abandoned_reclaim_time_v6 = None
+            self._payload.dhcp_config.echo_client_id = None
+
         self._existing = None
 
     @property
@@ -2525,11 +2505,8 @@ def main():
         dhcp_config=dict(
             type="dict",
             options=dict(
-                abandoned_reclaim_time=dict(type="int"),
-                abandoned_reclaim_time_v6=dict(type="int"),
                 allow_unknown=dict(type="bool"),
                 allow_unknown_v6=dict(type="bool"),
-                echo_client_id=dict(type="bool"),
                 filters=dict(type="list", elements="str"),
                 filters_v6=dict(type="list", elements="str"),
                 ignore_client_uid=dict(type="bool"),

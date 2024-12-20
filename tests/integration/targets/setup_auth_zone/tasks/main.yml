@@ -1,0 +1,17 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create a random View name to avoid conflicts
+    - ansible.builtin.set_fact:
+        _fqdn_auth_zone: "test-auth-zone-{{ 999999 | random | string }}.com."
+
+    - name: Create an Auth Zone in a view
+      infoblox.bloxone.dns_auth_zone:
+        fqdn: "{{ _fqdn_auth_zone }}"
+        view:  "{{ _view.id }}"
+        primary_type: cloud
+        state: present
+      register: _auth_zone

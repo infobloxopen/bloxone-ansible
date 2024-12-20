@@ -11,6 +11,8 @@ action_groups:
     - dns_auth_zone_info
     - dns_forward_zone
     - dns_forward_zone_info
+    - dns_delegation
+    - dns_delegation_info
   ipam:
     - ipam_ip_space
     - ipam_ip_space_info
