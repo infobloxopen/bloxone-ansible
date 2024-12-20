@@ -286,26 +286,6 @@
           - subnet_info.objects | length == 1
           - subnet_info.objects[0].ddns_send_updates == false
 
-    - name: "Create a Subnet with ddns_ttl_percent set to 25"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ ip_space.id }}"
-        state: "present"
-        ddns_ttl_percent: 25
-      register: subnet
-    - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
-        filters:
-          address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
-          cidr: 24
-      register: subnet_info
-    - assert:
-        that:
-          - subnet is not failed
-          - subnet_info.objects | length == 1
-          - subnet_info.objects[0].ddns_ttl_percent == 25
-
     - name: "Create a Subnet with ddns_update_on_renew set to true"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"
@@ -325,6 +305,27 @@
           - subnet is not failed
           - subnet_info.objects | length == 1
           - subnet_info.objects[0].ddns_update_on_renew == true
+
+#     Skip this due to backend bug NORTHSTAR-12587
+#    - name: "Create a Subnet with ddns_ttl_percent set to 25"
+#      infoblox.bloxone.ipam_subnet:
+#        address: "10.0.0.0/24"
+#        space: "{{ ip_space.id }}"
+#        state: "present"
+#        ddns_ttl_percent: 25.0
+#      register: subnet
+#    - name: Get information about the Subnet
+#      infoblox.bloxone.ipam_subnet_info:
+#        filters:
+#          address: "10.0.0.0"
+#          space: "{{ ip_space.id }}"
+#          cidr: 24
+#      register: subnet_info
+#    - assert:
+#        that:
+#          - subnet is not failed
+#          - subnet_info.objects | length == 1
+#          - subnet_info.objects[0].ddns_ttl_percent == 25.0
 
     - name: "Create a Subnet with ddns_use_conflict_resolution set to false"
       infoblox.bloxone.ipam_subnet:

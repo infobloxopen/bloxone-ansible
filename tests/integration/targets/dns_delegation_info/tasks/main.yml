@@ -1,0 +1,72 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        delegation_fqdn: "test-delegation--{{ 999999 | random | string }}.{{ _fqdn_auth_zone }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: Create a Delegation
+      infoblox.bloxone.dns_delegation:
+        fqdn: "{{ delegation_fqdn }}"
+        delegation_servers:
+          - fqdn: "ns1.example.com."
+            address: "12.0.0.0"
+        view: "{{ _view.id }}"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: delegation
+
+    - name: Get Delegation information by filters (FQDN)
+      infoblox.bloxone.dns_delegation_info:
+        filters:
+          fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
+      register: delegation_info
+    - assert:
+        that:
+          - delegation_info.objects | length == 1
+          - delegation_info.objects[0].id == delegation.id
+
+    - name: Get Delegation information by filter query
+      infoblox.bloxone.dns_delegation_info:
+        filter_query: "fqdn=='{{ delegation_fqdn }}'"
+      register: delegation_info
+    - assert:
+        that:
+          - delegation_info.objects | length == 1
+          - delegation_info.objects[0].id == delegation.id
+
+    - name: Get Delegation information by tag filters (if any)
+      infoblox.bloxone.dns_delegation_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+      register: delegation_info
+    - assert:
+        that:
+          - delegation_info.objects | length == 1
+          - delegation_info.objects[0].id == delegation.id
+
+  always:
+    - name: "Clean up DNS Delegation"
+      infoblox.bloxone.dns_delegation:
+        fqdn: "{{ delegation_fqdn }}"
+        view: "{{ _view.id }}"
+        state: absent
+      ignore_errors: true
+
+    - name: "Clean up Authorization Zone"
+      infoblox.bloxone.dns_auth_zone:
+        fqdn: "{{ _fqdn_auth_zone }}"
+        state: absent
+      ignore_errors: true
+
+    - name: "Clean up  DNS View"
+      infoblox.bloxone.dns_view:
+        name: "{{ name }}"
+        state: absent
+      ignore_errors: true
