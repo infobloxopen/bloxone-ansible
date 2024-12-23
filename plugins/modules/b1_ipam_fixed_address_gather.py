@@ -13,10 +13,6 @@ module: b1_ipam_fixed_address_gather
 author: "Amit Mishra (@amishra)"
 short_description: Configure IP space on Infoblox BloxOne DDI
 version_added: "1.0.1"
-deprecated:
-    removed_in: "3.0.0"
-    why: "This module is being deprecated and will be removed in version 3.0.0."
-    alternative: "Use the M(ipam_fixed_address_info) module instead."
 description:
   - Gather information about a fixed address object on Infoblox BloxOne DDI. This module gathers the fixed_address object using BloxOne REST APIs.
 requirements:

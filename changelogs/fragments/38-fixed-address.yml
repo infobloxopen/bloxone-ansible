@@ -1,3 +1,0 @@
-deprecated_features:
-  - b1_ipam_fixed_address - is deprecated in favor of `ipam_fixed_address`.
-  - b1_ipam_fixed_address_gather - is deprecated in favor of `ipam_fixed_address_info`.

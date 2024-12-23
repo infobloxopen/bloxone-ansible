@@ -15,10 +15,6 @@ author: "Amit Mishra (@amishra)"
 contributor: "Chris Marrison (@ccmarris)"
 short_description: Configure fixed address on Infoblox BloxOne DDI
 version_added: "1.1.2"
-deprecated:
-    removed_in: "3.0.0"
-    why: "This module is being deprecated and will be removed in version 3.0.0."
-    alternative: "Use the M(ipam_fixed_address) module instead."
 description:
   - Get, Create, Update and Delete fixed address on Infoblox BloxOne DDI. This module manages the fixed address object using BloxOne REST APIs.
 requirements:
