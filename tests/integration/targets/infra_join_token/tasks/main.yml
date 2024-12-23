@@ -1,0 +1,150 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+
+  block:
+    # Create a random name to avoid conflicts
+    - ansible.builtin.set_fact:
+        name: "test-join-token-{{ 999999 | random | string }}"
+        name2: "test-join-token-{{ 999999 | random | string }}"
+
+    - name: Create a Join Token (check mode)
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: present
+      check_mode: true
+      register: join_token
+    - name: Get Information about the Join Token
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token is changed
+          - join_token_info is not failed
+          - join_token_info.objects | length == 0
+
+    - name: Create a Join Token
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: present
+      register: join_token
+    - name: Get Information about the Join Token
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token is changed
+          - join_token_info is not failed
+          - join_token_info.objects | length == 1
+
+    - name: Create a Join Token (idempotent)
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: present
+      register: join_token
+    - assert:
+        that:
+          - join_token is not changed
+          - join_token is not failed
+
+    - name: Revoke the Join Token (check mode)
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: revoked
+      check_mode: true
+      register: join_token
+    - name: Get Information about the Join Token
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token is changed
+          - join_token_info is not failed
+          - join_token_info.objects | length == 1
+          - join_token_info.objects[0].status == "ACTIVE"
+
+    - name: Revoke the Join Token
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: revoked
+      register: join_token
+    - name: Get Information about the Join Token
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token is changed
+          - join_token_info is not failed
+          # The join token is revoked , not deleted , hence the length would be 1
+          - join_token_info.objects | length == 1
+          - join_token_info.objects[0].status == "REVOKED"
+      
+
+    - name: Revoke the Join Token (idempotent)
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: revoked
+      register: join_token
+    - assert:
+        that:
+          - join_token is not changed
+          - join_token is not failed
+
+    - name: Create a Join Token with Description
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name2 }}"
+        description: "Test Join Token"
+        state: present
+      register: join_token
+    - name: Get Information about the Join Token
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name2 }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token is changed
+          - join_token_info is not failed
+          - join_token_info.objects | length == 1
+
+    - name: Create a Join Token with Tags
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name2 }}"
+        description: "Test Join Token"
+        tags:
+          location: "site-1"
+        state: present
+      register: join_token
+    - name: Get Information about the Join Token
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name2 }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token is changed
+          - join_token_info is not failed
+          - join_token_info.objects | length == 1
+
+  always:
+    - name: "Clean up the second Join Token"
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name2 }}"
+        state: revoked
+      ignore_errors: true
+
+    - name: "Clean up the first Join Token"
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: revoked
+      ignore_errors: true
