@@ -56,6 +56,26 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """  # noqa: E501
 
+EXAMPLES = r"""
+  - name: Get ACL by ID
+    infoblox.bloxone.dns_acl_info:
+        id: "{{ acl_id }}"
+
+  - name: Get ACL by filters
+    infoblox.bloxone.dns_acl_info:
+      filters:
+        name: "{{ acl_name }}"
+
+    - name: Get ACL by filter query
+      infoblox.bloxone.dns_acl_info:
+        filter_query: "name=='{{ acl_name }}'"
+
+    - name: Get ACL by tag filters
+      infoblox.bloxone.dns_acl_info:
+        tag_filters:
+          location: "us-west"
+"""
+
 RETURN = r"""
 id:
     description:

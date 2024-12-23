@@ -115,6 +115,30 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """  # noqa: E501
 
+EXAMPLES = r"""
+  - name: Create ACL
+    infoblox.bloxone.dns_acl:
+      name: "my-acl"
+      state: "present"
+
+  -name: Create ACL with list
+    infoblox.bloxone.dns_acl:
+      name: "my-acl"
+      comment: "my comment"
+      list:
+        - access: "allow"
+          element: "ip"
+          address: "1.1.1.1"
+      tags:
+        location: "us-west"     
+      state: "present"
+
+  - name: Delete ACL
+    infoblox.bloxone.dns_acl:
+      name: "my-acl"
+      state: "absent"
+"""
+
 RETURN = r"""
 id:
     description:
