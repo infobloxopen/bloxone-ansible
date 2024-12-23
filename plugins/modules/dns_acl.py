@@ -395,7 +395,10 @@ def main():
                 tsig_key=dict(
                     type="dict",
                     options=dict(
-                        algorithm=dict(type="str", choices=["hmac_sha256", "hmac_sha1", "hmac_sha224", "hmac_sha384", "hmac_sha512"]),
+                        algorithm=dict(
+                            type="str",
+                            choices=["hmac_sha256", "hmac_sha1", "hmac_sha224", "hmac_sha384", "hmac_sha512"],
+                        ),
                         comment=dict(type="str"),
                         key=dict(type="str"),
                         name=dict(type="str"),
