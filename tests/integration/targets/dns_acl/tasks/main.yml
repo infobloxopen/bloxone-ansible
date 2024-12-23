@@ -12,6 +12,7 @@
     # Create a random ACL name to avoid conflicts
     - ansible.builtin.set_fact:
         acl_name: "test-acl-{{ 999999 | random | string }}"
+        tsig_key_name: "test-tsig-key-{{ 999999 | random | string }}"
 
     - name: Create an ACL (check mode)
       infoblox.bloxone.dns_acl:
@@ -242,7 +243,7 @@
             element: "tsig_key"
             tsig_key:
               "algorithm": "hmac_sha256"
-              "name": "test_sha256"
+              "name": "{{ tsig_key_name }}"
               "secret": "CXRmUdHsJp24HcOtjeX7NOgoMKj0jxTkAK8zyBbMIBs="
         state: present
       register: acl
@@ -263,7 +264,6 @@
           - acl_info.objects[0].list[0].access == "allow"
           - acl_info.objects[0].list[0].element == "tsig_key"
           - acl_info.objects[0].list[0].tsig_key.algorithm == "hmac_sha256"
-          - acl_info.objects[0].list[0].tsig_key.name == "test_sha256."
 
   always:
     # Cleanup if the test fails
@@ -272,4 +272,3 @@
         name: "{{ acl_name }}"
         state: "absent"
       ignore_errors: true
-

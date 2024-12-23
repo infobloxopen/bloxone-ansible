@@ -66,14 +66,14 @@ EXAMPLES = r"""
       filters:
         name: "{{ acl_name }}"
 
-    - name: Get ACL by filter query
-      infoblox.bloxone.dns_acl_info:
-        filter_query: "name=='{{ acl_name }}'"
+  - name: Get ACL by filter query
+    infoblox.bloxone.dns_acl_info:
+      filter_query: "name=='{{ acl_name }}'"
 
-    - name: Get ACL by tag filters
-      infoblox.bloxone.dns_acl_info:
-        tag_filters:
-          location: "us-west"
+  - name: Get ACL by tag filters
+    infoblox.bloxone.dns_acl_info:
+      tag_filters:
+        location: "us-west"
 """
 
 RETURN = r"""

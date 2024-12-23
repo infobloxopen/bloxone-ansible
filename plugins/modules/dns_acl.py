@@ -52,6 +52,9 @@ options:
                     - "* I(allow),"
                     - "* I(deny)."
                 type: str
+                choices:
+                    - allow
+                    - deny
             acl:
                 description:
                     - "The resource identifier."
@@ -70,6 +73,11 @@ options:
                     - "* I(acl),"
                     - "* I(tsig_key)."
                 type: str
+                choices:
+                    - any
+                    - ip
+                    - acl
+                    - tsig_key
             tsig_key:
                 description:
                     - "Optional. TSIG key."
@@ -86,6 +94,12 @@ options:
                             - "* I(hmac_sha384),"
                             - "* I(hmac_sha512)."
                         type: str
+                        choices:
+                            - hmac_sha256
+                            - hmac_sha1
+                            - hmac_sha224
+                            - hmac_sha384
+                            - hmac_sha512
                     comment:
                         description:
                             - "Comment for TSIG key."
@@ -121,7 +135,7 @@ EXAMPLES = r"""
       name: "my-acl"
       state: "present"
 
-  -name: Create ACL with list
+  - name: Create ACL with list
     infoblox.bloxone.dns_acl:
       name: "my-acl"
       comment: "my comment"
@@ -130,7 +144,7 @@ EXAMPLES = r"""
           element: "ip"
           address: "1.1.1.1"
       tags:
-        location: "us-west"     
+        location: "us-west"
       state: "present"
 
   - name: Delete ACL
@@ -400,10 +414,11 @@ def main():
                             choices=["hmac_sha256", "hmac_sha1", "hmac_sha224", "hmac_sha384", "hmac_sha512"],
                         ),
                         comment=dict(type="str"),
-                        key=dict(type="str"),
+                        key=dict(type="str", no_log=True),
                         name=dict(type="str"),
-                        secret=dict(type="str"),
+                        secret=dict(type="str", no_log=True),
                     ),
+                    no_log=True,
                 ),
             ),
         ),
