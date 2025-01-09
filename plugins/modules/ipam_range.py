@@ -189,13 +189,13 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """
 EXAMPLES = r"""
-    - name: "Create an ip space"
+    - name: "Create an Ip Space"
       infoblox.bloxone.ipam_ip_space:
         name: "my-ip-space"
         state: "present"
       register: ip_space
 
-    - name: "Create a subnet"
+    - name: "Create a Subnet"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space.id }}"
@@ -208,7 +208,7 @@ EXAMPLES = r"""
         space: "{{ ip_space.id }}"
         disable_dhcp: "true"
         tags:
-          location: "some where on earth"
+          location: "site-1"
         name: "Example Range"
         exclusion_ranges:
           - start: "10.0.0.10"
@@ -220,11 +220,11 @@ EXAMPLES = r"""
           low: 10
         state: "present"
 
-    - name: "Delete a Range"
+    - name: "Delete the Range"
       infoblox.bloxone.ipam_range:
         start: "10.0.0.1"
         end: "10.0.0.100"
-        space: "{{ _ip_space.id }}"
+        space: "{{ ip_space.id }}"
         state: "absent"
 """
 
@@ -579,23 +579,23 @@ item:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description: "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description: "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description: "The number of defined IP addresses such as reservations or DNS records. It can be computed as static = used - dynamic."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description: "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description: "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
 """  # noqa: E501
