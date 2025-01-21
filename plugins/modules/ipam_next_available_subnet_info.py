@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_next_available_subnet_info
-short_description: Manage Subnet
+short_description: Retrieves the Next available subnet
 description:
-    - Manage Subnet
+    - Retrieves the next available subnet
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
