@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_address_info
-short_description: Manage IPAM Address
+short_description: Retrieve an Address
 description:
-    - Manage IPAM Address
+    - Retrieves information about existing Addresses.
+    - The Address object represents any single IP address within a given IP space.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:

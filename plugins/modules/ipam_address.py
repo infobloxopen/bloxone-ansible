@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_address
-short_description: Manage IPAM Address
+short_description: Manage an Address
 description:
-    - Manage IPAM Address
+    - Manage an Address
+    - The Address object represents any single IP address within a given IP space.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:

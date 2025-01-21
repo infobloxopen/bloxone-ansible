@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_next_available_ip_info
-short_description: Manage Address
+short_description: Retrieves the Next available IP addresses
 description:
-    - Manage Address
+    - Retrieves the next available IP addresses in the specified resource
+    - The resource can be an address block, subnet or range.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -23,13 +24,15 @@ options:
         required: true
     contiguous:
         description:
-            - "Indicates whether the IP addresses should belong to a contiguous block. Defaults to false."
+            - "Indicates whether the IP addresses should belong to a contiguous block."
         type: bool
+        default: false
         required: false
     count:
         description:
-            - "The number of IP addresses requested. Defaults to 1."
+            - "The number of IP addresses requested."
         type: int
+        default: 1
         required: false
             
 
@@ -152,8 +155,8 @@ def main():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         id=dict(type="str", required=True),
-        contiguous=dict(type="bool", required=False),
-        count=dict(type="int", required=False),
+        contiguous=dict(type="bool", required=False, default=False),
+        count=dict(type="int", required=False, default=1),
     )
 
     module = NextAvailableIPInfoModule(
