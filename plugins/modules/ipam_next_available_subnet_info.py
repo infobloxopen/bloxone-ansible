@@ -39,7 +39,7 @@ extends_documentation_fragment:
 EXAMPLES = r"""
     - name: "Create an IP Space (required as parent)"
       infoblox.bloxone.ipam_ip_space:
-        name: "my-ip-space"
+        name: "example-ipspace"
         state: "present"
       register: ip_space
 
@@ -49,7 +49,7 @@ EXAMPLES = r"""
         space: "{{ ip_space.id }}"
         state: "present"
       register: address_block
-      
+
     - name: "Get information about the Subnet"
       infoblox.bloxone.ipam_next_available_subnet_info:
         id: "{{ address_block.id }}"

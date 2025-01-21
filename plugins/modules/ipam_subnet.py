@@ -7,9 +7,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.cisco.ise.plugins.action.device_administration_local_exception_rules_info import \
-    required_together
-
 DOCUMENTATION = r"""
 ---
 module: ipam_subnet
@@ -759,7 +756,7 @@ extends_documentation_fragment:
 EXAMPLES = r"""
     - name: "Create an IP Space (required as parent)"
       infoblox.bloxone.ipam_ip_space:
-        name: "my-ip-space"
+        name: "example-ipspace"
         state: "present"
       register: ip_space
 
@@ -2855,7 +2852,6 @@ def main():
         mutually_exclusive=[["address", "next_available_id"]],
         required_if=[("state", "present", ["space"])],
         required_one_of=[["address", "next_available_id"]],
-        required_together=[["cidr","next_available_id"]]
     )
 
     module.run_command()

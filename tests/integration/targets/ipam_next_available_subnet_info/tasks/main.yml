@@ -13,10 +13,10 @@
         id: "{{ _address_block.id }}"
         cidr: 24
       register: subnet_info
-#    - assert:
-#        that:
-#          - subnet_info is not failed
-#          - subnet_info.objects | length == 1
+    - assert:
+        that:
+          - subnet_info is not failed
+          - subnet_info.objects | length == 1
 
     - name: "Get information about the next available Subnet with count"
       infoblox.bloxone.ipam_next_available_subnet_info:
@@ -24,10 +24,10 @@
         cidr: 24
         count: 5
       register: subnet_info
-#    - assert:
-#        that:
-#          - subnet_info is not failed
-#          - subnet_info.objects | length == 5
+    - assert:
+        that:
+          - subnet_info is not failed
+          - subnet_info.objects | length == 5
 
   always:
     # Cleanup if the test fails
