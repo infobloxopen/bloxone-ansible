@@ -13,6 +13,7 @@
     - name: Create an Forward Zone
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         tags:
           location: "{{ tag_value }}"
         state: present
@@ -22,6 +23,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -32,6 +34,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -40,7 +43,7 @@
 
     - name: Get Forward Zone information by filter query
       infoblox.bloxone.dns_forward_zone_info:
-        filter_query: "fqdn=='{{ fqdn }}'"
+        filter_query: "fqdn=='{{ fqdn }}' and view=='{{ _view.id }}'"
     - assert:
         that:
           - forward_zone_info.objects | length == 1
@@ -59,5 +62,11 @@
     - name: "Delete Forward Zone"
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         state: "absent"
       ignore_errors: false
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

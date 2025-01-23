@@ -28,6 +28,9 @@ action_groups:
     - ipam_host
     - ipam_host_info
     - ipam_next_available_address_block_info
+    - ipam_address
+    - ipam_address_info
+    - ipam_next_available_ip_info
 
   infra:
     - infra_join_token
@@ -88,3 +91,12 @@ plugin_routing:
           deprecation:
             removal_version: 3.0.0
             warning_text: Use infoblox.bloxone.ipam_host_info instead.
+
+        b1_ipam_ipv4_reservation:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_address instead.
+        b1_ipam_ipv4_reservation_gather:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_address_info instead.

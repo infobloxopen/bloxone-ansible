@@ -7,5 +7,6 @@
     - name: "Delete an Auth Zone"
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ _fqdn_auth_zone }}"
+        view: "{{ _view.id }}"
         state: "absent"
       ignore_errors: true

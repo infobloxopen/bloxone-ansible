@@ -88,6 +88,7 @@ options:
         description:
             - "The resource identifier."
         type: str
+        required: true
 
 extends_documentation_fragment:
     - infoblox.bloxone.common
@@ -306,7 +307,7 @@ class ForwardZoneModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            filter = f"fqdn=='{self.params['fqdn']}'"
+            filter = f"fqdn=='{self.params['fqdn']}' and view=='{self.params['view']}'"
             resp = ForwardZoneApi(self.client).list(filter=filter)
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -327,7 +328,7 @@ class ForwardZoneModule(BloxoneAnsibleModule):
             return None
 
         update_body = self.payload
-        update_body = self.validate_readonly_on_update(self.existing, update_body, ["fqdn"])
+        update_body = self.validate_readonly_on_update(self.existing, update_body, ["fqdn", "view"])
 
         resp = ForwardZoneApi(self.client).update(id=self.existing.id, body=update_body)
         return resp.result.model_dump(by_alias=True, exclude_none=True)
@@ -399,13 +400,13 @@ def main():
         nsgs=dict(type="list", elements="str"),
         parent=dict(type="str"),
         tags=dict(type="dict"),
-        view=dict(type="str"),
+        view=dict(type="str", required=True),
     )
 
     module = ForwardZoneModule(
         argument_spec=module_args,
         supports_check_mode=True,
-        required_if=[("state", "present", ["fqdn"])],
+        required_if=[("state", "present", ["fqdn", "view"])],
     )
 
     module.run_command()

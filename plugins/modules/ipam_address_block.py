@@ -2781,7 +2781,7 @@ def main():
         mutually_exclusive=[["address", "next_available_id"]],
         required_if=[("state", "present", ["space"])],
         required_one_of=[["address", "next_available_id"]],
-        required_together=[["cidr", "next_available_id"]],
+        required_by={"next_available_id": "cidr"},
     )
 
     module.run_command()
