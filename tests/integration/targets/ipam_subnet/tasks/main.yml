@@ -490,7 +490,7 @@
           - subnet_info.objects[0].id == subnet.id
           - subnet_info.objects[0].cidr == 24
 
-    - name: "Create a Next available Subnet"
+    - name: "Create a Next available Subnet inside an Address Block"
       infoblox.bloxone.ipam_subnet:
         cidr: 24
         next_available_id: "{{ _address_block.id }}"

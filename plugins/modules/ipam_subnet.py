@@ -13,6 +13,7 @@ module: ipam_subnet
 short_description: Manage Subnet
 description:
     - Manage Subnet
+    - The Subnet object represents a set of addresses from which addresses are assigned to network equipment interfaces.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -773,10 +774,11 @@ EXAMPLES = r"""
         space: "{{ ip_space.id }}"
         state: "present"
 
-    - name: "Create a subnet with dhcp_config overridden"
+    - name: "Create a subnet with Additional Fields"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space_id }}"
+        tags: [location: "site1" ]
         state: "present"
         dhcp_config:
             abandoned_reclaim_time: 3600

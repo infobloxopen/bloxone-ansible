@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_subnet_info
-short_description: Manage Subnet
+short_description: Retrieve a Subnet
 description:
-    - Manage Subnet
+    - Retrieves information about existing Subnets.
+    - The Subnet object represents a set of addresses from which addresses are assigned to network equipment interfaces.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
