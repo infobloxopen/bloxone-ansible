@@ -1,0 +1,208 @@
+---
+#TODO: add tests
+# The following test require next_available_id to be supported.
+# - Create IPAM Host with next available ip
+
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create an random Host name to avoid conflicts
+    - ansible.builtin.set_fact:
+        name: "test-host-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic tests for Ipam Host
+    - name: Create a Host (check mode)
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "present"
+      check_mode: true
+      register: host
+    - name: Get information about the host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is changed
+          - host is not failed
+          - host_info.objects | length == 0
+
+    - name: Create a Host
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "present"
+      register: host
+    - name: Get information about the host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is not failed
+          - host_info.objects | length == 1
+          - host_info.objects[0].id == host.id
+
+    - name: Create a Host (idempotent)
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "present"
+      register: host
+    - assert:
+        that:
+          - host is not changed
+          - host is not failed
+
+    - name: Delete a Host (check mode)
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "absent"
+      check_mode: true
+      register: host
+    - name: Get information about the Host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is changed
+          - host is not failed
+          - host_info.objects | length == 1
+
+    - name: Delete a host
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "absent"
+      register: host
+    - name: Get information about the  host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is changed
+          - host is not failed
+          - host_info.objects | length == 0
+
+    - name: Delete a host (idempotent)
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "absent"
+      register: host
+    - assert:
+        that:
+          - host is not changed
+          - host is not failed
+
+    - name: Create a Host with auto generate records set to true
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        auto_generate_records: true
+        host_names:
+          - name: "example-host"
+            zone: "{{ _auth_zone.id }}"
+        addresses:
+          - address: "10.0.0.1"
+            space: "{{ _ip_space.id }}"
+        state: "present"
+      register: host
+    - name: Get information about the host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is not failed
+          - host_info.objects | length == 1
+          - host_info.objects[0].id == host.id
+          - host_info.objects[0].name == name
+          - host_info.objects[0].auto_generate_records == true
+          - host_info.objects[0].host_names[0].name == "example-host"
+          - host_info.objects[0].addresses[0].address == "10.0.0.1"
+
+    - name: Create a Host with comment
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        comment: "test comment"
+        state: "present"
+      register: host
+    - name: Get information about the Host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is not failed
+          - host_info.objects | length == 1
+          - host_info.objects[0].id == host.id
+          - host_info.objects[0].comment == "test comment"
+
+    - name: Create a Host with tags
+      infoblox.bloxone.ipam_host:
+          name: "{{ name }}"
+          tags:
+            region: "{{ tag_value }}"
+          state: "present"
+      register: host
+    - name: Get information about the Host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is not failed
+          - host_info.objects | length == 1
+          - host_info.objects[0].id == host.id
+          - host_info.objects[0].tags.region == tag_value
+
+    - name: Create a Host with Addresses
+      infoblox.bloxone.ipam_host:
+          name: "{{ name }}"
+          addresses:
+              - address: "10.0.0.1"
+                space: "{{ _ip_space.id }}"
+          state: "present"
+      register: host
+    - name: Get information about the Host
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host is not failed
+          - host_info.objects | length == 1
+          - host_info.objects[0].id == host.id
+          - host_info.objects[0].addresses[0].address == "10.0.0.1"
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete IPAM Host"
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete an Auth Zone"
+      ansible.builtin.include_role:
+        name: setup_auth_zone
+        tasks_from: cleanup.yml
+
+    - name: "Delete DNS View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml
+
+    - name: "Delete IP Space"
+      ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

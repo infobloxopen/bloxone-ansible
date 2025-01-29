@@ -4,6 +4,7 @@ action_groups:
         extend_group:
           - ipam
           - dns
+          - infra
   dns:
     - dns_view
     - dns_view_info
@@ -11,6 +12,15 @@ action_groups:
     - dns_auth_zone_info
     - dns_forward_zone
     - dns_forward_zone_info
+    - dns_forward_nsg
+    - dns_forward_nsg_info
+    - dns_auth_nsg
+    - dns_auth_nsg_info
+    - dns_delegation
+    - dns_delegation_info
+    - dns_record
+    - dns_record_info
+
   ipam:
     - ipam_ip_space
     - ipam_ip_space_info
@@ -20,6 +30,16 @@ action_groups:
     - ipam_address_block_info
     - ipam_range
     - ipam_range_info
+    - ipam_host
+    - ipam_host_info
+    - ipam_next_available_address_block_info
+    - ipam_address
+    - ipam_address_info
+    - ipam_next_available_ip_info
+
+  infra:
+    - infra_join_token
+    - infra_join_token_info
 
 plugin_routing:
     modules:
@@ -72,3 +92,21 @@ plugin_routing:
           deprecation:
             removal_version: 3.0.0
             warning_text: Use infoblox.bloxone.ipam_range instead.
+
+        b1_ipam_host:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_host instead.
+        b1_ipam_host_gather:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_host_info instead.
+
+        b1_ipam_ipv4_reservation:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_address instead.
+        b1_ipam_ipv4_reservation_gather:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_address_info instead.

@@ -64,7 +64,7 @@ EXAMPLES = r"""
   - name: Get Auth Zone information by filters (e.g. name)
     infoblox.bloxone.dns_auth_zone_info:
       filters:
-        name: "example_zone"
+        fqdn: "example_zone"
 
   - name: Get Auth Zone information by raw filter query
     infoblox.bloxone.dns_auth_zone_info:

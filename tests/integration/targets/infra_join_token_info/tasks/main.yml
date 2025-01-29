@@ -1,0 +1,54 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        name: "test-join-token-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: Create a Join Token
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: join_token
+
+    - name: Get Information about the Join Token by filters (Name)
+      infoblox.bloxone.infra_join_token_info:
+        filters:
+          name: "{{ name }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token_info.objects | length == 1
+          - join_token_info.objects[0].id == join_token.id
+
+    - name: Get Information about the Join Token by filter query
+      infoblox.bloxone.infra_join_token_info:
+        filter_query: "name=='{{ name }}'"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token_info.objects | length == 1
+          - join_token_info.objects[0].id == join_token.id
+
+    - name: Get Information about the Join Token by a tag filter
+      infoblox.bloxone.infra_join_token_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+      register: join_token_info
+    - assert:
+        that:
+          - join_token_info.objects | length == 1
+          - join_token_info.objects[0].id == join_token.id
+
+  always:
+    - name: "Clean up the Join Token"
+      infoblox.bloxone.infra_join_token:
+        name: "{{ name }}"
+        state: revoked
+      ignore_errors: true

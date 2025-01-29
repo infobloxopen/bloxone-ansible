@@ -14,6 +14,10 @@ module: b1_ipam_ipv4_reservation
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
 short_description: Configure IPv4 address reservation on Infoblox BloxOne DDI
 version_added: "1.0.1"
+deprecated:
+  removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(ipam_address) instead.
+  alternative: Use M(ipam_address) instead.
 description:
   - Get, Create, Update and Delete IPv4 address reservation on Infoblox BloxOne DDI. This module manages the IPAM IPv4 address reservation object using BloxOne REST APIs.
 requirements:

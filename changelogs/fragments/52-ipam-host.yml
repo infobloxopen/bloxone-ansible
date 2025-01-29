@@ -1,0 +1,3 @@
+deprecated_features:
+  - b1_ipam_host - is deprecated in favor of 'ipam_host'.
+  - b1_ipam_host_gather - is deprecated in favor of 'ipam_host_info'.

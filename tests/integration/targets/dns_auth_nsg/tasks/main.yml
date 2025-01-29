@@ -1,0 +1,196 @@
+---
+
+#TODO: add tests
+# The following require additional plugins to be supported.
+# - internal_secondaries
+
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        auth_nsg_name: "test-auth-nsg-{{ 999999 | random | string }}"
+        secondary_auth_nsg_name: "test-secondary-auth-nsg-{{ 999999 | random | string }}"
+
+    - name: Create an Auth NSG (check mode)
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: present
+      check_mode: true
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg is changed
+          - auth_nsg_info is not failed
+          - auth_nsg_info.objects | length == 0
+
+    - name: Create an Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: present
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg is changed
+          - auth_nsg_info is not failed
+          - auth_nsg_info.objects | length == 1
+
+    - name: Create an Auth NSG (idempotent)
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: present
+      register: auth_nsg
+    - assert:
+        that:
+          - auth_nsg is not changed
+          - auth_nsg is not failed
+
+    - name: Delete the Auth NSG (check mode)
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: absent
+      check_mode: true
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg is changed
+          - auth_nsg_info is not failed
+          - auth_nsg_info.objects | length == 1
+
+    - name: Delete the Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: absent
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg is changed
+          - auth_nsg_info is not failed
+          - auth_nsg_info.objects | length == 0
+
+    - name: Delete the Auth NSG (idempotent)
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: absent
+      register: auth_nsg
+    - assert:
+        that:
+          - auth_nsg is not changed
+          - auth_nsg is not failed
+
+    - name: Create an Auth NSG with a comment
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        comment: "Test Comment"
+        state: present
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg_info is not failed
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].id == auth_nsg.id
+          - auth_nsg_info.objects[0].comment == "Test Comment"
+
+    - name: Create Auth NSG with external primary
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        external_primaries:
+          - address: "1.1.1.1"
+            fqdn: "a.com."
+            type: "primary"
+        state: present
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg is not failed
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].external_primaries | length == 1
+          - auth_nsg_info.objects[0].external_primaries[0].address == "1.1.1.1"
+          - auth_nsg_info.objects[0].external_primaries[0].fqdn == "a.com."
+          - auth_nsg_info.objects[0].external_primaries[0].type == "primary"
+
+    - name: Create an Auth NSG with tags
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        comment: "Test Comment"
+        tags:
+          location: "site-1"
+        state: present
+      register: auth_nsg
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg_info is not failed
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].id == auth_nsg.id
+          - auth_nsg_info.objects[0].tags.location == "site-1"
+
+    - name: Create the Secondary Auth NSG referencing Primary
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ secondary_auth_nsg_name }}"
+        nsgs:
+          - "{{ auth_nsg.id }}"
+        state: present
+      register: secondary_auth_nsg
+    - name: Get Information about the Secondary Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ secondary_auth_nsg_name }}"
+      register: secondary_auth_nsg_info
+    - name: Validate that the Secondary Auth NSG references the Primary
+      assert:
+        that:
+          - secondary_auth_nsg_info is not failed
+          - secondary_auth_nsg_info.objects | length == 1
+          - secondary_auth_nsg_info.objects[0].nsgs | length == 1
+          - secondary_auth_nsg_info.objects[0].nsgs[0] == auth_nsg.id
+
+  always:
+    # Cleanup if the test fails
+    - name: Clean up Secondary Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ secondary_auth_nsg_name }}"
+        state: absent
+      ignore_errors: true
+
+    - name: Clean up Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: absent
+      ignore_errors: true

@@ -25,6 +25,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -42,6 +43,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -72,6 +74,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -89,6 +92,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -117,6 +121,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -127,6 +132,7 @@
     - name: Create and Read Forward Zone with Tags
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         tags:
           location: "site-1"
       register: forward_zone
@@ -134,6 +140,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -144,6 +151,7 @@
     - name: Create and Read Forward Zone with Comment
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         comment: "test comment"
         state: present
       register: forward_zone
@@ -151,6 +159,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone
     - assert:
         that:
@@ -161,6 +170,7 @@
     - name: Create and Read Forward Zone with Disabled
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         disabled: true
         state: present
       register: forward_zone
@@ -168,6 +178,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -178,6 +189,7 @@
     - name: Create Forward Zone with External Forwarders using Address only
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         external_forwarders:
           - address: "192.168.10.10"
         state: present
@@ -186,6 +198,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -196,6 +209,7 @@
     - name: Create Forward Zone with External Forwarders using FQDN and Address
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         external_forwarders:
           - address: "192.168.10.10"
             fqdn: "tf-infoblox-test.com."
@@ -205,6 +219,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -216,6 +231,7 @@
     - name: Create Forward Zone with Forward Only
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         forward_only: false
         state: present
       register: forward_zone
@@ -223,6 +239,7 @@
       infoblox.bloxone.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: forward_zone_info
     - assert:
         that:
@@ -232,15 +249,14 @@
 
   always:
     # Cleanup if the test fails
-    - name: "Clean up dns_forward_zone"
+    - name: "Delete The Forward Zone"
       infoblox.bloxone.dns_forward_zone:
         fqdn: "{{ fqdn }}"
+        view: "{{ _view.id }}"
         state: absent
       ignore_errors: true
 
     - name: "Delete the View"
-      infoblox.bloxone.dns_view:
-        name: "{{ name }}"
-        state: absent
-      register: _view
-      ignore_errors: true
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

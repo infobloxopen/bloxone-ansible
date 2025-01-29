@@ -115,6 +115,14 @@ def _is_changed(existing, payload):
         if v is not None:
             if k not in existing:
                 changed = True
+            elif isinstance(v, list):
+                # If the order of the list is different, it is considered as changed
+                if len(v) != len(existing[k]):
+                    changed = True
+                else:
+                    for i in range(len(v)):
+                        if _is_changed(existing[k][i], v[i]):
+                            changed = True
             elif isinstance(v, dict):
                 changed = _is_changed(existing[k], v)
             elif existing[k] != v:

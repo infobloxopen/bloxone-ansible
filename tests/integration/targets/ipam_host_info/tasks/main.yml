@@ -1,0 +1,59 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - ansible.builtin.set_fact:
+        name: "test-host-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: Create a Host
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        tags:
+           region: "{{ tag_value }}"
+        state: "present"
+      register: host
+
+    - name: Get Host information by ID
+      infoblox.bloxone.ipam_host_info:
+        id: "{{ host.id }}"
+      register: host_info
+    - assert:
+        that:
+          - host_info.objects | length == 1
+
+    - name: Get Host information by filters
+      infoblox.bloxone.ipam_host_info:
+        filters:
+          name: "{{ name }}"
+      register: host_info
+    - assert:
+        that:
+          - host_info.objects | length == 1
+
+    - name: Get Host information by filter query
+      infoblox.bloxone.ipam_host_info:
+        filter_query: "name=='{{ name }}'"
+    - assert:
+        that:
+          - host_info.objects | length == 1
+          - host_info.objects[0].id == host.id
+
+    - name: Get Host information by tag filters
+      infoblox.bloxone.ipam_host_info:
+        tag_filters:
+             region: "{{ tag_value }}"
+    - assert:
+        that:
+          - host_info.objects | length == 1
+          - host_info.objects[0].id ==  host.id
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete IPAM Host"
+      infoblox.bloxone.ipam_host:
+        name: "{{ name }}"
+        state: "absent"
+      ignore_errors: true

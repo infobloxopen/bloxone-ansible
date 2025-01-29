@@ -1,0 +1,54 @@
+---
+#TODO: add tests
+# The following require additional plugins to be supported.
+# - Next Available Address in Range
+
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - name: Get Information about Next Available IP in Address Block
+      infoblox.bloxone.ipam_next_available_ip_info:
+        id: "{{ _address_block.id }}"
+        count: 5
+      register: next_available_address_info
+    - assert:
+        that:
+          - next_available_address_info is not failed
+          - next_available_address_info.objects | length == 5
+
+    - name: Get Information about Next Available IP in Address Block Default Count
+      infoblox.bloxone.ipam_next_available_ip_info:
+        id: "{{ _address_block.id }}"
+      register: next_available_address_info
+    - assert:
+        that:
+          - next_available_address_info is not failed
+          - next_available_address_info.objects | length == 1
+
+    - name: Get Information about Next Available IP in Subnet
+      infoblox.bloxone.ipam_next_available_ip_info:
+        id: "{{ _subnet.id }}"
+        count: 5
+      register: next_available_address_info
+    - assert:
+        that:
+          - next_available_address_info is not failed
+          - next_available_address_info.objects | length == 5
+
+    - name: Get Information about Next Available IP in Subnet Default Count
+      infoblox.bloxone.ipam_next_available_ip_info:
+        id: "{{ _subnet.id }}"
+      register: next_available_address_info
+    - assert:
+        that:
+          - next_available_address_info is not failed
+          - next_available_address_info.objects | length == 1
+
+  always:
+      # Cleanup if the test fails
+    - name: Delete IP Space
+      ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

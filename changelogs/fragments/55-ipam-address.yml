@@ -1,0 +1,3 @@
+deprecated_features:
+  - b1_ipam_ipv4_reservation - is deprecated in favor of 'ipam_address'.
+  - b1_ipam_ipv4_reservation_gather - is deprecated in favor of 'ipam_address_info'.

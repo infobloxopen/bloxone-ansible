@@ -1,0 +1,11 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - name: "Delete DNS View"
+      infoblox.bloxone.dns_view:
+        name: "{{ dns_view_name }}"
+        state: absent
+      ignore_errors: true

@@ -3,10 +3,10 @@
     group/infoblox.bloxone.all:
       csp_url: "{{ csp_url }}"
       api_key: "{{ api_key }}"
-
+  
   block:
-    - name: "Delete IP Space"
+    - name: "Delete IP space"
       infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "absent"
+          name: "{{ ip_space_name }}"
+          state: "absent"
       ignore_errors: true

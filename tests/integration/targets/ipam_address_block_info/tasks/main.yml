@@ -9,16 +9,10 @@
         name: "test-ip-space-{{ 999999 | random | string }}"
         tag_value: "site-{{ 999999 | random | string }}"
 
-    - name: "Create an IP space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "present"
-      register: ip_space
-
     - name: "Create an Address Block"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         tags:
           location: "{{ tag_value }}"
         state: "present"
@@ -37,7 +31,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -47,7 +41,7 @@
 
     - name: Get Address Block information by filter query
       infoblox.bloxone.ipam_address_block_info:
-        filter_query: "address=='10.0.0.0' and space=='{{ ip_space.id }}' and cidr==16"
+        filter_query: "address=='10.0.0.0' and space=='{{ _ip_space.id }}' and cidr==16"
       register: address_block_info
     - assert:
         that:
@@ -63,3 +57,8 @@
         that:
           - address_block_info.objects | length == 1
           - address_block_info.objects[0].id == address_block.id
+  always:
+    # Cleanup if the test fails
+    - ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

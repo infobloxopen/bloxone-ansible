@@ -4,13 +4,12 @@
       csp_url: "{{ csp_url }}"
       api_key: "{{ api_key }}"
   block:
-    # Create a random View name to avoid conflicts
+    # Create a random IP space name to avoid conflicts
     - ansible.builtin.set_fact:
-        name: "test-space-{{ 999999 | random | string }}"
+        ip_space_name: "ip-space-{{ 999999 | random | string }}"
 
-    # Create an Ip Space
     - name: "Create an IP space"
       infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "present"
+          name: "{{ ip_space_name }}"
+          state: "present"
       register: _ip_space

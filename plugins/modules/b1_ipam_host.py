@@ -13,6 +13,10 @@ module: b1_ipam_host
 author: "Akhilesh Kabade (@akhilesh-kabade-infoblox), Sriram Kannan(@kannans)"
 short_description: Configure Host on Infoblox BloxOne DDI
 version_added: "1.0.1"
+deprecated:
+  removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(ipam_host) instead.
+  alternative: Use M(ipam_host) instead.
 description:
   -  Create, Update and Delete Hosts on Infoblox BloxOne DDI. This module manages the IPAM Host object using BloxOne REST APIs.
 requirements:
