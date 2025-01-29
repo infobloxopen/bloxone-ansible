@@ -23,6 +23,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -43,6 +44,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -75,6 +77,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -92,6 +95,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -113,17 +117,18 @@
     - name: Create DNS Delegation with a Comment
       infoblox.bloxone.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
+        view: "{{ _view.id }}"
         comment: "Delegation zone is created by Ansible"
         delegation_servers:
           - address: "12.0.0.0"
             fqdn: "ns1.com."
-        view: "{{ _view.id }}"
         state: present
       register: delegation
     - name: Get Information about the DNS Delegation
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -147,6 +152,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -172,6 +178,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -195,6 +202,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -220,6 +228,7 @@
       infoblox.bloxone.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
+          view: "{{ _view.id }}"
       register: delegation_info
     - assert:
         that:
@@ -240,13 +249,11 @@
       ignore_errors: true
 
     - name: "Clean up Authorization Zone"
-      infoblox.bloxone.dns_auth_zone:
-        fqdn: "{{ _fqdn_auth_zone }}"
-        state: absent
-      ignore_errors: true
+      ansible.builtin.include_role:
+        name: setup_auth_zone
+        tasks_from: cleanup.yml
 
-    - name: "Clean up  DNS View"
-      infoblox.bloxone.dns_view:
-        name: "{{ name }}"
-        state: absent
-      ignore_errors: true
+    - name: "Clean up the View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

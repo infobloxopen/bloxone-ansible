@@ -230,9 +230,7 @@ class DelegationModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            # TODO - add view to filter once it is supported, removed due to NORTHSTAR-12614
-            # filter = f"fqdn=='{self.params['fqdn']}' and view =='{self.params['view']}'"
-            filter = f"fqdn=='{self.params['fqdn']}'"
+            filter = f"fqdn=='{self.params['fqdn']}' and view =='{self.params['view']}'"
             resp = DelegationApi(self.client).list(filter=filter)
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -327,7 +325,7 @@ def main():
     module = DelegationModule(
         argument_spec=module_args,
         supports_check_mode=True,
-        required_if=[("state", "present", ["fqdn", "delegation_servers"])],
+        required_if=[("state", "present", ["fqdn", "delegation_servers", "view"])],
     )
 
     module.run_command()

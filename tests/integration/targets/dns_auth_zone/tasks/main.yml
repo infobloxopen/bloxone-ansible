@@ -26,6 +26,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -44,6 +45,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -55,6 +57,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
+        view: "{{ _view.id }}"
         external_primaries:
           - fqdn: "as-infoblox-test.com."
             address: "192.168.10.10"
@@ -65,6 +68,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -79,6 +83,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
+        view: "{{ _view.id }}"
         state: present
       register: auth_zone
     - assert:
@@ -90,6 +95,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
+        view: "{{ _view.id }}"
         state: absent
       check_mode: true
       register: auth_zone
@@ -97,6 +103,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -115,6 +122,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -148,6 +156,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -160,6 +169,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         comment: "Test Comment"
         state: present
       register: auth_zone
@@ -167,6 +177,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -179,6 +190,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         disabled: true
         state: present
       register: auth_zone
@@ -186,6 +198,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -198,6 +211,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         external_secondaries:
           - fqdn: "as-infoblox-test.com."
             address: "192.168.10.10"
@@ -207,6 +221,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -221,12 +236,14 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -240,6 +257,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         gss_tsig_enabled: true
         state: present
       register: auth_zone
@@ -247,6 +265,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -259,6 +278,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         inheritance_sources:
           # The API currently requires all fields inside the inheritance config to be explicitly provided,
           # or it fails with error 'The value of an inheritance action field is not valid'.
@@ -293,6 +313,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -303,6 +324,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         notify: true
         state: present
       register: auth_zone
@@ -310,6 +332,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -322,6 +345,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         query_acl:
           - access: "allow"
             element: "ip"
@@ -334,6 +358,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -351,6 +376,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         transfer_acl:
           - access: "allow"
             element: "ip"
@@ -363,6 +389,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -380,6 +407,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         update_acl:
           - access: "allow"
             element: "ip"
@@ -392,6 +420,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -409,6 +438,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         use_forwarders_for_subzones: true
         state: present
       register: auth_zone
@@ -416,6 +446,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -428,6 +459,7 @@
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         zone_authority:
             default_ttl: 28600
             expire: 2519200
@@ -443,6 +475,7 @@
       infoblox.bloxone.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -461,12 +494,12 @@
     - name: "Delete Auth Zone"
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ fqdn }}"
+        primary_type: cloud
+        view: "{{ _view.id }}"
         state: "absent"
       ignore_errors: true
 
     - name: "Delete the View"
-      infoblox.bloxone.dns_view:
-        name: "{{ name }}"
-        state: absent
-      register: _view
-      ignore_errors: true
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

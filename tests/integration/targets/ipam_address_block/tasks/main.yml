@@ -6,20 +6,12 @@
   block:
     # Create a random IP space name to avoid conflicts
     - ansible.builtin.set_fact:
-        name: "test-ip-space-{{ 999999 | random | string }}"
         tag_value: "site-{{ 999999 | random | string }}"
-
-    # Basic tests for Address Block
-    - name: "Create an IP space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "present"
-      register: ip_space
 
     - name: "Create an Address Block (check mode)"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
       check_mode: true
       register: address_block
@@ -27,7 +19,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -39,14 +31,14 @@
     - name: "Create an Address Block"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
       register: address_block
     - name: Get information about the Address Block
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -58,7 +50,7 @@
     - name: "Create an Address Block (idempotent)"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
       register: address_block
     - assert:
@@ -66,10 +58,27 @@
           - address_block is not changed
           - address_block is not failed
 
+    - name: "Create Next Available Address Block"
+      infoblox.bloxone.ipam_address_block:
+        space: "{{ _ip_space.id }}"
+        cidr: 20
+        next_available_id: "{{ address_block.id }}"
+        state: "present"
+      register: next_available_address_block
+    - name: Get Address Block Information by ID
+      infoblox.bloxone.ipam_address_block_info:
+        id: "{{ next_available_address_block.id }}"
+      register: next_available_address_block_info
+    - assert:
+        that:
+          - next_available_address_block is changed
+          - next_available_address_block is not failed
+          - next_available_address_block_info.objects | length == 1
+
     - name: "Delete an Address Block (check mode)"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "absent"
       check_mode: true
       register: address_block
@@ -77,7 +86,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -89,14 +98,14 @@
     - name: "Delete an Address Block"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "absent"
       register: address_block
     - name: Get information about the Address Block
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -108,7 +117,7 @@
     - name: "Delete an Address Block (idempotent)"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "absent"
       register: address_block
     - assert:
@@ -120,14 +129,14 @@
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0"
         cidr: 16
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
       register: address_block
     - name: Get information about the Address Block
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -139,7 +148,7 @@
     - name: "Create an Address Block with ASM config overridden"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         asm_config:
           asm_threshold: 70
           enable: true
@@ -172,7 +181,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -188,7 +197,7 @@
     - name: "Create an Address Block with comment"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
         comment: "Comment."
       register: address_block
@@ -196,7 +205,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -208,7 +217,7 @@
     - name: "Create an Address Block with ddns_client_update set to server"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
         ddns_client_update: "server"
       register: address_block
@@ -216,7 +225,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -228,7 +237,7 @@
     - name: "Create an Address Block with ddns_use_conflict_resolution set to false"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
         ddns_use_conflict_resolution: "false"
       register: address_block
@@ -236,7 +245,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -248,7 +257,7 @@
     - name: "Create an Address Block with DHCP config overridden"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         dhcp_config:
           lease_time: 3600
         inheritance_sources:
@@ -281,7 +290,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -294,7 +303,7 @@
     - name: "Create an Address Block with hostname_rewrite_enabled set to true"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         state: "present"
         hostname_rewrite_enabled: "true"
       register: address_block
@@ -302,7 +311,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -314,7 +323,7 @@
     - name: "Create an Address Block with tags"
       infoblox.bloxone.ipam_address_block:
         address: "10.0.0.0/16"
-        space: "{{ ip_space.id }}"
+        space: "{{ _ip_space.id }}"
         tags:
           location: "{{ tag_value }}"
         state: "present"
@@ -323,7 +332,7 @@
       infoblox.bloxone.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
-          space: "{{ ip_space.id }}"
+          space: "{{ _ip_space.id }}"
           cidr: 16
       register: address_block_info
     - assert:
@@ -334,8 +343,6 @@
 
   always:
     # Cleanup if the test fails
-    - name: "Delete IP Space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "absent"
-      ignore_errors: true
+    - ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

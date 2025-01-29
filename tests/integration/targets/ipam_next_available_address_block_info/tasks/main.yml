@@ -1,0 +1,39 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - name: "Create an Address Block"
+      infoblox.bloxone.ipam_address_block:
+        address: "10.0.0.0/16"
+        space: "{{ _ip_space.id }}"
+        state: "present"
+      register: address_block
+
+    - name: Get Next Available Address Block Information by ID and default Count
+      infoblox.bloxone.ipam_next_available_address_block_info:
+          id: "{{ address_block.id }}"
+          cidr: 20
+      register: next_available_address_block_info
+    - assert:
+        that:
+          - next_available_address_block_info is not failed
+          - next_available_address_block_info.objects | length == 1
+
+    - name: Get Next Available Address Block Information by ID and Count
+      infoblox.bloxone.ipam_next_available_address_block_info:
+        id: "{{ address_block.id }}"
+        cidr: 24
+        count: 5
+      register: next_available_address_block_info
+    - assert:
+        that:
+          - next_available_address_block_info is not failed
+          - next_available_address_block_info.objects | length == 5
+
+  always:
+    # Cleanup if the test fails
+    - ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

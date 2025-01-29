@@ -578,6 +578,7 @@ options:
         description:
             - "The resource identifier."
         type: str
+        required: true
     zone_authority:
         description:
             - "Optional. ZoneAuthority."
@@ -2015,7 +2016,7 @@ class AuthZoneModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            filter = f"fqdn=='{self.params['fqdn']}'"
+            filter = f"fqdn=='{self.params['fqdn']}' and view=='{self.params['view']}'"
             resp = AuthZoneApi(self.client).list(filter=filter, inherit="full")
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -2036,7 +2037,7 @@ class AuthZoneModule(BloxoneAnsibleModule):
             return None
 
         update_body = self.payload
-        update_body = self.validate_readonly_on_update(self.existing, update_body, ["fqdn", "primary_type"])
+        update_body = self.validate_readonly_on_update(self.existing, update_body, ["fqdn", "primary_type", "view"])
 
         resp = AuthZoneApi(self.client).update(id=self.existing.id, body=update_body, inherit="full")
         return resp.result.model_dump(by_alias=True, exclude_none=True)
@@ -2309,7 +2310,7 @@ def main():
             ),
         ),
         use_forwarders_for_subzones=dict(type="bool"),
-        view=dict(type="str"),
+        view=dict(type="str", required=True),
         zone_authority=dict(
             type="dict",
             options=dict(
@@ -2328,7 +2329,7 @@ def main():
     module = AuthZoneModule(
         argument_spec=module_args,
         supports_check_mode=True,
-        required_if=[("state", "present", ["fqdn", "primary_type"])],
+        required_if=[("state", "present", ["fqdn", "primary_type", "view"])],
     )
 
     module.run_command()

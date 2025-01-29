@@ -1,0 +1,65 @@
+---
+
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - ansible.builtin.set_fact:
+          tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic tests for Address
+    - name: Create an Address
+      infoblox.bloxone.ipam_address:
+        address: "10.0.0.3"
+        space: "{{ _ip_space.id }}"
+        tags:
+          location: "{{ tag_value }}"
+        state: "present"
+      register: address
+
+    - name: Get Address information by ID
+      infoblox.bloxone.ipam_address_info:
+        id: "{{ address.id }}"
+      register: address_info
+    - assert:
+        that:
+          - address_info.objects | length == 1
+          - address_info.objects[0].id == address.id
+
+    - name: Get Address information by filters
+      infoblox.bloxone.ipam_address_info:
+        filters:
+          address: "10.0.0.3"
+          space: "{{ _ip_space.id }}"
+      register: address_info
+    - assert:
+        that:
+          - address_info.objects | length == 1
+          - address_info.objects[0].id == address.id
+
+    - name: Get Address information by tag_filters
+      infoblox.bloxone.ipam_address_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+      register: address_info
+    - assert:
+        that:
+          - address_info.objects | length != 0
+          - address_info.objects[0].id == address.id
+
+    - name:  Get Address information by filter query
+      infoblox.bloxone.ipam_address_info:
+        filter_query: "address=='10.0.0.3' and space=='{{ _ip_space.id }}'"
+      register: address_info
+    - assert:
+        that:
+          - address_info.objects | length != 0
+          - address_info.objects[0].id == address.id
+
+  always:
+      # Cleanup if the test fails
+    - name: Delete IP Space
+      ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

@@ -1,0 +1,16 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    # Create a random Address Block to avoid conflicts
+    - ansible.builtin.set_fact:
+        name: "address-block-{{ 999999 | random | string }}"
+
+    - name: "Create an Address Block"
+      infoblox.bloxone.ipam_address_block:
+        address: "10.0.0.0/16"
+        space: "{{ _ip_space.id }}"
+        state: "present"
+      register: _address_block

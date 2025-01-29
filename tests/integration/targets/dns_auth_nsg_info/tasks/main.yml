@@ -1,0 +1,60 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      csp_url: "{{ csp_url }}"
+      api_key: "{{ api_key }}"
+  block:
+    - ansible.builtin.set_fact:
+        auth_nsg_name: "test-auth-nsg-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: Create an Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: present
+      register: auth_nsg
+
+    - name: Get Information about the Auth NSG
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].name == auth_nsg.object.name
+
+    - name: Get Auth NSG information by filters (Name)
+      infoblox.bloxone.dns_auth_nsg_info:
+        filters:
+          name: "{{ auth_nsg_name }}"
+      register: auth_nsg_info
+    - assert:
+        that:
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].id == auth_nsg.id
+
+    - name: Get Auth NSG information by filter query
+      infoblox.bloxone.dns_auth_nsg_info:
+        filter_query: "name=='{{ auth_nsg_name }}'"
+    - assert:
+        that:
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].id == auth_nsg.id
+
+    - name: Get Auth NSG information by tag filters
+      infoblox.bloxone.dns_auth_nsg_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - auth_nsg_info.objects | length == 1
+          - auth_nsg_info.objects[0].id == auth_nsg.id
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete Auth NSG"
+      infoblox.bloxone.dns_auth_nsg:
+        name: "{{ auth_nsg_name }}"
+        state: "absent"
+      ignore_errors: true
