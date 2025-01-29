@@ -265,8 +265,40 @@
           - acl_info.objects[0].list[0].element == "tsig_key"
           - acl_info.objects[0].list[0].tsig_key.algorithm == "hmac_sha256"
 
+    - name: Create an ACL with ACL list.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}_acl_list"
+        list:
+          - access: ""
+            element: "acl"
+            acl: "{{ acl.id }}"
+        state: present
+      register: acl_list
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}_acl_list"
+      register: acl_info
+    - assert:
+        that:
+          - acl_list is changed
+          - acl_list is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl_list.id
+          - acl_info.objects[0].name == acl_list.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == ""
+          - acl_info.objects[0].list[0].acl == acl_list.object.list[0].acl
+
   always:
     # Cleanup if the test fails
+    - name: "Delete ACL List"
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}_acl_list"
+        state: "absent"
+      ignore_errors: true
+
     - name: "Delete ACL"
       infoblox.bloxone.dns_acl:
         name: "{{ acl_name }}"

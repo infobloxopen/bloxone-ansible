@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: dns_acl
-short_description: Manage Acl
+short_description: Manage ACL
 description:
-    - Manage Acl
+    - Manage ACL
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -55,6 +55,7 @@ options:
                 choices:
                     - allow
                     - deny
+                    - ""
             acl:
                 description:
                     - "The resource identifier."
@@ -132,13 +133,13 @@ extends_documentation_fragment:
 EXAMPLES = r"""
   - name: Create ACL
     infoblox.bloxone.dns_acl:
-      name: "my-acl"
+      name: "example-acl"
       state: "present"
 
-  - name: Create ACL with list
+  - name: Create ACL with additional fields
     infoblox.bloxone.dns_acl:
-      name: "my-acl"
-      comment: "my comment"
+      name: "example-acl"
+      comment: "example comment"
       list:
         - access: "allow"
           element: "ip"
@@ -149,19 +150,19 @@ EXAMPLES = r"""
 
   - name: Delete ACL
     infoblox.bloxone.dns_acl:
-      name: "my-acl"
+      name: "example-acl"
       state: "absent"
 """
 
 RETURN = r"""
 id:
     description:
-        - ID of the Acl object
+        - ID of the ACL object
     type: str
     returned: Always
 item:
     description:
-        - Acl object
+        - ACL object
     type: complex
     returned: Always
     contains:
@@ -328,7 +329,7 @@ class AclModule(BloxoneAnsibleModule):
             if len(resp.results) == 1:
                 return resp.results[0]
             if len(resp.results) > 1:
-                self.fail_json(msg=f"Found multiple Acl: {resp.results}")
+                self.fail_json(msg=f"Found multiple ACL: {resp.results}")
             if len(resp.results) == 0:
                 return None
 
@@ -363,16 +364,16 @@ class AclModule(BloxoneAnsibleModule):
             if self.params["state"] == "present" and self.existing is None:
                 item = self.create()
                 result["changed"] = True
-                result["msg"] = "Acl created"
+                result["msg"] = "ACL created"
             elif self.params["state"] == "present" and self.existing is not None:
                 if self.payload_changed():
                     item = self.update()
                     result["changed"] = True
-                    result["msg"] = "Acl updated"
+                    result["msg"] = "ACL updated"
             elif self.params["state"] == "absent" and self.existing is not None:
                 self.delete()
                 result["changed"] = True
-                result["msg"] = "Acl deleted"
+                result["msg"] = "ACL deleted"
 
             if self.check_mode:
                 # if in check mode, do not update the result or the diff, just return the changed state
@@ -402,7 +403,7 @@ def main():
             type="list",
             elements="dict",
             options=dict(
-                access=dict(type="str", choices=["allow", "deny"]),
+                access=dict(type="str", choices=["allow", "deny", ""]),
                 acl=dict(type="str"),
                 address=dict(type="str"),
                 element=dict(type="str", choices=["any", "ip", "acl", "tsig_key"]),
