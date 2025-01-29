@@ -189,19 +189,26 @@ extends_documentation_fragment:
     - infoblox.bloxone.common
 """
 EXAMPLES = r"""
-    - name: "Create an Ip Space"
+    - name: "Create an IP Space (required as parent)"
       infoblox.bloxone.ipam_ip_space:
         name: "my-ip-space"
         state: "present"
       register: ip_space
 
-    - name: "Create a Subnet"
+    - name: "Create a Subnet (required as parent)"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space.id }}"
         state: "present"
 
     - name: "Create a Range"
+      infoblox.bloxone.ipam_range:
+        start: "10.0.0.1"
+        end: "10.0.0.100"
+        space: "{{ ip_space.id }}"
+        state: "present"
+    
+    - name: "Create a Range with additional Fields"
       infoblox.bloxone.ipam_range:
         start: "10.0.0.1"
         end: "10.0.0.100"

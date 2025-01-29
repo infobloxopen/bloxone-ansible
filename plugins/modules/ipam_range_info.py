@@ -57,19 +57,24 @@ extends_documentation_fragment:
 """
 
 EXAMPLES = r"""
-- name: Retrieve range information by ID
-  ipam_range_info:
-    id: "range-id-12345"
+  - name: Get range information by ID
+    infoblox.bloxone.ipam_range_info:
+      id: "{{range.id}}"
 
-- name: Retrieve range information with filters
-  ipam_range_info:
-    filters:
-      start: "192.168.1.0"
-      end: "192.168.1.255"
+  - name: Get range information with filters
+    infoblox.bloxone.ipam_range_info:
+      filters:
+        start: "192.168.1.0"
+        end: "192.168.1.255"
 
-- name: Retrieve range information with filter query
-  ipam_range_info:
-    filter_query: "start=='10.0.0.1' and end=='10.0.0.100'"
+  - name: Get range information with filters (eg. start , end)
+    infoblox.bloxone.ipam_range_info:
+      filter_query: "start=='10.0.0.1' and end=='10.0.0.100'"
+
+  - name: Get range information with tag filters
+    infoblox.bloxone.ipam_range_info:
+        tag_filters:
+          location: "site-1"
 """
 
 RETURN = r"""
@@ -424,23 +429,23 @@ objects:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description: "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description: "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description: "The number of defined IP addresses such as reservations or DNS records. It can be computed as static = used - dynamic."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description: "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description: "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
 """  # noqa: E501

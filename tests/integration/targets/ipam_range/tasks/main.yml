@@ -1,5 +1,4 @@
 ---
-# TODO: Add tests for DHCP Options the ipam_range module
 - module_defaults:
     group/infoblox.bloxone.all:
       csp_url: "{{ csp_url }}"
