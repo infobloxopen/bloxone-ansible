@@ -207,7 +207,7 @@ EXAMPLES = r"""
         end: "10.0.0.100"
         space: "{{ ip_space.id }}"
         state: "present"
-    
+
     - name: "Create a Range with additional Fields"
       infoblox.bloxone.ipam_range:
         start: "10.0.0.1"
