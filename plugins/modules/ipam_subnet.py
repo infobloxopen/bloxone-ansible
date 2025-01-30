@@ -2434,7 +2434,7 @@ class SubnetModule(BloxoneAnsibleModule):
             if "/" in self.params["address"]:
                 self.params["address"], netmask = self.params["address"].split("/")
                 self.params["cidr"] = int(netmask)
-                
+
         exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id", "next_available_id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = Subnet.from_dict(self._payload_params)
