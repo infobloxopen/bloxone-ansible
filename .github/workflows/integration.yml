@@ -19,8 +19,8 @@ jobs:
 
       - name: Set up integration_config.yml
         run: |
-          echo "api_key: ${{ secrets.BLOXONE_API_KEY }}" > infoblox.bloxone/tests/integration/integration_config.yml
-          echo "csp_url: ${{ secrets.BLOXONE_CSP_URL }}" >> infoblox.bloxone/tests/integration/integration_config.yml
+          echo "portal_key: ${{ secrets.INFOBLOX_PORTAL_KEY }}" > infoblox.bloxone/tests/integration/integration_config.yml
+          echo "portal_url: ${{ secrets.INFOBLOX_PORTAL_URL }}" >> infoblox.bloxone/tests/integration/integration_config.yml
 
       - uses: ansible-community/ansible-test-gh-action@v1.15.0
         with:

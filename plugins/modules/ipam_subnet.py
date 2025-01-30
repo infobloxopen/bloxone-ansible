@@ -2419,8 +2419,8 @@ item:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import Subnet, SubnetApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
@@ -2434,8 +2434,8 @@ class SubnetModule(BloxoneAnsibleModule):
             if "/" in self.params["address"]:
                 self.params["address"], netmask = self.params["address"].split("/")
                 self.params["cidr"] = int(netmask)
-
-        exclude = ["state", "csp_url", "api_key", "id", "next_available_id"]
+                
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id", "next_available_id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = Subnet.from_dict(self._payload_params)
 

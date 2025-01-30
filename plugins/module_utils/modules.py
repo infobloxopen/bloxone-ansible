@@ -11,19 +11,19 @@ import traceback
 from ansible.module_utils.basic import AnsibleModule, env_fallback, missing_required_lib
 
 try:
-    import bloxone_client
+    import universal_ddi_client
 
-    HAS_BLOXONE_CLIENT = True
-    BLOXONE_CLIENT_IMP_ERR = None
+    HAS_UNIVERSAL_DDI_CLIENT = True
+    UNIVERSAL_DDI_CLIENT_IMP_ERR = None
 except ImportError:
-    HAS_BLOXONE_CLIENT = False
-    BLOXONE_CLIENT_IMP_ERR = traceback.format_exc()
+    HAS_UNIVERSAL_DDI_CLIENT = False
+    UNIVERSAL_DDI_CLIENT_IMP_ERR = traceback.format_exc()
 
 
 class BloxoneAnsibleModule(AnsibleModule):
     def __init__(self, *args, **kwargs):
         # Add common arguments to the module argument_spec
-        args_full = bloxone_client_common_argument_spec()
+        args_full = universal_ddi_client_common_argument_spec()
         try:
             args_full.update(kwargs["argument_spec"])
         except (TypeError, NameError):
@@ -33,13 +33,13 @@ class BloxoneAnsibleModule(AnsibleModule):
         super(BloxoneAnsibleModule, self).__init__(*args, **kwargs)
         self._client = None
 
-        if not HAS_BLOXONE_CLIENT:
+        if not HAS_UNIVERSAL_DDI_CLIENT:
             self.fail_json(
                 msg=missing_required_lib(
-                    "bloxone_client",
-                    url="https://github.com/infobloxopen/bloxone-python-client",
+                    "universal_ddi_client",
+                    url="https://github.com/infobloxopen/universal-ddi-python-client",
                 ),
-                exception=BLOXONE_CLIENT_IMP_ERR,
+                exception=UNIVERSAL_DDI_CLIENT_IMP_ERR,
             )
 
     @property
@@ -61,15 +61,18 @@ class BloxoneAnsibleModule(AnsibleModule):
         return update_body
 
 
-def bloxone_client_common_argument_spec():
+def universal_ddi_client_common_argument_spec():
     return dict(
-        api_key=dict(
-            type="str", aliases=["bloxone_api_key"], fallback=(env_fallback, ["BLOXONE_API_KEY"]), no_log=True
-        ),
-        csp_url=dict(
+        portal_key=dict(
             type="str",
-            aliases=["bloxone_csp_url"],
-            fallback=(env_fallback, ["BLOXONE_CSP_URL"]),
+            aliases=["infoblox_portal_key", "api_key"],
+            fallback=(env_fallback, ["INFOBLOX_PORTAL_KEY"]),
+            no_log=True,
+        ),
+        portal_url=dict(
+            type="str",
+            aliases=["infoblox_portal_url", "csp_url"],
+            fallback=(env_fallback, ["INFOBLOX_PORTAL_URL"]),
             default="https://csp.infoblox.com",
         ),
     )
@@ -77,23 +80,23 @@ def bloxone_client_common_argument_spec():
 
 def _get_client(module):
     config = _get_client_config(module)
-    client = bloxone_client.ApiClient(config)
+    client = universal_ddi_client.ApiClient(config)
     return client
 
 
 def _get_client_config(module):
-    csp_url = module.params.get("csp_url")
-    api_key = module.params.get("api_key")
+    portal_url = module.params.get("portal_url")
+    portal_key = module.params.get("portal_key")
 
     # Use None for empty values, so that the client can handle it
-    if not csp_url:
-        csp_url = None
-    if not api_key:
-        api_key = None
+    if not portal_url:
+        portal_url = None
+    if not portal_key:
+        portal_key = None
 
-    config = bloxone_client.Configuration(
-        csp_url=csp_url,
-        api_key=api_key,
+    config = universal_ddi_client.Configuration(
+        csp_url=portal_url,
+        api_key=portal_key,
         client_name="ansible",
     )
     config.debug = True

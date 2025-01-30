@@ -1,0 +1,14 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - name: Create Reverse Mapping Zone
+      infoblox.bloxone.dns_auth_zone:
+        fqdn: "0.0.40.in-addr.arpa."
+        primary_type: cloud
+        view: "{{ _view.id }}"
+        state: present
+      register: rmz

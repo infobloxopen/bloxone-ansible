@@ -110,7 +110,7 @@ EXAMPLES = r"""
       notify: true
       state: "present"
       tags:
-        location: "my-location"
+        location: "site-1"
 
   - name: Delete the Zone
     infoblox.bloxone.dns_forward_zone:
@@ -259,8 +259,8 @@ item:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from dns_config import ForwardZone, ForwardZoneApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
@@ -269,7 +269,7 @@ class ForwardZoneModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ForwardZoneModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = ForwardZone.from_dict(self._payload_params)
         self._existing = None
