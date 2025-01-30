@@ -838,7 +838,7 @@ class RecordModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(RecordModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = Record.from_dict(self._payload_params)
         self._existing = None
