@@ -182,8 +182,8 @@ item:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from dns_config import ForwardNSG, ForwardNsgApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
