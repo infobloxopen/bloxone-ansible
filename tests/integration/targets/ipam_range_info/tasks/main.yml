@@ -1,8 +1,8 @@
 ---
 - module_defaults:
     group/infoblox.bloxone.all:
-      csp_url: "{{ csp_url }}"
-      api_key: "{{ api_key }}"
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
   block:
     # Create a random tag to avoid conflicts
     - ansible.builtin.set_fact:
@@ -10,7 +10,7 @@
         range_start: "10.0.0.1"
         range_end: "10.0.0.254"
 
-    - name: "Create an IP Range"
+    - name: "Create an IPAM Range"
       infoblox.bloxone.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
@@ -20,7 +20,7 @@
         state: "present"
       register: ipam_range
 
-    - name: Get IP Range information by ID
+    - name: Get IPAM Range information by ID
       infoblox.bloxone.ipam_range_info:
         id: "{{ ipam_range.id }}"
       register: range_info
@@ -29,7 +29,7 @@
           - range_info.objects | length == 1
           - range_info.objects[0].name == ipam_range.object.name
 
-    - name: Get IP Range information by filters
+    - name: Get IPAM Range information by filters
       infoblox.bloxone.ipam_range_info:
         filters:
           start: "{{ range_start }}"
@@ -41,7 +41,7 @@
           - range_info.objects | length == 1
           - range_info.objects[0].id == ipam_range.id
 
-    - name: Get IP Range information by filter query
+    - name: Get IPAM Range information by filter query
       infoblox.bloxone.ipam_range_info:
         filter_query: "start=='{{ range_start }}' and end=='{{ range_end }}' and space=='{{ _ip_space.id }}'"
       register: range_info
@@ -50,7 +50,7 @@
           - range_info.objects | length == 1
           - range_info.objects[0].id == ipam_range.id
 
-    - name: Get IP Range information by tag filters
+    - name: Get IPAM Range information by tag filters
       infoblox.bloxone.ipam_range_info:
         tag_filters:
           location: "{{ tag_value }}"
@@ -62,7 +62,7 @@
 
   always:
     # Cleanup if the test fails
-    - name: "Delete IP Range"
+    - name: "Delete IPAM Range"
       infoblox.bloxone.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
@@ -70,15 +70,10 @@
         state: "absent"
       ignore_errors: true
 
-    - name: "Delete Subnet"
-      infoblox.bloxone.ipam_subnet:
-        address: "10.0.0.0/24"
-        space: "{{ _ip_space.id }}"
-        state: "absent"
-      ignore_errors: true
+    - ansible.builtin.include_role:
+        name: "Cleanup Subnet"
+        tasks_from: "cleanup.yml"
 
-    - name: "Delete IP Space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "{{ name }}"
-        state: "absent"
-      ignore_errors: true
+    - ansible.builtin.include_role:
+        name: "Cleanup IP Space"
+        tasks_from: "cleanup.yml"

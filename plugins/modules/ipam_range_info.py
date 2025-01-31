@@ -69,6 +69,7 @@ EXAMPLES = r"""
       filters:
         start: "192.168.1.0"
         end: "192.168.1.255"
+        space: "{{ ip_space.id }}"
 
   - name: Get range information with filters (eg. start , end)
     infoblox.bloxone.ipam_range_info:
@@ -456,8 +457,8 @@ objects:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import RangeApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
