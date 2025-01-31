@@ -71,9 +71,9 @@
       ignore_errors: true
 
     - ansible.builtin.include_role:
-        name: "Cleanup Subnet"
+        name: "setup_subnet"
         tasks_from: "cleanup.yml"
 
     - ansible.builtin.include_role:
-        name: "Cleanup IP Space"
+        name: "setup_ip_space"
         tasks_from: "cleanup.yml"
