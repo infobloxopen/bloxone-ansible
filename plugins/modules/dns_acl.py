@@ -10,7 +10,7 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: dns_acl
-short_description: Manage ACL
+short_description: "Manages a named Access Control List (ACL)
 description:
     - Manage ACL
 version_added: 2.0.0
