@@ -95,8 +95,8 @@ def _get_client_config(module):
         portal_key = None
 
     config = universal_ddi_client.Configuration(
-        csp_url=portal_url,
-        api_key=portal_key,
+        portal_url=portal_url,
+        portal_key=portal_key,
         client_name="ansible",
     )
     config.debug = True

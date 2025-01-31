@@ -32,6 +32,8 @@ action_groups:
     - ipam_next_available_subnet_info
     - ipam_address_block
     - ipam_address_block_info
+    - ipam_range
+    - ipam_range_info
     - ipam_host
     - ipam_host_info
     - ipam_next_available_address_block_info
@@ -97,6 +99,11 @@ plugin_routing:
           deprecation:
             removal_version: 3.0.0
             warning_text: Use infoblox.bloxone.dns_auth_zone_info instead.
+
+        b1_ipam_range:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.bloxone.ipam_range instead.
 
         b1_ipam_host:
           deprecation:
