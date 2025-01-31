@@ -18,10 +18,10 @@
         state: present
       register: dns_acl
 
-    - name: Get Information about the DNS ACL
+    - name: Get Information about the DNS ACL by ID
       infoblox.bloxone.dns_acl_info:
         filters:
-          name: "{{ acl_name }}"
+            id: "{{ dns_acl.id }}"
       register: dns_acl_info
     - assert:
         that:

@@ -1,8 +1,6 @@
 ---
 #TODO: Add integration tests for the infoblox.bloxone.dns_acl module
 #   - compartment_id
-#   - list.tsig_key  with tsig_key id
-#   - list.acl
 
 - module_defaults:
     group/infoblox.bloxone.all:
@@ -184,7 +182,6 @@
         list:
           - access: "allow"
             element: "any"
-            address: ""
         state: present
       register: acl
     - name: Get Information about the ACL
@@ -211,7 +208,6 @@
         list:
           - access: "allow"
             element: "any"
-            address: ""
         tags:
           location: "my-location"
         state: present
