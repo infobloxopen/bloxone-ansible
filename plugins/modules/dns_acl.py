@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: dns_acl
-short_description: "Manages a named Access Control List (ACL)
+short_description: "Manages a named Access Control List (ACL)"
 description:
-    - "Manages a named Access Control List (ACL)
+    - "Manages a named Access Control List (ACL)"
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -276,7 +276,7 @@ item:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
+    from universal_ddi_client import ApiException, NotFoundException
     from dns_config import ACL, AclApi
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
@@ -286,7 +286,7 @@ class AclModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AclModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = ACL.from_dict(self._payload_params)
         self._existing = None

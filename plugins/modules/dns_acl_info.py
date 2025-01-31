@@ -10,9 +10,9 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: dns_acl_info
-short_description: Manage Acl
+short_description: "Manages a named Access Control List (ACL)"
 description:
-    - Manage Acl
+    - "Manages a named Access Control List (ACL)"
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -189,7 +189,7 @@ objects:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
+    from universal_ddi_client import ApiException, NotFoundException
     from dns_config import AclApi
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
