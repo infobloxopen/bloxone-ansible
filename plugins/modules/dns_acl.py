@@ -12,7 +12,7 @@ DOCUMENTATION = r"""
 module: dns_acl
 short_description: "Manages a named Access Control List (ACL)
 description:
-    - Manage ACL
+    - "Manages a named Access Control List (ACL)
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
