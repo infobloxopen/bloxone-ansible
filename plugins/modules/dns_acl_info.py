@@ -31,16 +31,6 @@ options:
             - Filter query to filter objects
         type: str
         required: false
-    inherit:
-        description:
-            - Return inheritance information
-        type: str
-        required: false
-        choices:
-            - full
-            - partial
-            - none
-        default: full
     tag_filters:
         description:
             - Filter dict to filter objects by tags
@@ -213,7 +203,7 @@ class AclInfoModule(BloxoneAnsibleModule):
 
     def find_by_id(self):
         try:
-            resp = AclApi(self.client).read(self.params["id"], inherit="full")
+            resp = AclApi(self.client).read(self.params["id"])
             return [resp.result]
         except NotFoundException as e:
             return None
@@ -275,7 +265,6 @@ def main():
         id=dict(type="str", required=False),
         filters=dict(type="dict", required=False),
         filter_query=dict(type="str", required=False),
-        inherit=dict(type="str", required=False, choices=["full", "partial", "none"], default="full"),
         tag_filters=dict(type="dict", required=False),
         tag_filter_query=dict(type="str", required=False),
     )
