@@ -4,7 +4,7 @@
       csp_url: "{{ csp_url }}"
       api_key: "{{ api_key }}"
   block:
-    # Create a random IP space name to avoid conflicts
+    # Create a random tag to avoid conflicts
     - ansible.builtin.set_fact:
         tag_value: "site-{{ 999999 | random | string }}"
         range_start: "10.0.0.1"
