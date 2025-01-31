@@ -10,7 +10,7 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_range_info
-short_description: Manage Range
+short_description: Retrieves a Range
 description:
     - Manage Range
 version_added: 2.0.0
