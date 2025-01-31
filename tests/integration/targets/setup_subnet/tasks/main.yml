@@ -4,10 +4,7 @@
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
-    # Create a random Subnet name to avoid conflicts
-    - ansible.builtin.set_fact:
-        name: "subnet-{{ 999999 | random | string }}"
-
+    # Create a subnet
     - name: "Create a Subnet"
       infoblox.bloxone.ipam_subnet:
         address: "10.0.0.0/24"

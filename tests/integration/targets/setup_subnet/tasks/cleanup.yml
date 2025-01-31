@@ -5,8 +5,9 @@
       portal_key: "{{ portal_key }}"
 
   block:
-    - name: "Delete IP space"
-      infoblox.bloxone.ipam_ip_space:
-          name: "{{ ip_space_name }}"
-          state: "absent"
+    - name: "Delete Subnet"
+      infoblox.bloxone.ipam_subnet:
+        address: "10.0.0.0/24"
+        space: "{{ _ip_space.id }}"
+        state: "absent"
       ignore_errors: true
