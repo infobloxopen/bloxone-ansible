@@ -1,0 +1,302 @@
+---
+#TODO: Add integration tests for the infoblox.bloxone.dns_acl module
+#   - compartment_id
+
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random ACL name to avoid conflicts
+    - ansible.builtin.set_fact:
+        acl_name: "test-acl-{{ 999999 | random | string }}"
+        tsig_key_name: "test-tsig-key-{{ 999999 | random | string }}"
+
+    - name: Create an ACL (check mode)
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: present
+      check_mode: true
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl_info is not failed
+          - acl_info.objects | length == 0
+
+    - name: Create an ACL
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+
+    - name: Create an ACL (idempotent)
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: present
+      register: acl
+    - assert:
+        that:
+          - acl is not changed
+          - acl is not failed
+
+    - name: Delete the ACL (check mode)
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: absent
+      check_mode: true
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+
+    - name: Delete the ACL
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: absent
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl_info is not failed
+          - acl_info.objects | length == 0
+
+    - name: Delete an ACL (idempotent)
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: absent
+      register: acl
+    - assert:
+        that:
+          - acl is not changed
+          - acl is not failed
+
+    - name: Create an ACL with a comment
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        comment: "Test ACL"
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+          - acl_info.objects[0].comment == "Test ACL"
+
+    - name: Create an ACL with a allow list.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        list:
+          - access: "allow"
+            element: "ip"
+            address: "1.1.1.1"
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == "allow"
+          - acl_info.objects[0].list[0].element == "ip"
+          - acl_info.objects[0].list[0].address == "1.1.1.1"
+
+    - name: Create an ACL with a deny list.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        list:
+          - access: "deny"
+            element: "ip"
+            address: "2.2.2.2"
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == "deny"
+          - acl_info.objects[0].list[0].element == "ip"
+          - acl_info.objects[0].list[0].address == "2.2.2.2"
+
+    - name: Create an ACL with allow any network.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        list:
+          - access: "allow"
+            element: "any"
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == "allow"
+          - acl_info.objects[0].list[0].element == "any"
+          - acl_info.objects[0].list[0].address == ""
+
+    - name: Create an ACL with tags.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        list:
+          - access: "allow"
+            element: "any"
+        tags:
+          location: "my-location"
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == "allow"
+          - acl_info.objects[0].list[0].element == "any"
+          - acl_info.objects[0].list[0].address == ""
+          - acl_info.objects[0].tags.location == "my-location"
+
+    - name: Create an ACL with tsig key.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        list:
+          - access: "allow"
+            element: "tsig_key"
+            tsig_key:
+              "algorithm": "hmac_sha256"
+              "name": "{{ tsig_key_name }}"
+              "secret": "CXRmUdHsJp24HcOtjeX7NOgoMKj0jxTkAK8zyBbMIBs="
+        state: present
+      register: acl
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}"
+      register: acl_info
+    - assert:
+        that:
+          - acl is changed
+          - acl is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl.id
+          - acl_info.objects[0].name == acl.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == "allow"
+          - acl_info.objects[0].list[0].element == "tsig_key"
+          - acl_info.objects[0].list[0].tsig_key.algorithm == "hmac_sha256"
+
+    - name: Create an ACL with ACL list.
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}_acl_list"
+        list:
+          - access: ""
+            element: "acl"
+            acl: "{{ acl.id }}"
+        state: present
+      register: acl_list
+    - name: Get Information about the ACL
+      infoblox.bloxone.dns_acl_info:
+        filters:
+          name: "{{ acl_name }}_acl_list"
+      register: acl_info
+    - assert:
+        that:
+          - acl_list is changed
+          - acl_list is not failed
+          - acl_info is not failed
+          - acl_info.objects | length == 1
+          - acl_info.objects[0].id == acl_list.id
+          - acl_info.objects[0].name == acl_list.object.name
+          - acl_info.objects[0].list | length == 1
+          - acl_info.objects[0].list[0].access == ""
+          - acl_info.objects[0].list[0].acl == acl_list.object.list[0].acl
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete ACL List"
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}_acl_list"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete ACL"
+      infoblox.bloxone.dns_acl:
+        name: "{{ acl_name }}"
+        state: "absent"
+      ignore_errors: true

@@ -142,7 +142,8 @@ objects:
                     type: int
                     returned: Always
                 reenable_date:
-                    description: ""
+                    description:
+                        - "The date at which notifications will be re-enabled automatically."
                     type: str
                     returned: Always
         asm_scope_flag:
@@ -1680,23 +1681,28 @@ objects:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description:
+                        - "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description:
+                        - "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description:
+                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as I(static) &#x3D; I(used) - I(dynamic)."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description:
+                        - "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description:
+                        - "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
         vendor_specific_option_option_space:

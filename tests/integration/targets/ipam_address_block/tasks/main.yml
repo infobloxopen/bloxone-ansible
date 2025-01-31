@@ -191,8 +191,13 @@
           - address_block_info.objects | length == 1
           - address_block_info.objects[0].asm_config.asm_threshold == 70
           - address_block_info.objects[0].asm_config.forecast_period == 12
+          - address_block_info.objects[0].inheritance_sources.asm_config.asm_enable_block.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.asm_config.asm_growth_block.action == "inherit"
           - address_block_info.objects[0].inheritance_sources.asm_config.asm_threshold.action == "override"
           - address_block_info.objects[0].inheritance_sources.asm_config.forecast_period.action == "override"
+          - address_block_info.objects[0].inheritance_sources.asm_config.history.action == "override"
+          - address_block_info.objects[0].inheritance_sources.asm_config.min_total.action == "override"
+          - address_block_info.objects[0].inheritance_sources.asm_config.min_unused.action == "override"
 
     - name: "Create an Address Block with comment"
       infoblox.bloxone.ipam_address_block:
@@ -299,6 +304,16 @@
           - address_block_info.objects | length == 1
           - address_block_info.objects[0].dhcp_config.lease_time == 3600
           - address_block_info.objects[0].inheritance_sources.dhcp_config.lease_time.action == "override"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.abandoned_reclaim_time.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.abandoned_reclaim_time_v6.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.allow_unknown.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.allow_unknown_v6.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.echo_client_id.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.filters.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.filters_v6.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.ignore_client_uid.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.ignore_list.action == "inherit"
+          - address_block_info.objects[0].inheritance_sources.dhcp_config.lease_time_v6.action == "inherit"
 
     - name: "Create an Address Block with hostname_rewrite_enabled set to true"
       infoblox.bloxone.ipam_address_block:
@@ -340,6 +355,46 @@
           - address_block is not failed
           - address_block_info.objects | length == 1
           - address_block_info.objects[0].tags.location == tag_value
+
+    - name: "Create an Address Block with empty Compartment Id"
+      infoblox.bloxone.ipam_address_block:
+        address: "10.0.0.0/16"
+        space: "{{ _ip_space.id }}"
+        compartment_id: ""
+        state: "present"
+      register: address_block
+    - name: Get information about the Address Block
+      infoblox.bloxone.ipam_address_block_info:
+        filters:
+          address: "10.0.0.0"
+          space: "{{ _ip_space.id }}"
+          cidr: 16
+      register: address_block_info
+    - assert:
+        that:
+          - address_block is not failed
+          - address_block_info.objects | length == 1
+          - address_block_info.objects[0].compartment_id == ""
+
+    - name: "Create an Address Block with Compartment Id as null"
+      infoblox.bloxone.ipam_address_block:
+        address: "10.0.0.0/16"
+        space: "{{ _ip_space.id }}"
+        compartment_id: null
+        state: "present"
+      register: address_block
+    - name: Get information about the Address Block
+      infoblox.bloxone.ipam_address_block_info:
+        filters:
+          address: "10.0.0.0"
+          space: "{{ _ip_space.id }}"
+          cidr: 16
+      register: address_block_info
+    - assert:
+        that:
+          - address_block is not failed
+          - address_block_info.objects | length == 1
+          - address_block_info.objects[0].compartment_id == ""
 
   always:
     # Cleanup if the test fails

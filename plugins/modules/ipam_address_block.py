@@ -86,6 +86,10 @@ options:
         description:
             - "The description for the address block. May contain 0 to 1024 characters. Can include UTF-8."
         type: str
+    compartment_id:
+        description:
+            - "The compartment associated with the object. If no compartment is associated with the object, the value defaults to empty."
+        type: str
     ddns_client_update:
         description:
             - "Controls who does the DDNS updates."
@@ -2505,6 +2509,7 @@ def main():
         ),
         cidr=dict(type="int"),
         comment=dict(type="str"),
+        compartment_id=dict(type="str"),
         ddns_client_update=dict(type="str"),
         ddns_conflict_resolution_mode=dict(type="str"),
         ddns_domain=dict(type="str"),
