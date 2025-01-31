@@ -12,7 +12,10 @@ DOCUMENTATION = r"""
 module: ipam_range_info
 short_description: Retrieves a Range
 description:
-    - Manage Range
+    - Retrieves information about existing Ranges.
+    - A Range object represents a set of contiguous IP addresses in the same IP space with no gap.
+    - They are expressed as a (start, end) pair within a given subnet that are grouped together for administrative purpose and protocol management.
+    - The start and end values are not required to align with CIDR boundaries.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
