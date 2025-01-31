@@ -1,8 +1,8 @@
 ---
 - module_defaults:
     group/infoblox.bloxone.all:
-      csp_url: "{{ csp_url }}"
-      api_key: "{{ api_key }}"
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
 
   block:
     # Create a random Delegation name to avoid conflicts

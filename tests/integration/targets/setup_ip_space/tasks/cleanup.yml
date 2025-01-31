@@ -3,7 +3,7 @@
     group/infoblox.bloxone.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
-  
+
   block:
     - name: "Delete IP space"
       infoblox.bloxone.ipam_ip_space:

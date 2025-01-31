@@ -1,0 +1,200 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random Host name to avoid conflicts
+    - ansible.builtin.set_fact:
+        display_name: "test-infra-host-{{ 999999 | random | string }}"
+        serial_number: "serial{{ 999999 | random | string }}"
+
+    - name: Create a Host (check mode)
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: present
+      check_mode: true
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 0
+
+    - name: Create a Host
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: present
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+
+    - name: Create a Host (idempotent)
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: present
+      register: infra_host
+    - assert:
+        that:
+          - infra_host is not changed
+          - infra_host is not failed
+
+    - name: Delete the Host (check mode)
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: absent
+      check_mode: true
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+
+    - name: Delete the Host
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: absent
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 0
+
+    - name: Delete the Host (idempotent)
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: absent
+      register: infra_host
+    - assert:
+        that:
+          - infra_host is not changed
+          - infra_host is not failed
+
+    - name: Create a Host with Description
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        description: "Test Host"
+        state: present
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].description == "Test Host"
+
+    - name: Create a Host with Maintenance Mode enabled
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        maintenance_mode: enabled
+        state: present
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].maintenance_mode == "enabled"
+
+    - name: Create a Host with an IP Space
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        ip_space: "{{ _ip_space.id }}"
+        state: present
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].ip_space == infra_host.object.ip_space
+
+    - name: Create a Host with a Serial Number
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        serial_number: "{{ serial_number }}"
+        state: present
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].serial_number == infra_host.object.serial_number
+
+    - name: Create a Host with Tags
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        tags:
+          location: "site-1"
+        state: present
+      register: infra_host
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host is changed
+          - infra_host_info is not failed
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].tags.location == "site-1"
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete Host"
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete IP Space"
+      ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

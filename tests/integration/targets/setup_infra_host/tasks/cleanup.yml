@@ -1,0 +1,12 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    - name: "Delete Infra Host"
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        serial_number: "{{ serial_number }}"
+        state: "absent"
+      ignore_errors: true
