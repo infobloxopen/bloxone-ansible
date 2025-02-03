@@ -1,0 +1,60 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random Forward Zone name to avoid conflicts
+    - ansible.builtin.set_fact:
+        forward_nsg_name: "test-forward-nsg-{{ 999999 | random | string }}.com."
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: Create a Forward NSG
+      infoblox.bloxone.dns_forward_nsg:
+        name: "{{ forward_nsg_name }}"
+        state: present
+      register: forward_nsg
+
+    - name: Get Information about the Forward NSG
+      infoblox.bloxone.dns_forward_nsg_info:
+        filters:
+          name: "{{ forward_nsg_name }}"
+      register: forward_nsg_info
+    - assert:
+        that:
+          - forward_nsg_info.objects | length == 1
+          - forward_nsg_info.objects[0].name == forward_nsg.object.name
+
+    - name: Get Forward NSG information by filters (Name)
+      infoblox.bloxone.dns_forward_nsg_info:
+        filters:
+          name: "{{ forward_nsg_name }}"
+      register: forward_nsg_info
+    - assert:
+        that:
+          - forward_nsg_info.objects | length == 1
+          - forward_nsg_info.objects[0].id == forward_nsg.id
+
+    - name: Get Forward NSG information by filter query
+      infoblox.bloxone.dns_forward_nsg_info:
+        filter_query: "name=='{{ forward_nsg_name }}'"
+    - assert:
+        that:
+          - forward_nsg_info.objects | length == 1
+          - forward_nsg_info.objects[0].id == forward_nsg.id
+
+    - name: Get Forward NSG information by tag filters
+      infoblox.bloxone.dns_forward_nsg_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - forward_nsg_info.objects | length == 1
+          - forward_nsg_info.objects[0].id == forward_nsg.id
+
+  always:
+    - name: "Delete Forward NSG"
+      infoblox.bloxone.dns_forward_nsg:
+        name: "{{ forward_nsg_name }}"
+        state: "absent"
+      ignore_errors: true

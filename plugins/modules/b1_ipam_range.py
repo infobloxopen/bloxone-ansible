@@ -14,6 +14,10 @@ module: b1_ipam_range
 author: "Amit Mishra (@amishra), Sriram Kannan(@kannans)"
 short_description: Configure the IPAM range on Infoblox BloxOne DDI
 version_added: "1.0.1"
+deprecated:
+    removed_in: "3.0.0"
+    why: "This module is being deprecated and will be removed in version 3.0.0. Use M(ipam_range) instead."
+    alternative: "Use the M(ipam_range) module instead."
 description:
   - Create, Update and Delete the IPAM range on Infoblox BloxOne DDI. This module manages the IPAM IPAM range object using BloxOne REST APIs.
 requirements:

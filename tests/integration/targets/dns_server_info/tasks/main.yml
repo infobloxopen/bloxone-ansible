@@ -1,0 +1,65 @@
+---
+
+#TODO: add tests
+# The following require additional plugins to be supported.
+# - tsig keys
+# - acl
+
+
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random Auth Zone name to avoid conflicts
+    - ansible.builtin.set_fact:
+        dns_server_name: "test-dns-server-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: Create a DNS Server
+      infoblox.bloxone.dns_server:
+        name: "{{ dns_server_name }}"
+        recursion_enabled: true
+        tags:
+          location: "{{ tag_value }}"
+        forwarders:
+          - address: "192.168.11.11"
+            fqdn: "example.com."
+        state: present
+      register: dns_server
+
+    - name: Get Information about the DNS Server by filter (name)
+      infoblox.bloxone.dns_server_info:
+        filters:
+          name: "{{ dns_server_name }}"
+      register: dns_server_info
+    - assert:
+        that:
+          - dns_server_info.objects | length == 1
+          - dns_server_info.objects[0].name == dns_server.object.name
+
+    - name: Get DNS Server information by filter query
+      infoblox.bloxone.dns_server_info:
+        filter_query: "name=='{{ dns_server_name }}'"
+      register: dns_server_info
+    - assert:
+        that:
+          - dns_server_info.objects | length == 1
+          - dns_server_info.objects[0].id == dns_server.id
+
+    - name: Get DNS Server information by tag filters
+      infoblox.bloxone.dns_server_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+      register: dns_server_info
+    - assert:
+        that:
+          - dns_server_info.objects | length == 1
+          - dns_server_info.objects[0].id == dns_server.id
+
+  always:
+    - name: "Delete dns server"
+      infoblox.bloxone.dns_server:
+        name: "{{ dns_server_name }}"
+        state: "absent"
+      ignore_errors: true

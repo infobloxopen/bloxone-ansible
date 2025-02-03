@@ -1,0 +1,339 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create an A record with a random name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-a-record-{{ 999999 | random | string }}"
+        record_2_name: "test-a-record-2-{{ 999999 | random | string }}"
+
+    - ansible.builtin.set_fact:
+        absolute_name_spec: "{{ record_2_name }}.{{ _fqdn_auth_zone }}"
+
+    - name: Create an A Record (check mode)
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "192.168.10.10"
+        type: "A"
+        state: present
+      check_mode: true
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record is changed
+          - a_record_info is not failed
+          - a_record_info.objects | length == 0
+
+    - name: Create an A Record
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "A"
+        rdata:
+          address: "192.168.10.10"
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record is changed
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].rdata.address == "192.168.10.10"
+          - a_record_info.objects[0].type == "A"
+          - a_record_info.objects[0].zone == a_record.object.zone
+
+    - name: Create an A Record (idempotent)
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "A"
+        rdata:
+          address: "192.168.10.10"
+        state: present
+      register: a_record
+    - assert:
+        that:
+          - a_record is not changed
+          - a_record is not failed
+
+    - name: Delete the A Record (check mode)
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "192.168.10.10"
+        type: "A"
+        state: absent
+      check_mode: true
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record is changed
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+
+    - name: Delete the A Record
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "192.168.10.10"
+        type: "A"
+        state: absent
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record is changed
+          - a_record_info is not failed
+          - a_record_info.objects | length == 0
+
+    - name: Delete the A Record (idempotent)
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "192.168.10.10"
+        type: "A"
+        state: absent
+      register: a_record
+    - assert:
+        that:
+          - a_record is not changed
+          - a_record is not failed
+
+    - name: Create an A Record with comment
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "10.0.0.0"
+        type: "A"
+        comment: "This is a test A Record"
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].comment == "This is a test A Record"
+
+    - name: Create an A Record with TTL
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "10.0.0.0"
+        type: "A"
+        ttl: 3600
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].ttl == 3600
+
+    - name: Create an A Record with Disabled
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "10.0.0.0"
+        type: "A"
+        disabled: true
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].disabled == true
+
+    - name: Create an A Record with Tags
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "10.0.0.0"
+        type: "A"
+        tags:
+          location: "site-1"
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+          filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create an A Record with Inheritance Sources
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "10.0.0.0"
+        type: "A"
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create an A Record with Options
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "40.0.0.0"
+        type: "A"
+        options:
+          create_ptr: true
+          check_rmz: true
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+    - name: Get Information about the PTR Record created in the Reverse Mapping Zone
+      infoblox.bloxone.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].zone == rmz.id
+
+    - name: Create an A Record with Name in Zone and Zone
+      infoblox.bloxone.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "10.0.0.0"
+        type: "A"
+        state: present
+      register: a_record
+    - name: Get Information about the A Record
+      infoblox.bloxone.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "A"
+      register: a_record_info
+    - assert:
+        that:
+          - a_record_info is not failed
+          - a_record_info.objects | length == 1
+          - a_record_info.objects[0].id == a_record.id
+          - a_record_info.objects[0].name_in_zone == a_record.object.name_in_zone
+          - a_record_info.objects[0].zone == a_record.object.zone
+
+    - name: Create an A Record using Absolute Name Spec and View
+      infoblox.bloxone.dns_record:
+        absolute_name_spec: "{{ absolute_name_spec }}"
+        view: "{{ _view.id }}"
+        comment: "This is a test A Record created using ANS and View"
+        rdata:
+          address: "15.0.0.0"
+        type: "A"
+        state: present
+      ignore_errors: yes
+      register: a_record2
+    - assert:
+        that:
+          - a_record2 is failed
+          - a_record2.msg == "missing required arguments: zone"
+
+  always:
+     - name: "Delete the A Record"
+       infoblox.bloxone.dns_record:
+         name_in_zone: "{{ record_name }}"
+         zone: "{{ _auth_zone.id }}"
+         rdata:
+           address: "10.0.0.0"
+         type: "A"
+         state: absent
+       ignore_errors: true
+
+     - name: "Delete the Auth Zone"
+       ansible.builtin.include_role:
+         name: setup_auth_zone
+         tasks_from: cleanup.yml
+
+     - name: "Delete the Reverse Mapping Zone"
+       ansible.builtin.include_role:
+         name: setup_auth_zone_rmz
+         tasks_from: cleanup.yml
+
+     - name: "Delete the View"
+       ansible.builtin.include_role:
+         name: setup_view
+         tasks_from: cleanup.yml

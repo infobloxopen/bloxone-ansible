@@ -1,0 +1,239 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    - ansible.builtin.set_fact:
+        tsig_key_name: "test-tsig-{{ 999999 | random | string }}."
+        tsig_key_secret: "rA+n89+aOCjFVNzBPbYkl+j3oQcl4U19JAkCIK9Ad8k="
+        tsig_key_algorithm: "hmac_sha512"
+
+    - name: Create a TSIG Key (check mode)
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        algorithm: "{{ tsig_key_algorithm }}"
+        secret: "{{ tsig_key_secret }}"
+        state: present
+      check_mode: true
+      register: tsig_key
+    - name: Get Information about the TSIG Key
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - assert:
+        that:
+          - tsig_key is changed
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 0
+
+    - name: Create a TSIG Key
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        algorithm: "{{ tsig_key_algorithm }}"
+        secret: "{{ tsig_key_secret }}"
+        state: present
+      register: tsig_key
+    - name: Get Information about the TSIG Key
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - assert:
+        that:
+          - tsig_key is changed
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+
+    - name: Create the TSIG Key (idempotent)
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        secret: "{{ tsig_key_secret }}"
+        algorithm: "{{ tsig_key_algorithm }}"
+        state: present
+      register: tsig_key
+    - assert:
+        that:
+          - tsig_key is not changed
+          - tsig_key is not failed
+
+    - name: Delete the TSIG Key (check mode)
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        secret: "{{ tsig_key_secret }}"
+        state: absent
+      check_mode: true
+      register: tsig_key
+    - name: Get Information about the TSIG Key after Deletion
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - assert:
+        that:
+          - tsig_key is changed
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+
+    - name: Delete the TSIG Key
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        secret: "{{ tsig_key_secret }}"
+        state: absent
+      register: tsig_key
+    - name: Get Information about the TSIG Key after Final Deletion
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - assert:
+        that:
+          - tsig_key is changed
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 0
+
+    - name: Delete the TSIG Key (idempotent)
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        secret: "{{ tsig_key_secret }}"
+        state: absent
+      register: tsig_key
+    - assert:
+        that:
+          - tsig_key is not changed
+          - tsig_key is not failed
+
+    - name: Create a TSIG Key with Algorithm type hmac_sha256
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        algorithm: "hmac_sha256"
+        secret: "{{ tsig_key_secret }}"
+        state: present
+      register: tsig_key
+    - name: Get TSIG Key Information
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - name: Assert TSIG Key Algorithm
+      assert:
+        that:
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+          - tsig_key_info.objects[0].name == tsig_key_name
+          - tsig_key_info.objects[0].algorithm == "hmac_sha256"
+
+    - name: Create a TSIG Key with Algorithm type hmac_sha384
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        algorithm: "hmac_sha384"
+        secret: "{{ tsig_key_secret }}"
+        state: present
+      register: tsig_key
+    - name: Get TSIG Key Information
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - name: Assert TSIG Key Algorithm
+      assert:
+        that:
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+          - tsig_key_info.objects[0].name == tsig_key_name
+          - tsig_key_info.objects[0].algorithm == "hmac_sha384"
+
+    - name: Create a TSIG Key with the secret dynamically generated
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}_generated."
+        algorithm: "hmac_sha384"
+        state: present
+      register: tsig_key
+    - name: Get TSIG Key Information
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}_generated."
+      register: tsig_key_info
+    - name: Assert TSIG Key Algorithm
+      assert:
+        that:
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+          - tsig_key_info.objects[0].name == "{{ tsig_key_name }}_generated."
+          - tsig_key_info.objects[0].algorithm == "hmac_sha384"
+
+
+    - name: Create a TSIG Key with a Comment
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        algorithm: "{{ tsig_key_algorithm }}"
+        secret: "{{ tsig_key_secret }}"
+        comment: "tsig_key_comment"
+        state: present
+      register: tsig_key
+    - name: Get TSIG Key Information
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - name: Assert TSIG Key Comment and Existence
+      assert:
+        that:
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+          - tsig_key_info.objects[0].name == tsig_key_name
+          - tsig_key_info.objects[0].comment == "tsig_key_comment"
+
+    - name: Create a TSIG Key with a Specific Secret
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        algorithm: "{{ tsig_key_algorithm }}"
+        secret: "wuQuR0A08ApqKT65yaGiqWHalHxS7Ie8LF2VTUFZFZo="
+        state: present
+      register: tsig_key
+    - name: Get TSIG Key Information
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - name: Assert TSIG Key Secret and Existence
+      assert:
+        that:
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+          - tsig_key_info.objects[0].secret == "wuQuR0A08ApqKT65yaGiqWHalHxS7Ie8LF2VTUFZFZo="
+
+    - name: Create a TSIG Key with Specific Tags
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        secret: "{{ tsig_key_secret }}"
+        algorithm: "{{ tsig_key_algorithm }}"
+        tags:
+          location: "site-1"
+        state: present
+      register: tsig_key
+    - name: Get TSIG Key Information
+      infoblox.bloxone.tsig_key_info:
+        filters:
+          name: "{{ tsig_key_name }}"
+      register: tsig_key_info
+    - name: Assert TSIG Key Tags and Existence
+      assert:
+        that:
+          - tsig_key_info is not failed
+          - tsig_key_info.objects | length == 1
+          - tsig_key_info.objects[0].tags.location == "site-1"
+
+  always:
+    - name: "Delete tsig keys"
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete tsig keys"
+      infoblox.bloxone.tsig_key:
+        name: "{{ tsig_key_name }}_generated."
+        state: "absent"
+      ignore_errors: true

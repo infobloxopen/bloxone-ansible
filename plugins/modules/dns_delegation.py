@@ -182,8 +182,8 @@ item:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from dns_config import Delegation, DelegationApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
@@ -192,7 +192,7 @@ class DelegationModule(BloxoneAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(DelegationModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = Delegation.from_dict(self._payload_params)
         self._existing = None
@@ -230,9 +230,7 @@ class DelegationModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            # TODO - add view to filter once it is supported, removed due to NORTHSTAR-12614
-            # filter = f"fqdn=='{self.params['fqdn']}' and view =='{self.params['view']}'"
-            filter = f"fqdn=='{self.params['fqdn']}'"
+            filter = f"fqdn=='{self.params['fqdn']}' and view =='{self.params['view']}'"
             resp = DelegationApi(self.client).list(filter=filter)
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -327,7 +325,7 @@ def main():
     module = DelegationModule(
         argument_spec=module_args,
         supports_check_mode=True,
-        required_if=[("state", "present", ["fqdn", "delegation_servers"])],
+        required_if=[("state", "present", ["fqdn", "delegation_servers", "view"])],
     )
 
     module.run_command()

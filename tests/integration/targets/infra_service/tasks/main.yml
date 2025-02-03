@@ -1,0 +1,225 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random Service name to avoid conflicts
+    - ansible.builtin.set_fact:
+        service_name: "test-infra-service-{{ 999999 | random | string }}"
+
+    - name: Create a Service (check mode)
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dhcp"
+        state: present
+      check_mode: true
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 0
+
+    - name: Create a Service
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dhcp"
+        state: present
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+
+    - name: Create a Service (idempotent)
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dhcp"
+        state: present
+      register: infra_service
+    - assert:
+        that:
+          - infra_service is not changed
+          - infra_service is not failed
+
+    - name: Delete the Service (check mode)
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dhcp"
+        state: absent
+      check_mode: true
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+
+    - name: Delete the Service
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dhcp"
+        state: absent
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 0
+
+    - name: Delete the Service (idempotent)
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dhcp"
+        state: absent
+      register: infra_service
+    - assert:
+        that:
+          - infra_service is not changed
+          - infra_service is not failed
+
+    - name: Create a Service with Description
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dns"
+        description: "Test Service"
+        state: present
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+          - infra_service_info.objects[0].description == "Test Service"
+
+    - name: Create a Service with Desired State
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dns"
+        desired_state: "start"
+        state: present
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+
+    - name: Create a Service with Desired Version
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dns"
+        desired_version: "3.4.0"
+        state: present
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+
+    - name: Create a Service with Interface Labels
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dns"
+        interface_labels:
+          - "WAN"
+          - "LAN"
+          - "label1"
+          - "label2"
+        state: present
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+
+
+    - name: Create a Service with Tags
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dns"
+        tags:
+          location: "site-1"
+        state: present
+      register: infra_service
+    - name: Get Information about the Service
+      infoblox.bloxone.infra_service_info:
+        filters:
+          name: "{{ service_name }}"
+      register: infra_service_info
+    - assert:
+        that:
+          - infra_service is changed
+          - infra_service_info is not failed
+          - infra_service_info.objects | length == 1
+          - infra_service_info.objects[0].tags.location == "site-1"
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete the Service"
+      infoblox.bloxone.infra_service:
+        name: "{{ service_name }}"
+        pool_id: "{{ _infra_host.object.pool_id }}"
+        service_type: "dns"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete the Host"
+      ansible.builtin.include_role:
+        name: setup_infra_host
+        tasks_from: cleanup.yml

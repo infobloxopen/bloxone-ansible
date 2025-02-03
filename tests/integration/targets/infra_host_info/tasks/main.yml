@@ -1,0 +1,80 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random Host name to avoid conflicts
+    - ansible.builtin.set_fact:
+        display_name: "test-infra-host-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic Test for Host
+    - name: Create a Host
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: infra_host
+
+    - name: Get Information about the Host
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].display_name == infra_host.object.display_name
+
+    - name: Get Infra Host information by filters (Display Name)
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}"
+      register: infra_host_info
+    - assert:
+        that:
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].id == infra_host.id
+
+    - name: Get Host information by filter query
+      infoblox.bloxone.infra_host_info:
+        filter_query: "display_name=='{{ display_name }}'"
+    - assert:
+        that:
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].id == infra_host.id
+
+    - name: Get Host information by tag filters
+      infoblox.bloxone.infra_host_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - infra_host_info.objects | length == 1
+          - infra_host_info.objects[0].id == infra_host.id
+
+    # The following test will not retrieve any result as the display_name is incorrect
+    # This test demonstrates to retry the call maximum 5 times with a delay of 1 second between each call
+    - name: Get Information about the Host by using Retry if not found and Timeout
+      infoblox.bloxone.infra_host_info:
+        filters:
+          display_name: "{{ display_name }}+incorrect_name"
+      timeout: "10" # Timeout for each call is set to 10 seconds
+      retries: 5 # Retry 5 times
+      delay: 1 # Delay between each retry is set to 1 second
+      until: "infra_host_info.objects | length == 1"
+      register: infra_host_info
+      ignore_errors: true
+    - assert:
+        that:
+          - infra_host_info.objects | length == 0
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete Host"
+      infoblox.bloxone.infra_host:
+        display_name: "{{ display_name }}"
+        state: "absent"
+      ignore_errors: true

@@ -7,16 +7,16 @@
 class ModuleDocFragment:
     DOCUMENTATION = r"""
 options:
-    api_key:
+    portal_key:
         description:
-          - The API token for authentication against Infoblox BloxOne API. If not set, the environment variable E(BLOXONE_API_KEY) will be used.
+          - The API token for authentication against Infoblox BloxOne API. If not set, the environment variable E(INFOBLOX_PORTAL_KEY) will be used.
         type: str
-        aliases: [ bloxone_api_key ]
+        aliases: [ infoblox_portal_key, api_key ]
 
-    csp_url:
+    portal_url:
         description:
-          - The Infoblox Cloud Services Portal (CSP) URL. If not set, the environment variable E(BLOXONE_CSP_URL) will be used.
+          - The Infoblox Cloud Services Portal (CSP) URL. If not set, the environment variable E(INFOBLOX_PORTAL_URL) will be used.
         type: str
-        aliases: [ bloxone_csp_url ]
+        aliases: [ infoblox_portal_url, csp_url ]
         default: 'https://csp.infoblox.com'
 """

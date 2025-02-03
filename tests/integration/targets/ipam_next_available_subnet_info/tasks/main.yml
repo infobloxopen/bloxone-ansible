@@ -1,0 +1,37 @@
+---
+- module_defaults:
+    group/infoblox.bloxone.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+  block:
+    # Create a random IP space name to avoid conflicts
+    - ansible.builtin.set_fact:
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    - name: "Get information about the next available Subnet"
+      infoblox.bloxone.ipam_next_available_subnet_info:
+        id: "{{ _address_block.id }}"
+        cidr: 24
+      register: subnet_info
+    - assert:
+        that:
+          - subnet_info is not failed
+          - subnet_info.objects | length == 1
+
+    - name: "Get information about the next available Subnet with count"
+      infoblox.bloxone.ipam_next_available_subnet_info:
+        id: "{{ _address_block.id }}"
+        cidr: 24
+        count: 5
+      register: subnet_info
+    - assert:
+        that:
+          - subnet_info is not failed
+          - subnet_info.objects | length == 5
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete IP Space"
+      ansible.builtin.include_role:
+        name: setup_ip_space
+        tasks_from: cleanup.yml

@@ -86,6 +86,10 @@ options:
         description:
             - "The description for the address block. May contain 0 to 1024 characters. Can include UTF-8."
         type: str
+    compartment_id:
+        description:
+            - "The compartment associated with the object. If no compartment is associated with the object, the value defaults to empty."
+        type: str
     ddns_client_update:
         description:
             - "Controls who does the DDNS updates."
@@ -2340,8 +2344,8 @@ item:
 from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import AddressBlock, AddressBlockApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
     pass  # Handled by BloxoneAnsibleModule
 
@@ -2357,7 +2361,7 @@ class AddressBlockModule(BloxoneAnsibleModule):
                 self.params["address"], netmask = self.params["address"].split("/")
                 self.params["cidr"] = int(netmask)
 
-        exclude = ["state", "csp_url", "api_key", "id", "next_available_id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id", "next_available_id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = AddressBlock.from_dict(self._payload_params)
 
@@ -2505,6 +2509,7 @@ def main():
         ),
         cidr=dict(type="int"),
         comment=dict(type="str"),
+        compartment_id=dict(type="str"),
         ddns_client_update=dict(type="str"),
         ddns_conflict_resolution_mode=dict(type="str"),
         ddns_domain=dict(type="str"),
@@ -2781,7 +2786,7 @@ def main():
         mutually_exclusive=[["address", "next_available_id"]],
         required_if=[("state", "present", ["space"])],
         required_one_of=[["address", "next_available_id"]],
-        required_together=[["cidr", "next_available_id"]],
+        required_by={"next_available_id": "cidr"},
     )
 
     module.run_command()

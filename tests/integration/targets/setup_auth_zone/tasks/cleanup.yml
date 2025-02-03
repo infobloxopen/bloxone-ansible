@@ -1,11 +1,12 @@
 ---
 - module_defaults:
     group/infoblox.bloxone.all:
-      csp_url: "{{ csp_url }}"
-      api_key: "{{ api_key }}"
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
   block:
     - name: "Delete an Auth Zone"
       infoblox.bloxone.dns_auth_zone:
         fqdn: "{{ _fqdn_auth_zone }}"
+        view: "{{ _view.id }}"
         state: "absent"
       ignore_errors: true
