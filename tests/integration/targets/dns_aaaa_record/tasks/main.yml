@@ -238,7 +238,7 @@
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-          address: "2001::0"
+          address: "2001::1"
         type: "AAAA"
         options:
           create_ptr: true
@@ -267,12 +267,13 @@
           - ptr_record_info is not failed
           - ptr_record_info.objects | length == 1
           - ptr_record_info.objects[0].zone == rmz_ipv6.id
+          - ptr_record_info.objects[0].name_in_zone == "1"
 
     - name: Create AAAA Record with Options (create_ptr is true and check_rmz is false)
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-          address: "2001::0"
+          address: "2001::2"
         type: "AAAA"
         options:
           create_ptr: true
@@ -301,12 +302,13 @@
           - ptr_record_info is not failed
           - ptr_record_info.objects | length == 1
           - ptr_record_info.objects[0].zone == rmz_ipv6.id
+          - ptr_record_info.objects[0].name_in_zone == "2"
 
     - name: Create AAAA Record with Options (create_ptr and check_rmz are false)
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-          address: "2001::0"
+          address: "3001::0"
         type: "AAAA"
         options:
           create_ptr: false
@@ -324,17 +326,6 @@
           - aaaa_record_info is not failed
           - aaaa_record_info.objects | length == 1
           - aaaa_record_info.objects[0].id == aaaa_record_options.id
-    - name: Get Information about the PTR Record created in the Reverse Mapping Zone
-      infoblox.bloxone.dns_record_info:
-        filters:
-          zone: "{{ rmz_ipv6.id }}"
-          type: "PTR"
-      register: ptr_record_info
-    - assert:
-        that:
-          - ptr_record_info is not failed
-          - ptr_record_info.objects | length == 1
-          - ptr_record_info.objects[0].zone == rmz_ipv6.id
 
     - name: Create a AAAA Record with Name in Zone and Zone
       infoblox.bloxone.dns_record:

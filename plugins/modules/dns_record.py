@@ -357,16 +357,7 @@ EXAMPLES = r"""
         tags:
             location: "site-1"
         state: "present"
-        
-    - name: Delete the A Record
-      infoblox.bloxone.dns_record:
-        zone: "{{ _auth_zone.id }}"
-        name_in_zone: "example_a_record"
-        rdata:
-            address: "192.168.10.10"
-        type: "A"
-        state: "absent"
-    
+   
     - name: Create an AAAA Record in an Auth Zone
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
@@ -463,7 +454,7 @@ EXAMPLES = r"""
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-            target_name: "svc.example.com."
+          target_name: "svc.example.com."
         type: "SVCB"
         state: "present"
 
@@ -473,7 +464,16 @@ EXAMPLES = r"""
         rdata:
           text: "sample text"
         type: "TXT"
-        state: "present"         
+        state: "present"  
+             
+    - name: Delete the A Record
+      infoblox.bloxone.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        name_in_zone: "example_a_record"
+        rdata:
+          address: "192.168.10.10"
+        type: "A"
+        state: "absent"       
 """  # noqa: E501
 
 RETURN = r"""

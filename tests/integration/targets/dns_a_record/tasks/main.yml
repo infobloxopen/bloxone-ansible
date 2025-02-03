@@ -271,12 +271,13 @@
           - ptr_record_info is not failed
           - ptr_record_info.objects | length == 1
           - ptr_record_info.objects[0].zone == rmz.id
+          - ptr_record_info.objects[0].name_in_zone == "0"
 
     - name: Create an A Record with Options (create_ptr is true and check_rmz is false)
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-          address: "40.0.0.0"
+          address: "40.0.0.2"
         type: "A"
         options:
           create_ptr: true
@@ -305,12 +306,13 @@
           - ptr_record_info is not failed
           - ptr_record_info.objects | length == 1
           - ptr_record_info.objects[0].zone == rmz.id
+          - ptr_record_info.objects[0].name_in_zone == "2"
 
     - name: Create an A Record with Options (create_ptr and check_rmz are false)
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-          address: "40.0.0.0"
+          address: "50.0.0.0"
         type: "A"
         options:
           create_ptr: false
@@ -328,17 +330,6 @@
           - a_record_info is not failed
           - a_record_info.objects | length == 1
           - a_record_info.objects[0].id == a_record.id
-    - name: Get Information about the PTR Record created in the Reverse Mapping Zone
-      infoblox.bloxone.dns_record_info:
-        filters:
-          zone: "{{ rmz.id }}"
-          type: "PTR"
-      register: ptr_record_info
-    - assert:
-        that:
-          - ptr_record_info is not failed
-          - ptr_record_info.objects | length == 1
-          - ptr_record_info.objects[0].zone == rmz.id
 
     - name: Create an A Record with Name in Zone and Zone
       infoblox.bloxone.dns_record:

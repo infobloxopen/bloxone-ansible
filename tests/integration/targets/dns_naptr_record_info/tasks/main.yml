@@ -20,7 +20,7 @@
           order: 100
           preference: 10
           replacement: "."
-          service: "SIP+D2U"
+          services: "SIP+D2U"
         tags:
           location: "{{ tag_value }}"
         state: present
@@ -73,6 +73,7 @@
           order: 100
           preference: 10
           replacement: "."
+          services: "SIP+D2U"
         type: "NAPTR"
         state: "absent"
       ignore_errors: true
