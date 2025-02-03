@@ -238,7 +238,7 @@
         name_in_zone: "{{ record_name }}"
         zone: "{{ _auth_zone.id }}"
         rdata:
-          text: "example text"
+          text: "sample text"
         type: "TXT"
         state: present
       register: txt_record

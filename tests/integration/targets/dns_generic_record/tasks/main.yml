@@ -8,7 +8,6 @@
     # Create a random name to avoid conflicts
     - ansible.builtin.set_fact:
         record_name: "test-generic-record-{{ 999999 | random | string }}"
-        fqdn: "test-zone.example.com"
 
     - name: Create a Generic Record (check mode)
       infoblox.bloxone.dns_record:

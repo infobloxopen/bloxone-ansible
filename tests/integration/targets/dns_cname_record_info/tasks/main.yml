@@ -67,7 +67,7 @@
         name_in_zone: "{{ record_name }}"
         zone: "{{ _auth_zone.id }}"
         rdata:
-            cname: "cname.example.com."
+          cname: "cname.example.com."
         type: "CNAME"
         state: "absent"
       ignore_errors: true

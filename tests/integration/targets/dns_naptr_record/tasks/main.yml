@@ -58,6 +58,7 @@
         - naptr_record_info.objects[0].rdata.order == 20
         - naptr_record_info.objects[0].rdata.preference == 10
         - naptr_record_info.objects[0].rdata.replacement == "."
+        - naptr_record_info.objects[0].rdata.services == "SIP+D2U"
         - naptr_record_info.objects[0].type == "NAPTR"
         - naptr_record_info.objects[0].zone == naptr_record.object.zone
 
@@ -305,7 +306,7 @@
           order: 100
           preference: 10
           replacement: "."
-          services: "SIP+D2U"
+          services: "SIP+E2U"
         state: present
       register: naptr_record
     - name: Get information about the NAPTR Record
@@ -330,10 +331,10 @@
         name_in_zone: "{{ record_name }}"
         zone: "{{ _auth_zone.id }}"
         rdata:
-          order: 20
+          order: 100
           preference: 10
           replacement: "."
-          services: "SIP+D2U"
+          services: "SIP+E2U"
         type: "NAPTR"
         state: "absent"
       ignore_errors: true

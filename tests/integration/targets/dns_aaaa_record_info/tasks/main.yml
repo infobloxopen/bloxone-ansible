@@ -67,7 +67,7 @@
         name_in_zone: "{{ record_name }}"
         zone: "{{ _auth_zone.id }}"
         rdata:
-            address: "2001:db8::6"
+          address: "2001:db8::6"
         type: "AAAA"
         state: "absent"
       ignore_errors: true

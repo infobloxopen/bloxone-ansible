@@ -242,7 +242,7 @@
       infoblox.bloxone.dns_record:
         zone: "{{ _auth_zone.id }}"
         rdata:
-          address: "40.0.0.0"
+          address: "40.0.0.1"
         type: "A"
         options:
           create_ptr: true
@@ -271,7 +271,7 @@
           - ptr_record_info is not failed
           - ptr_record_info.objects | length == 1
           - ptr_record_info.objects[0].zone == rmz.id
-          - ptr_record_info.objects[0].name_in_zone == "0"
+          - ptr_record_info.objects[0].name_in_zone == "1"
 
     - name: Create an A Record with Options (create_ptr is true and check_rmz is false)
       infoblox.bloxone.dns_record:

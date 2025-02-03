@@ -67,7 +67,7 @@
         name_in_zone: "{{ record_name }}"
         zone: "{{ rmz.id }}"
         rdata:
-            dname: "domain.com."
+          dname: "domain.com."
         type: "PTR"
         state: "absent"
       ignore_errors: true
