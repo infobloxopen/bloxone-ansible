@@ -46,6 +46,7 @@ action_groups:
   keys:
     - tsig_key
     - tsig_key_info
+    - kerberos_key_info
 
   infra:
     - infra_join_token
