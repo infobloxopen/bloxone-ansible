@@ -1,53 +1,69 @@
 # Infoblox BloxOne Collection for Ansible
 
-The Infoblox BloxOne Collection (`infoblox.bloxone`) includes a variety of Ansible modules to help automate the management of BloxOne services. 
+The Infoblox Universal_ddi Collection (`infoblox.universal_ddi`) includes a variety of Ansible modules to help automate the management of BloxOne services. 
 
 ## Description 
 Infoblox Universal DDI Modules for Ansible Collections facilitate the DNS and IPAM automation of VM workloads that are deployed across multiple platforms.
-The bloxone_modules collection consists of modules and plug-ins required to manage the networks, IP addresses, and DNS records in universal DDI. The collection is hosted on Ansible Galaxy under infoblox.bloxone_modules.
+The bloxone_modules collection consists of modules and plug-ins required to manage the networks, IP addresses, and DNS records in universal_ddi. The collection is hosted on Ansible Galaxy under infoblox.universal_ddi_modules.
 ## Version Information
 
 ### What's new in v2
-- The collection has been renamed from `b1ddi_modules` to `Universal DDI`.
+- The collection has been renamed from `b1ddi_modules` to `universal_ddi`.
 - The modules are renamed to follow the BloxOne API naming conventions. The old module names are deprecated and will be removed in the next major release.
 - The modules are rewritten to use the [Universal DDI Python client](https://github.com/infobloxopen/universal-ddi-python-client) library. This provides a more consistent experience across the modules and supports a wider range of BloxOne services.
 
 ## Collection Overview
 
 ### Modules
-The `infoblox.bloxone` modules collection has the following content:
+The `infoblox.universal_ddi` modules collection has the following content:
 
 ##### DNS
+- `dns_acl` : Module to create, update and delete DNS ACL.
+- `dns_acl_info` : Module to get DNS ACL information.
+- `dns_auth_nsg` : Module to create, update and delete Auth NSG.
+- `dns_auth_nsg_info` : Module to get Auth NSG information.
+- `dns_auth_zone` : Module to create, update and delete Auth zone.
+- `dns_auth_zone_info` : Module to get Auth zone information.
+- `dns_delegation` : Module to create, update and delete DNS delegation.
+- `dns_delegation_info` : Module to get DNS delegation information.
+- `dns_forward_nsg` : Module to create, update and delete DNS forward NSG.
+- `dns_forward_nsg_info` : Module to get DNS forward NSG information.
+- `dns_forward_zone` : Module to create, update and delete DNS forward zone.
+- `dns_forward_zone_info` : Module to get DNS forward zone information.
+- `dns_host` : Module to create, update and delete DNS host.
+- `dns_host_info` : Module to get DNS host information.
+- `dns_records` : Module to create, update and delete DNS records.
+- `dns_records_info` : Module to get DNS records information.
+- `dns_server` : Module to create, update and delete DNS server.
+- `dns_server_info` : Module to get DNS server information.
 - `dns_view` : Module to create, update and delete DNS view.
-- `dns_view_gather` : Module to get view information.
-- `dns_zone` : Module to create and delete DNS zone.
-- `dns_zone_gather` : Module to get zone information.
-- `a_record` : Module to create and delete A record.
-- `a_record_gather` : Module to gather information about existing A records.
-- `cname_record` : Module to create and delete CNAME record
-- `cname_record_gather` : Module to gather information about existing CNAME records.
-- `ptr_record` : Module to create and delete PTR record
-- `ptr_record_gather` : Module to gather information about existing PTR records.
-- `ns_record` : Module to create and delete NS record
-- `ns_record_gather` : Module to gather information about existing ns records.
+- `dns_view_info` : Module to get view information.
 
-##### IPAM/DHCP
-- `ipam_ipspace` : Module to create, update and delete an IPSpace in a BloxOne platform.
-- `ipam_ipspace_gather` : Module to gather information about an existing IPSpace
-- `ipam_address_block` : Module to create, update and delete an Address Block in a BloxOne platform.
-- `ipam_address_block_gather` : Module to gather information about an existing Address Block.
-- `ipam_subnet` : Module to create, update and delete a subnet in BloxOne platform.
-- `ipam_subnet_gather` : Module to gather information about an existing subnets.
-- `ipam_range` : Module to create, update and delete a range in BloxOne platform.
-- `ipam_address` : Module to create, update and delete an address in BloxOne platform.
-- `ipam_address_gather` : Module to gather information about an address in BloxOne platform.
-- `ipam_fixed_address` : Module to create, update and delete a ipv4 fixed address in BloxOne platform.
-- `ipam_fixed_address_gather` : Module to gather information about an ipv4 fixed address. For instance mac-address of an address.
-- `ipam_host_gather` : Module to gather information about an ipam host.
-- `ipam_host` : Module to create, update and delete a ipam host in BloxOne platform.
-- `ipam_host_gather` : Module to gather information about option space in B1DDI.
-- `ipam_host` : Module to create, update and delete a option space in BloxOne platform.
-- 
+##### INFRA
+- `infra_host` : Module to create, update and delete an INFRA host.
+- `infra_host_info` : Module to get INFRA host information.
+- `infra_join_token` : Module to create, update and delete an INFRA join token.
+- `infra_join_token_info` : Module to get INFRA join token information.
+- `infra_service` : Module to create, update and delete an INFRA service.
+- `infra_service_info` : Module to get INFRA service information.
+
+##### IPAM
+- `ipam_address` : Module to create, update and delete an IPAM address.
+- `ipam_address_info` : Module to get IPAM address information.
+- `ipam_address_block` : Module to create, update and delete an IPAM address block.
+- `ipam_address_block_info` : Module to get IPAM address block information.
+- `ipam_host` : Module to create, update and delete a IPAM host.
+- `ipam_host_info` : Module to get IPAM host information.
+- `ipam_ipspace` : Module to create, update and delete an IPAM IPSpace.
+- `ipam_ipspace_info` : Module to get IPAM IPSpace information.
+- `ipam_range` : Module to create, update and delete a IPAM range.
+- `ipam_range` : Module to get IPAM range information.
+- `ipam_subnet` : Module to create, update and delete a IPAM subnet.
+- `ipam_subnet_info` : Module to get IPAM subnets information.
+- `ipam_next_available_ip_info` : Module to get next available ip information.
+- `ipam_next_available_subnet_info` : Module to get next available subnets information.
+- `ipam_next_available_address_block_info` : Module to get next available address block information.
+
 ## Requirements
  
 - ansible >= 2.15
@@ -57,7 +73,7 @@ The `infoblox.bloxone` modules collection has the following content:
 
 ## Installation
 
-The `infoblox.bloxone` collection can be installed from git repository.
+The `infoblox.universal_ddi` collection can be installed from git repository.
 
 ```shell
 ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-ansible.git,v2
@@ -86,34 +102,138 @@ Latest sample playbooks and examples are available at [playbooks](https://github
   infoblox.bloxone.dns_view:
     name: "example-view"
     state: present
+
+- name: Delete the View
+  infoblox.bloxone.dns_view:
+    name: "example-view"
+    state: absent
 ```
-### 2. Automated DNS Zone Management
-**Description:** Create, delete, and manage DNS zones automatically based on changes in your network's domain requirements.
+### 2. Automated DNS ACL Management
+**Description:** Automate the creation, modification, or deletion of DNS Access Control Lists (ACLs) for controlling and securing access to DNS services based on various criteria such as IP addresses, subnets, or specific user groups.
+
 **Example:**
-```yaml 
-- name: Create an Auth Zone
-  infoblox.bloxone.dns_auth_zone:
-    fqdn: "example-auth-zone"
-    primary_type: external
-    view: "{{ _view.id }}"
+```yaml
+- name: Create an ACL
+  infoblox.bloxone.dns_acl:
+    name: "example-acl"
     state: present
+    
+- name: Delete the ACL
+  infoblox.bloxone.dns_acl:
+    name: "example-acl"
+    state: absent
 ```
 
-### 3. Automated DNS Record Management
+### 3. Automated DNS AUTH NSG Management
+**Description:** Automate the creation, modification, or deletion of DNS Authoritative Name Server Groups (NSG) to streamline and enhance DNS configurations.
+
+**Example:**
+```yaml
+    - name: Create an Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "example_nsg"
+        state: present
+    
+    - name: Delete the Auth NSG
+      infoblox.bloxone.dns_auth_nsg:
+        name: "example_nsg"
+        state: absent
+```
+
+### 4. Automated DNS Auth Zone Management
+**Description:** Automate the creation, deletion, or management of DNS Authoritative Zones to ensure consistent and efficient management of DNS records.
+
+**Example:**
+```yaml
+    - name: Create an Auth Zone
+      infoblox.bloxone.dns_auth_zone:
+        fqdn: "test-auth-zone"
+        primary_type: external
+        view: "{{ view.id }}"
+        state: present
+    
+    - name: Delete the Auth Zone
+      infoblox.bloxone.dns_auth_zone:
+        fqdn: "test-auth-zone"
+        primary_type: external
+        view: "{{ view.id }}"
+```
+### 5. DNS Delegation Management
+**Description:** Create and delete DNS delegations within a domain for DNS management.
+
+**Example:**
+```yaml
+- name: Create a Delegation
+  infoblox.bloxone.dns_delegation:
+    fqdn: "test-delegation"
+    delegation_servers:
+      - fqdn: "ns1.example.com."
+        address: "12.0.0.0"
+    view: "{{ view.id }}"
+    state: present
+
+- name: Delete the Delegation
+  infoblox.bloxone.dns_delegation:
+    fqdn: "test-delegation"
+    view: "{{ view.id }}"
+    state: absent
+```
+
+### 6. DNS Forward Zone Management
+**Description:** Create and delete forward zones to direct DNS queries for a domain or subdomain to specific DNS servers.
+
+**Example:**
+```yaml
+- name: Create a Forward Zone
+  infoblox.bloxone.dns_forward_zone:
+    fqdn: "example_zone."
+    state: present
+
+- name: Delete the Zone
+  infoblox.bloxone.dns_forward_zone:
+    name: "example_zone."
+    state: "absent"
+```
+
+### 7. DNS Forwarding NSG Configuration
+**Description:** Create and delete forward zones to direct DNS queries traffic.
+
+**Example:**
+```yaml
+- name: Create a Forward NSG
+  infoblox.bloxone.dns_forward_nsg:
+    name: "example_nsg"
+    state: "present"
+    
+- name: Delete the Forward NSG
+  infoblox.bloxone.dns_forward_nsg:
+    name: "example_nsg"
+    state: "absent"
+```
+
+### 8. Automated DNS Record Management
 **Description:** Automatically create, update, and delete DNS records in Universal DDI based on changes in your infrastructure.
 
 **Example:**
 ```yaml
 - name: Create a DNS A Record 
   infoblox.bloxone.dns_record:
-    zone: "{{ _auth_zone.id }}"
+    zone: "{{ auth_zone.id }}"
     rdata:
       address: "192.168.10.10"
     type: "A"
     state: "present"
+
+- name: Delete the A Record
+  infoblox.bloxone.dns_record:
+    zone: "{{ auth_zone.id }}"
+    rdata:
+      address: "192.168.10.10"
+    type: "A"
+    state: absent
 ```
 
-### 4. IP Address Management (IPAM)
+### 9. IP Address Management (IPAM)
 **Description:** Automate the provisioning, updating, and de-provisioning of IP addresses in Universal DDI
 
 **Example:**
@@ -122,9 +242,15 @@ Latest sample playbooks and examples are available at [playbooks](https://github
   infoblox.bloxone.ipam_ip_space:
       name: "example-ip-space"
       state: "present"
+
+- name: "Delete IP Space"
+  infoblox.bloxone.ipam_ip_space:
+      name: "example-ip-space"
+      state: "absent"
 ```
-### 5. Address Block Management
+### 10. Address Block Management
 Description: Create and delete address blocks within an IP space for IP address management.
+
 **Example:**
 ```yaml
 - name: "Create an Address Block"
@@ -134,18 +260,85 @@ Description: Create and delete address blocks within an IP space for IP address 
     tags:
       location: "site-1"
     state: "present"
+
+- name: "Delete an Address Block"
+  infoblox.bloxone.ipam_address_block:
+    address: "10.0.0.0/16"
+    space: "{{ ip_space.id }}"
+    state: "absent"
 ```
 
-### 6. Subnet Management
+### 11. Subnet Management
 Description: Create, update, and delete subnets within a specific address block.
+
+**Example:**
 ```yaml
 - name: "Create a subnet"
   infoblox.bloxone.ipam_subnet:
     address: "10.0.0.0/24"
     space: "{{ ip_space.id }}"
     state: "present"
+
+- name: "Delete a Subnet"
+  infoblox.bloxone.ipam_subnet:
+    address: "10.0.0.0/24"
+    space: "{{ ip_space.id }}"
+    state: "absent"
 ```
-TBW - Add usage examples
+
+### 12. Address Management
+**Description:** Manage and allocate IP address blocks, subnets, and ranges to efficiently utilize and track IP addresses within an organization or network.
+
+**Example:**
+```yaml
+- name: "Create an Address"
+  infoblox.bloxone.ipam_address:
+    address: "10.0.0.3"
+    space: "{{ ip_space.id }}"
+    state: "present"
+    
+- name: "Delete an Address"
+  infoblox.bloxone.ipam_address:
+    address: "10.0.0.3"
+    space: "{{ ip_space.id }}"
+    state: "absent"
+```
+
+### 13. Host Management
+**Description:** Managing the allocation, reservation, and tracking of IP addresses for hosts within a network.
+
+**Example:**
+```yaml
+- name: "Create a Host"
+  infoblox.bloxone.ipam_host:
+    name: "example_host"
+    state: "present"
+  
+- name: "Delete a host"
+  infoblox.bloxone.ipam_host:
+    name: "example_host"
+    state: "absent"
+```
+
+### 14. IPAM Range Management
+**Description:** Define, allocate, and manage IP address ranges within a subnet to ensure efficient use of IP space.
+
+**Example:**
+```yaml
+- name: "Create a Range"
+  infoblox.bloxone.ipam_range:
+    start: "10.0.0.1"
+    end: "10.0.0.100"
+    space: "{{ ip_space.id }}"
+    state: "present"
+    
+- name: "Delete the Range"
+  infoblox.bloxone.ipam_range:
+    start: "10.0.0.1"
+    end: "10.0.0.100"
+    space: "{{ ip_space.id }}"
+    state: "absent"
+```
 
 ## Licensing
 
