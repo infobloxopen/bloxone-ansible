@@ -79,7 +79,7 @@ The `infoblox.universal_ddi` modules collection has the following content:
 The `infoblox.universal_ddi` collection can be installed from git repository.
 
 ```shell
-ansible-galaxy collection install git+https://github.com/infobloxopen/universal_ddi-ansible.git,v2
+ansible-galaxy collection install git+https://github.com/infobloxopen/universal-ddi-ansible.git
 ```
 
 The python dependencies are not installed by `ansible-galaxy`. They can be manually installed using the following command:
@@ -94,7 +94,7 @@ By default ansible will install the collection in ~/.ansible/collections. Kindly
 collections_paths = ./collections
 ```
 ## Playbooks
-Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/universal-ddi-ansible/tree/v2/playbooks).
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/universal-ddi-ansible/tree/main/playbooks).
 ## Usage
 ### 1. Automated DNS View Management
 **Description:** Automate the creation or deletion of DNS views for separating DNS configurations based on different network segments
@@ -344,15 +344,9 @@ Description: Create, update, and delete subnets within a specific address block.
     state: "absent"
 ```
 
-## Licensing
-
-GNU General Public License v3.0 or later.
-
-See [COPYING](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
-
 ## Issues or RFEs
 
-You can open an issue or request for enhancement [here](https://github.com/infobloxopen/universalddi-ansible/issues)
+You can open an issue or request for enhancement [here](https://github.com/infobloxopen/universal-ddi-ansible/issues)
  
 
 
