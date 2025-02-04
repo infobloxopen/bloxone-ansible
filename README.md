@@ -1,6 +1,6 @@
-# Infoblox BloxOne Collection for Ansible
+# Infoblox Universal_ddi Collection for Ansible
 
-The Infoblox BloxOne Collection (`infoblox.universal_ddi`) includes a variety of Ansible modules to help automate the management of BloxOne services. 
+The Infoblox universal_ddi Collection (`infoblox.universal_ddi`) includes a variety of Ansible modules to help automate the management of universal_ddi services. 
 
 ## Description 
 Infoblox Universal DDI Modules for Ansible Collections facilitate the DNS and IPAM automation of VM workloads that are deployed across multiple platforms.
@@ -79,7 +79,7 @@ The `infoblox.universal_ddi` modules collection has the following content:
 The `infoblox.universal_ddi` collection can be installed from git repository.
 
 ```shell
-ansible-galaxy collection install git+https://github.com/infobloxopen/bloxone-ansible.git,v2
+ansible-galaxy collection install git+https://github.com/infobloxopen/universal_ddi-ansible.git,v2
 ```
 
 The python dependencies are not installed by `ansible-galaxy`. They can be manually installed using the following command:
@@ -94,7 +94,7 @@ By default ansible will install the collection in ~/.ansible/collections. Kindly
 collections_paths = ./collections
 ```
 ## Playbooks
-Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/bloxone-ansible/tree/v2/playbooks).
+Latest sample playbooks and examples are available at [playbooks](https://github.com/infobloxopen/universal-ddi-ansible/tree/v2/playbooks).
 ## Usage
 ### 1. Automated DNS View Management
 **Description:** Automate the creation or deletion of DNS views for separating DNS configurations based on different network segments
@@ -102,12 +102,12 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create a View
-  infoblox.bloxone.dns_view:
+  infoblox.universal_ddi.dns_view:
     name: "example-view"
     state: present
 
 - name: Delete the View
-  infoblox.bloxone.dns_view:
+  infoblox.universal_ddi.dns_view:
     name: "example-view"
     state: absent
 ```
@@ -117,12 +117,12 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create an ACL
-  infoblox.bloxone.dns_acl:
+  infoblox.universal_ddi.dns_acl:
     name: "example-acl"
     state: present
     
 - name: Delete the ACL
-  infoblox.bloxone.dns_acl:
+  infoblox.universal_ddi.dns_acl:
     name: "example-acl"
     state: absent
 ```
@@ -133,12 +133,12 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create an Auth NSG
-  infoblox.bloxone.dns_auth_nsg:
+  infoblox.universal_ddi.dns_auth_nsg:
     name: "example_nsg"
     state: present
 
 - name: Delete the Auth NSG
-  infoblox.bloxone.dns_auth_nsg:
+  infoblox.universal_ddi.dns_auth_nsg:
     name: "example_nsg"
     state: absent
 ```
@@ -149,14 +149,14 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create an Auth Zone
-  infoblox.bloxone.dns_auth_zone:
+  infoblox.universal_ddi.dns_auth_zone:
     fqdn: "test-auth-zone"
     primary_type: external
     view: "{{ view.id }}"
     state: present
 
 - name: Delete the Auth Zone
-  infoblox.bloxone.dns_auth_zone:
+  infoblox.universal_ddi.dns_auth_zone:
     fqdn: "test-auth-zone"
     primary_type: external
     view: "{{ view.id }}"
@@ -168,7 +168,7 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create a Delegation
-  infoblox.bloxone.dns_delegation:
+  infoblox.universal_ddi.dns_delegation:
     fqdn: "test-delegation"
     delegation_servers:
       - fqdn: "ns1.example.com."
@@ -177,7 +177,7 @@ Latest sample playbooks and examples are available at [playbooks](https://github
     state: present
 
 - name: Delete the Delegation
-  infoblox.bloxone.dns_delegation:
+  infoblox.universal_ddi.dns_delegation:
     fqdn: "test-delegation"
     view: "{{ view.id }}"
     state: absent
@@ -189,12 +189,12 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create a Forward Zone
-  infoblox.bloxone.dns_forward_zone:
+  infoblox.universal_ddi.dns_forward_zone:
     fqdn: "example_zone."
     state: present
 
 - name: Delete the Zone
-  infoblox.bloxone.dns_forward_zone:
+  infoblox.universal_ddi.dns_forward_zone:
     name: "example_zone."
     state: "absent"
 ```
@@ -205,12 +205,12 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create a Forward NSG
-  infoblox.bloxone.dns_forward_nsg:
+  infoblox.universal_ddi.dns_forward_nsg:
     name: "example_nsg"
     state: "present"
     
 - name: Delete the Forward NSG
-  infoblox.bloxone.dns_forward_nsg:
+  infoblox.universal_ddi.dns_forward_nsg:
     name: "example_nsg"
     state: "absent"
 ```
@@ -221,7 +221,7 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: Create a DNS A Record 
-  infoblox.bloxone.dns_record:
+  infoblox.universal_ddi.dns_record:
     zone: "{{ auth_zone.id }}"
     rdata:
       address: "192.168.10.10"
@@ -229,7 +229,7 @@ Latest sample playbooks and examples are available at [playbooks](https://github
     state: "present"
 
 - name: Delete the A Record
-  infoblox.bloxone.dns_record:
+  infoblox.universal_ddi.dns_record:
     zone: "{{ auth_zone.id }}"
     rdata:
       address: "192.168.10.10"
@@ -243,12 +243,12 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 **Example:**
 ```yaml
 - name: "Create an IP space"
-  infoblox.bloxone.ipam_ip_space:
+  infoblox.universal_ddi.ipam_ip_space:
       name: "example-ip-space"
       state: "present"
 
 - name: "Delete IP Space"
-  infoblox.bloxone.ipam_ip_space:
+  infoblox.universal_ddi.ipam_ip_space:
       name: "example-ip-space"
       state: "absent"
 ```
@@ -258,7 +258,7 @@ Description: Create and delete address blocks within an IP space for IP address 
 **Example:**
 ```yaml
 - name: "Create an Address Block"
-  infoblox.bloxone.ipam_address_block:
+  infoblox.universal_ddi.ipam_address_block:
     address: "10.0.0.0/16"
     space: "{{ ip_space.id }}"
     tags:
@@ -266,7 +266,7 @@ Description: Create and delete address blocks within an IP space for IP address 
     state: "present"
 
 - name: "Delete an Address Block"
-  infoblox.bloxone.ipam_address_block:
+  infoblox.universal_ddi.ipam_address_block:
     address: "10.0.0.0/16"
     space: "{{ ip_space.id }}"
     state: "absent"
@@ -278,13 +278,13 @@ Description: Create, update, and delete subnets within a specific address block.
 **Example:**
 ```yaml
 - name: "Create a subnet"
-  infoblox.bloxone.ipam_subnet:
+  infoblox.universal_ddi.ipam_subnet:
     address: "10.0.0.0/24"
     space: "{{ ip_space.id }}"
     state: "present"
 
 - name: "Delete a Subnet"
-  infoblox.bloxone.ipam_subnet:
+  infoblox.universal_ddi.ipam_subnet:
     address: "10.0.0.0/24"
     space: "{{ ip_space.id }}"
     state: "absent"
@@ -296,13 +296,13 @@ Description: Create, update, and delete subnets within a specific address block.
 **Example:**
 ```yaml
 - name: "Create an Address"
-  infoblox.bloxone.ipam_address:
+  infoblox.universal_ddi.ipam_address:
     address: "10.0.0.3"
     space: "{{ ip_space.id }}"
     state: "present"
     
 - name: "Delete an Address"
-  infoblox.bloxone.ipam_address:
+  infoblox.universal_ddi.ipam_address:
     address: "10.0.0.3"
     space: "{{ ip_space.id }}"
     state: "absent"
@@ -314,12 +314,12 @@ Description: Create, update, and delete subnets within a specific address block.
 **Example:**
 ```yaml
 - name: "Create a Host"
-  infoblox.bloxone.ipam_host:
+  infoblox.universal_ddi.ipam_host:
     name: "example_host"
     state: "present"
   
 - name: "Delete a host"
-  infoblox.bloxone.ipam_host:
+  infoblox.universal_ddi.ipam_host:
     name: "example_host"
     state: "absent"
 ```
@@ -330,14 +330,14 @@ Description: Create, update, and delete subnets within a specific address block.
 **Example:**
 ```yaml
 - name: "Create a Range"
-  infoblox.bloxone.ipam_range:
+  infoblox.universal_ddi.ipam_range:
     start: "10.0.0.1"
     end: "10.0.0.100"
     space: "{{ ip_space.id }}"
     state: "present"
     
 - name: "Delete the Range"
-  infoblox.bloxone.ipam_range:
+  infoblox.universal_ddi.ipam_range:
     start: "10.0.0.1"
     end: "10.0.0.100"
     space: "{{ ip_space.id }}"
@@ -352,7 +352,7 @@ See [COPYING](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
 
 ## Issues or RFEs
 
-You can open an issue or request for enhancement [here](https://github.com/infobloxopen/bloxone-ansible/issues)
+You can open an issue or request for enhancement [here](https://github.com/infobloxopen/universalddi-ansible/issues)
  
 
 
