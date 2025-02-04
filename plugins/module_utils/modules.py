@@ -20,7 +20,7 @@ except ImportError:
     UNIVERSAL_DDI_CLIENT_IMP_ERR = traceback.format_exc()
 
 
-class BloxoneAnsibleModule(AnsibleModule):
+class UniversalDDIAnsibleModule(AnsibleModule):
     def __init__(self, *args, **kwargs):
         # Add common arguments to the module argument_spec
         args_full = universal_ddi_client_common_argument_spec()
@@ -30,7 +30,7 @@ class BloxoneAnsibleModule(AnsibleModule):
             pass
         kwargs["argument_spec"] = args_full
 
-        super(BloxoneAnsibleModule, self).__init__(*args, **kwargs)
+        super(UniversalDDIAnsibleModule, self).__init__(*args, **kwargs)
         self._client = None
 
         if not HAS_UNIVERSAL_DDI_CLIENT:

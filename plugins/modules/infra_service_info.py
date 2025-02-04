@@ -43,25 +43,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Get Service Information by ID
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         id: "{{ service.id }}"
 
     - name: Get Service information by filters (Display Name)
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           service_name: "example_service"
 
     - name: Get Service information by filter query
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filter_query: "service_name=='example_service'"
 
     - name: Get Service information by tag filters
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         tag_filters:
           location: "site-1"
 """
@@ -178,16 +178,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from infra_mgmt import ServicesApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ServicesInfoModule(BloxoneAnsibleModule):
+class ServicesInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ServicesInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

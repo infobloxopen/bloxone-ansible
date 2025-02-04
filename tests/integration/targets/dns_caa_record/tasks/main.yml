@@ -1,0 +1,314 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        record_name: "test-caa-record-{{ 999999 | random | string }}"
+
+    - name: Create a CAA Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        state: present
+      check_mode: true
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+        - caa_record is changed
+        - caa_record_info is not failed
+        - caa_record_info.objects | length == 0
+
+    - name: Create a CAA Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+        that:
+        - caa_record is changed
+        - caa_record_info is not failed
+        - caa_record_info.objects | length == 1
+        - caa_record_info.objects[0].id == caa_record.id
+        - caa_record_info.objects[0].rdata.tag == "issue"
+        - caa_record_info.objects[0].rdata.value == "ca.example.com"
+        - caa_record_info.objects[0].type == "CAA"
+        - caa_record_info.objects[0].zone == caa_record.object.zone
+
+    - name: Create a CAA Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        state: present
+      register: caa_record
+    - assert:
+        that:
+          - caa_record is not changed
+          - caa_record is not failed
+
+    - name: Delete the CAA Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        type: "CAA"
+        state: absent
+      check_mode: true
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+        - caa_record is changed
+        - caa_record_info is not failed
+        - caa_record_info.objects | length == 1
+
+    - name: Delete the CAA Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        type: "CAA"
+        state: absent
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+        - caa_record_info is not failed
+        - caa_record_info.objects | length == 0
+
+    - name: Delete the CAA Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        type: "CAA"
+        state: absent
+      register: caa_record
+    - assert:
+       that:
+        - caa_record is not changed
+        - caa_record is not failed
+
+    - name: Create a CAA Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        comment: "This is a test CAA Record"
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+        - caa_record_info is not failed
+        - caa_record_info.objects | length == 1
+        - caa_record_info.objects[0].id == caa_record.id
+        - caa_record_info.objects[0].comment == "This is a test CAA Record"
+
+    - name: Create a CAA Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        ttl: 3600
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+        - caa_record_info is not failed
+        - caa_record_info.objects | length == 1
+        - caa_record_info.objects[0].id == caa_record.id
+        - caa_record_info.objects[0].ttl == 3600
+
+    - name: Create DNS CAA Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        disabled: true
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+          - caa_record_info is not failed
+          - caa_record_info.objects | length == 1
+          - caa_record_info.objects[0].id == caa_record.id
+          - caa_record_info.objects[0].disabled == true
+
+    - name: Create DNS CAA Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        tags:
+          location: "site-1"
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+          - caa_record_info is not failed
+          - caa_record_info.objects | length == 1
+          - caa_record_info.objects[0].id == caa_record.id
+          - caa_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create a CAA Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+          - caa_record_info is not failed
+          - caa_record_info.objects | length == 1
+          - caa_record_info.objects[0].id == caa_record.id
+          - caa_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create a CAA Record with Flags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+          flags: 1
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+         - caa_record_info is not failed
+         - caa_record_info.objects | length == 1
+         - caa_record_info.objects[0].id == caa_record.id
+         - caa_record_info.objects[0].rdata.flags == 1
+
+    - name: Create a CAA record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        state: present
+      register: caa_record
+    - name: Get information about the CAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CAA"
+      register: caa_record_info
+    - assert:
+       that:
+          - caa_record_info is not failed
+          - caa_record_info.objects | length == 1
+          - caa_record_info.objects[0].id == caa_record.id
+          - caa_record_info.objects[0].name_in_zone == caa_record.object.name_in_zone
+          - caa_record_info.objects[0].zone == caa_record.object.zone
+
+  always:
+    - name: "Delete CAA Record"
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "CAA"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        state: absent
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

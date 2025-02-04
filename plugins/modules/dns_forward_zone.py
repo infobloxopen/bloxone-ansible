@@ -91,17 +91,17 @@ options:
         required: true
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a Forward Zone
-    infoblox.bloxone.dns_forward_zone:
+    infoblox.universal_ddi.dns_forward_zone:
       fqdn: "example_zone."
       state: present
 
   - name: Create an Forward Zone with Additional Fields
-    infoblox.bloxone.dns_forward_zone:
+    infoblox.universal_ddi.dns_forward_zone:
       fqdn: "example_zone."
       comment: "Example Forward Zone"
       disabled: true
@@ -113,7 +113,7 @@ EXAMPLES = r"""
         location: "site-1"
 
   - name: Delete the Zone
-    infoblox.bloxone.dns_forward_zone:
+    infoblox.universal_ddi.dns_forward_zone:
       name: "example_zone."
       state: "absent"
 """  # noqa: E501
@@ -256,16 +256,16 @@ item:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import ForwardZone, ForwardZoneApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ForwardZoneModule(BloxoneAnsibleModule):
+class ForwardZoneModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ForwardZoneModule, self).__init__(*args, **kwargs)
 

@@ -1,0 +1,275 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a CNAME record with a random name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-cname-record-{{ 999999 | random | string }}"
+
+    - name: Create a CNAME Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example.com."
+        state: present
+      check_mode: true
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+        - cname_record is changed
+        - cname_record_info is not failed
+        - cname_record_info.objects | length == 0
+
+    - name: Create a CNAME Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example.com."
+        state: present
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+        that:
+        - cname_record is changed
+        - cname_record_info is not failed
+        - cname_record_info.objects | length == 1
+        - cname_record_info.objects[0].id == cname_record.id
+        - cname_record_info.objects[0].rdata.cname == "www.example.com."
+        - cname_record_info.objects[0].type == "CNAME"
+        - cname_record_info.objects[0].zone == cname_record.object.zone
+
+    - name: Create a CNAME Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example.com."
+        state: present
+      register: cname_record
+    - assert:
+        that:
+          - cname_record is not changed
+          - cname_record is not failed
+
+    - name: Delete the CNAME Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example.com."
+        state: absent
+      check_mode: true
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+        - cname_record is changed
+        - cname_record_info is not failed
+        - cname_record_info.objects | length == 1
+
+    - name: Delete the CNAME Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example.com."
+        state: absent
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+        - cname_record_info is not failed
+        - cname_record_info.objects | length == 0
+
+    - name: Delete the CNAME Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example.com."
+        state: absent
+      register: cname_record
+    - assert:
+       that:
+        - cname_record is not changed
+        - cname_record is not failed
+
+    - name: Create a CNAME Record with comment
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example1.com."
+        comment: "This is a test CNAME Record"
+        state: present
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+        - cname_record_info is not failed
+        - cname_record_info.objects | length == 1
+        - cname_record_info.objects[0].id == cname_record.id
+        - cname_record_info.objects[0].comment == "This is a test CNAME Record"
+
+    - name: Create a CNAME Record with TTL
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example1.com."
+        ttl: 3600
+        state: present
+      register: cname_record_ttl
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+        - cname_record_info is not failed
+        - cname_record_info.objects | length == 1
+        - cname_record_info.objects[0].id == cname_record.id
+        - cname_record_info.objects[0].ttl == 3600
+
+    - name: Create a CNAME Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example1.com."
+        disabled: true
+        state: present
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+          - cname_record_info is not failed
+          - cname_record_info.objects | length == 1
+          - cname_record_info.objects[0].id == cname_record.id
+          - cname_record_info.objects[0].disabled == true
+
+    - name: Create a CNAME Record with Tags
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example1.com."
+        tags:
+          location: "site-1"
+        state: present
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+       that:
+            - cname_record_info is not failed
+            - cname_record_info.objects | length == 1
+            - cname_record_info.objects[0].id == cname_record.id
+            - cname_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create a CNAME Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "CNAME"
+        rdata:
+          cname: "www.example1.com."
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: cname_record
+    - name: Get information about the CNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "CNAME"
+      register: cname_record_info
+    - assert:
+        that:
+          - cname_record_info is not failed
+          - cname_record_info.objects | length == 1
+          - cname_record_info.objects[0].id == cname_record.id
+          - cname_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+  always:
+     - name: "Delete the CNAME Record"
+       infoblox.universal_ddi.dns_record:
+         name_in_zone: "{{ record_name }}"
+         zone: "{{ _auth_zone.id }}"
+         type: "CNAME"
+         rdata:
+           cname: "www.example1.com."
+         state: absent
+       ignore_errors: true
+
+     - name: "Delete the Auth Zone"
+       ansible.builtin.include_role:
+         name: setup_auth_zone
+         tasks_from: cleanup.yml
+
+     - name: "Delete the View"
+       ansible.builtin.include_role:
+         name: setup_view
+         tasks_from: cleanup.yml

@@ -43,25 +43,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get Auth NSG information by ID
-    infoblox.bloxone.dns_auth_nsg_info:
+    infoblox.universal_ddi.dns_auth_nsg_info:
       id: "{{ auth_nsg_id }}"
 
   - name: Get Auth NSG information by filters (e.g. name)
-    infoblox.bloxone.dns_auth_nsg_info:
+    infoblox.universal_ddi.dns_auth_nsg_info:
       filters:
         name: "example_nsg"
 
   - name: Get Auth NSG information by raw filter query
-    infoblox.bloxone.dns_auth_nsg_info:
+    infoblox.universal_ddi.dns_auth_nsg_info:
       filter_query: "name=='example_nsg'"
 
   - name: Get Auth NSG information by tag filters
-    infoblox.bloxone.dns_auth_nsg_info:
+    infoblox.universal_ddi.dns_auth_nsg_info:
       tag_filters:
         location: "site-1"
 """  # noqa: E501
@@ -277,16 +277,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import AuthNsgApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AuthNsgInfoModule(BloxoneAnsibleModule):
+class AuthNsgInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AuthNsgInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

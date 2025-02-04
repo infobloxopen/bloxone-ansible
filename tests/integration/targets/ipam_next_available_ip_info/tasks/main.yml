@@ -4,12 +4,12 @@
 # - Next Available Address in Range
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
     - name: Get Information about Next Available IP in Address Block
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _address_block.id }}"
         count: 5
       register: next_available_address_info
@@ -19,7 +19,7 @@
           - next_available_address_info.objects | length == 5
 
     - name: Get Information about Next Available IP in Address Block Default Count
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _address_block.id }}"
       register: next_available_address_info
     - assert:
@@ -28,7 +28,7 @@
           - next_available_address_info.objects | length == 1
 
     - name: Get Information about Next Available IP in Subnet
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _subnet.id }}"
         count: 5
       register: next_available_address_info
@@ -38,7 +38,7 @@
           - next_available_address_info.objects | length == 5
 
     - name: Get Information about Next Available IP in Subnet Default Count
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _subnet.id }}"
       register: next_available_address_info
     - assert:

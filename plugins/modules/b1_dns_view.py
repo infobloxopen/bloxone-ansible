@@ -15,8 +15,8 @@ short_description: Configure DNS View on Infoblox BloxOne DDI
 version_added: "1.0.1"
 deprecated:
   removed_in: 3.0.0
-  why: This module is deprecated and will be removed in version 3.0.0. Use M(infoblox.bloxone.dns_view) instead.
-  alternative: Use M(infoblox.bloxone.dns_view) instead.
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(infoblox.universal_ddi.dns_view) instead.
+  alternative: Use M(infoblox.universal_ddi.dns_view) instead.
 description:
   - Get, Create, Update and Delete DNS View on Infoblox BloxOne DDI. This module manages the DNS View object using BloxOne REST APIs.
 requirements:
@@ -111,7 +111,7 @@ RETURN = """ # """
 import json
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request, Utilities
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.b1ddi import Request, Utilities
 
 
 def get_dns_view(data):

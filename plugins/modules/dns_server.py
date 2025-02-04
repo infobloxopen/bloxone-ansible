@@ -996,17 +996,17 @@ options:
                 type: str
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a DNS Server
-    infoblox.bloxone.dns_server:
+    infoblox.universal_ddi.dns_server:
       name: "example_server"
       state: "present"
 
   - name: Create a DNS Server with Additional Fields
-    infoblox.bloxone.dns_server:
+    infoblox.universal_ddi.dns_server:
       name: "example_server"
       recursion_enabled: true
       forwarders:
@@ -1018,7 +1018,7 @@ EXAMPLES = r"""
       state: "present"
 
   - name: Delete the DNS Server
-    infoblox.bloxone.dns_server:
+    infoblox.universal_ddi.dns_server:
       name: "example_server"
       state: "absent"
 """
@@ -3344,16 +3344,16 @@ item:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import Server, ServerApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ServerModule(BloxoneAnsibleModule):
+class ServerModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ServerModule, self).__init__(*args, **kwargs)
 

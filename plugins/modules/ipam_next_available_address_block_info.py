@@ -32,23 +32,23 @@ options:
         type: int
         required: false
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: "Create an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ ip_space.id }}"
         state: "present"
 
     - name: Get Next Available Address Block Information by ID
-      infoblox.bloxone.ipam_next_available_address_block_info:
+      infoblox.universal_ddi.ipam_next_available_address_block_info:
           id: "{{ address_block.id }}"
           cidr: 20
 
     - name: Get Next Available Address Block Information by ID and Count
-      infoblox.bloxone.ipam_next_available_address_block_info:
+      infoblox.universal_ddi.ipam_next_available_address_block_info:
         id: "{{ address_block.id }}"
         cidr: 24
         count: 5
@@ -68,16 +68,16 @@ objects:
     returned: Always
 """
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import AddressBlockApi
     from universal_ddi_client import ApiException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class NextAvailableAddressBlockInfoModule(BloxoneAnsibleModule):
+class NextAvailableAddressBlockInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(NextAvailableAddressBlockInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

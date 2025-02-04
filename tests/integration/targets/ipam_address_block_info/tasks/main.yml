@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -10,7 +10,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Create an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         tags:
@@ -19,7 +19,7 @@
       register: address_block
 
     - name: Get Address Block information by ID
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         id: "{{ address_block.id }}"
       register: address_block_info
     - assert:
@@ -28,7 +28,7 @@
           - address_block_info.objects[0].name == address_block.object.name
 
     - name: Get Address Block information by filters
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -40,7 +40,7 @@
           - address_block_info.objects[0].id == address_block.id
 
     - name: Get Address Block information by filter query
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filter_query: "address=='10.0.0.0' and space=='{{ _ip_space.id }}' and cidr==16"
       register: address_block_info
     - assert:
@@ -49,7 +49,7 @@
           - address_block_info.objects[0].id == address_block.id
 
     - name: Get Address Block information by tag filters
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: address_block_info

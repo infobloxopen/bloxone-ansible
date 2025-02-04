@@ -60,19 +60,19 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
 - name: Create TSIG Key
-  infoblox.bloxone.tsig_key:
+  infoblox.universal_ddi.tsig_key:
     name: "test-tsig-key"
     secret: "rA+n89+aOCjFVNzBPbYkl+j3oQcl4U19JAkCIK9Ad8k="
     algorithm: "hmac_sha512"
     state: present
 
 - name: Create TSIG Key with additional Fields
-  infoblox.bloxone.tsig_key:
+  infoblox.universal_ddi.tsig_key:
     name: "test-tsig-key"
     secret: "fA+n89+aOCjFVNzBPbYkl+j3oQcl4U19JAkCIK9Ad8k="
     algorithm: "hmac_sha512"
@@ -81,7 +81,7 @@ EXAMPLES = r"""
       location: "site-1"
       
 - name: Create TSIG Key with secret dynamically generated
-  infoblox.bloxone.tsig_key:
+  infoblox.universal_ddi.tsig_key:
     name: "test-tsig-key2"
     algorithm: "hmac_sha512"
     state: present
@@ -89,7 +89,7 @@ EXAMPLES = r"""
       location: "site-1"
 
 - name: Delete TSIG Key
-  infoblox.bloxone.tsig_key:
+  infoblox.universal_ddi.tsig_key:
     name: "test-tsig-key"
     state: absent
 """  # noqa: E501
@@ -160,16 +160,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from keys import GenerateTsigApi, TsigApi, TSIGKey
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class TsigKeyModule(BloxoneAnsibleModule):
+class TsigKeyModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(TsigKeyModule, self).__init__(*args, **kwargs)
 

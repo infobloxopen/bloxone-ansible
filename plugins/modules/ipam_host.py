@@ -94,28 +94,28 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: "Create an IP space (required as parent)"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
         name: "example_ip_space"
         state: "present"
 
     - name: "Create a Subnet (required as parent)"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space.id }}"
         state: "present"
 
     - name: "Create a Host"
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "example_host"
         state: "present"
 
     - name: "Create a Host with Additional Fields"
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
           name: "example_host"
           addresses:
               - address: "10.0.0.1"
@@ -126,7 +126,7 @@ EXAMPLES = r"""
           state: "present"
 
     - name: "Delete a host"
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "example_host"
         state: "absent"
 """
@@ -235,16 +235,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import IpamHost, IpamHostApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class IpamHostModule(BloxoneAnsibleModule):
+class IpamHostModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(IpamHostModule, self).__init__(*args, **kwargs)
 

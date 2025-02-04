@@ -8,7 +8,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 ---
-name: bloxone
+name: universal_ddi
 author:
   - "Vedant Sethia (@vedantsethia)"
   - "Chris Marrison (@ccmarris)"
@@ -38,7 +38,7 @@ options:
 EXAMPLES = """
 - name: fetch all IP Space objects
   ansible.builtin.set_fact:
-    ip_space: "{{ lookup('bloxone', '/ipam/ipspace' , filters={'name': 'vsethia-ip-space'}, tfilters={'Tagname': '<value>'}, fields=['id', 'name', 'comment'] , provider={'host': '{{host}}', 'api_key': '{{api_key}}'}) }}"
+    ip_space: "{{ lookup('universal_ddi', '/ipam/ipspace' , filters={'name': 'vsethia-ip-space'}, tfilters={'Tagname': '<value>'}, fields=['id', 'name', 'comment'] , provider={'host': '{{host}}', 'api_key': '{{api_key}}'}) }}"
 
 """  # noqa: E501
 
@@ -128,7 +128,7 @@ class LookupModule(LookupBase):
     def run(self, terms, variables=None, **kwargs):
         if not HAS_REQUESTS_LIB:
             raise AnsibleError(
-                "The 'bloxone' lookup cannot be run without the 'requests' library installed."
+                "The 'universal_ddi' lookup cannot be run without the 'requests' library installed."
             ) from REQUESTS_LIB_IMP_ERR
         try:
             obj_type = terms[0]

@@ -1,0 +1,82 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a random TXT record name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-txt-record-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic Test for TXT Record
+    - name: Create a TXT Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          text: "sample text"
+        type: "TXT"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: txt_record
+
+    - name: Get TXT Record information by ID
+      infoblox.universal_ddi.dns_record_info:
+        id: "{{ txt_record.id }}"
+      register: txt_record_info
+    - assert:
+        that:
+          - txt_record_info.objects | length == 1
+
+    - name: Get TXT Record information by filters
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "TXT"
+      register: txt_record_info
+    - assert:
+        that:
+          - txt_record_info.objects | length == 1
+          - txt_record_info.objects[0].id == txt_record.id
+
+    - name: Get TXT Record information by raw filter query
+      infoblox.universal_ddi.dns_record_info:
+        filter_query: "name_in_zone=='{{ record_name }}' and zone=='{{ _auth_zone.id }}' and type=='TXT'"
+    - assert:
+        that:
+          - txt_record_info.objects | length == 1
+          - txt_record_info.objects[0].id == txt_record.id
+
+    - name: Get TXT Record information by tag filters
+      infoblox.universal_ddi.dns_record_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - txt_record_info.objects | length == 1
+          - txt_record_info.objects[0].id == txt_record.id
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete TXT Record"
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          text: "sample text"
+        type: "TXT"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

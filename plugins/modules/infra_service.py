@@ -69,25 +69,25 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a host
-    infoblox.bloxone.infra_host:
+    infoblox.universal_ddi.infra_host:
       display_name: "example_host"
       state: "present"
     register: infra_host
 
   - name: Create a service
-    infoblox.bloxone.infra_service:
+    infoblox.universal_ddi.infra_service:
       name: "example_service"
       service_type: "dns"
       pool_id: "{{ infra_host.object.pool_id }}"
       state: "present"
 
   - name: Create a Service with Additional Fields
-    infoblox.bloxone.infra_service:
+    infoblox.universal_ddi.infra_service:
       name: "example_service"
       description: "Example Infra Service"
       service_type: "dns"
@@ -102,7 +102,7 @@ EXAMPLES = r"""
         location: "site-1"
 
   - name: Delete the Service
-    infoblox.bloxone.infra_service:
+    infoblox.universal_ddi.infra_service:
       name: "example_service"
       service_type: "dns"
       pool_id: "{{ infra_host.object.pool_id }}"
@@ -220,16 +220,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from infra_mgmt import Service, ServicesApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class InfraServiceModule(BloxoneAnsibleModule):
+class InfraServiceModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(InfraServiceModule, self).__init__(*args, **kwargs)
 

@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
 
@@ -10,7 +10,7 @@
         tag_value: "tf_acc_test"
 
     - name: Get Kerberos key information by Filters (domain)
-      infoblox.bloxone.kerberos_key_info:
+      infoblox.universal_ddi.kerberos_key_info:
         filters:
           domain: "NEO1.COM"
       register: kerberos_info
@@ -26,7 +26,7 @@
           - kerberos_info.objects[0].version is defined
 
     - name: Get Kerberos key information by Filters (principal)
-      infoblox.bloxone.kerberos_key_info:
+      infoblox.universal_ddi.kerberos_key_info:
         filters:
           principal: "{{ principal }}"
       register: kerberos_info
@@ -41,7 +41,7 @@
           - kerberos_info.objects[0].version is defined
 
     - name: Get Kerberos key information by filter query
-      infoblox.bloxone.kerberos_key_info:
+      infoblox.universal_ddi.kerberos_key_info:
         filter_query: "principal=='{{ principal }}'"
       register: kerberos_info
     - assert:
@@ -55,7 +55,7 @@
           - kerberos_info.objects[0].version is defined
 
     - name: Get Kerberos key information by tag filters
-      infoblox.bloxone.kerberos_key_info:
+      infoblox.universal_ddi.kerberos_key_info:
         tag_filters:
           used_for: "{{ tag_value }}"
       register: kerberos_info

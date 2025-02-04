@@ -43,26 +43,26 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get Forward Zone information by filters (FQDN)
-    infoblox.bloxone.dns_forward_zone_info:
+    infoblox.universal_ddi.dns_forward_zone_info:
       filters:
         id: "{{ forward_zone_id }}"
 
   - name: Get Forward Zone information by filters (e.g. name)
-    infoblox.bloxone.dns_forward_zone_info:
+    infoblox.universal_ddi.dns_forward_zone_info:
       filters:
         name: "example_zone"
 
   - name: Get Forward Zone information by raw filter query
-    infoblox.bloxone.dns_auth_zone_info:
+    infoblox.universal_ddi.dns_auth_zone_info:
       filter_query: "name=='example_zone'"
 
   - name: Get Forward Zone information by tag filters
-    infoblox.bloxone.dns_forward_zone_info:
+    infoblox.universal_ddi.dns_forward_zone_info:
       tag_filters:
         location: "site-1"
 """  # noqa: E501
@@ -206,16 +206,16 @@ objects:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import ForwardZoneApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ForwardZoneInfoModule(BloxoneAnsibleModule):
+class ForwardZoneInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ForwardZoneInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

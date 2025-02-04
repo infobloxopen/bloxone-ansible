@@ -625,17 +625,17 @@ options:
                 type: bool
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create an Auth Zone
-    infoblox.bloxone.dns_auth_zone:
+    infoblox.universal_ddi.dns_auth_zone:
       name: "example_zone"
       state: "present"
 
   - name: Create an Auth Zone with Additional Fields
-    infoblox.bloxone.dns_auth_zone:
+    infoblox.universal_ddi.dns_auth_zone:
       name: "example_zone"
       comment: "Example Auth Zone"
       query_acl:
@@ -649,7 +649,7 @@ EXAMPLES = r"""
         location: "my-location"
 
   - name: Delete the Zone
-    infoblox.bloxone.dns_auth_zone:
+    infoblox.universal_ddi.dns_auth_zone:
       name: "example_zone"
       state: "absent"
 """  # noqa: E501
@@ -1965,16 +1965,16 @@ item:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import AuthZone, AuthZoneApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AuthZoneModule(BloxoneAnsibleModule):
+class AuthZoneModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AuthZoneModule, self).__init__(*args, **kwargs)
 

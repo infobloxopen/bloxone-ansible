@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -10,13 +10,13 @@
 
 
     - name: Create a View (check mode)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: present
       check_mode: true
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -27,12 +27,12 @@
           - view_info.objects | length == 0
 
     - name: Create a View
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -44,7 +44,7 @@
           - view_info.objects[0].name == view.object.name
 
     - name: Create a View (idempotent)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: present
       register: view
@@ -54,13 +54,13 @@
           - view is not failed
 
     - name: Delete the View (check mode)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: absent
       check_mode: true
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -71,12 +71,12 @@
           - view_info.objects | length == 1
 
     - name: Delete the View
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: absent
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -87,7 +87,7 @@
           - view_info.objects | length == 0
 
     - name: Delete a View (idempotent)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: absent
       register: view
@@ -97,14 +97,14 @@
           - view is not failed
 
     - name: Create a View with tags
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         tags:
           location: "site-1"
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -116,13 +116,13 @@
           - view_info.objects[0].tags.location == "site-1"
 
     - name: Create a View with a comment
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         comment: "Test Comment"
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -134,13 +134,13 @@
           - view_info.objects[0].comment == "Test Comment"
 
     - name: Create a View with Edns Option In Outgoing Query Enabled
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         add_edns_option_in_outgoing_query: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -153,7 +153,7 @@
 
     - name: Create a View with a Custom Root NS
 
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         custom_root_ns:
           - address: "192.168.10.10"
@@ -161,7 +161,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -176,13 +176,13 @@
 
     - name: Create a View with Custom Root NS Enabled
 
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         custom_root_ns_enabled: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -196,13 +196,13 @@
 
     - name: Create a View with Disabled
 
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         disabled: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -214,13 +214,13 @@
           - view_info.objects[0].disabled == true
 
     - name: Create a View with DNS Sec Enabled Validation
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         dnssec_enable_validation: false
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -232,7 +232,7 @@
           - view_info.objects[0].dnssec_enable_validation == false
 
     - name: Create a View with DNS Sec Trust Anchors
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         dnssec_trust_anchors:
           - algorithm: 8
@@ -242,7 +242,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -257,13 +257,13 @@
 
       # Set false to test against default behaviour of the API
     - name: Create a View with DNS Sec Keys Expiry Validation
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         dnssec_validate_expiry: false
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -275,14 +275,14 @@
           - view_info.objects[0].dnssec_validate_expiry == false
 
     - name: Create a View with Default TTL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         dtc_config:
           default_ttl: 400
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -294,7 +294,7 @@
           - view_info.objects[0].dtc_config.default_ttl == 400
 
     - name: Create a View with ECS Enabled and ECS Zones
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         ecs_enabled: true
         ecs_zones:
@@ -305,7 +305,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -322,13 +322,13 @@
           - view_info.objects[0].ecs_zones | length == 2
 
     - name: Create a View with Ecs Forwarding
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         ecs_forwarding: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -340,13 +340,13 @@
           - view_info.objects[0].ecs_enabled == true
 
     - name: Create a View with Ecs Prefix v4
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         ecs_prefix_v4: 1
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -358,13 +358,13 @@
           - view_info.objects[0].ecs_prefix_v4 == 1
 
     - name: Create a View with Ecs Prefix v6
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         ecs_prefix_v6: 1
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -376,13 +376,13 @@
           - view_info.objects[0].ecs_prefix_v6 == 1
 
     - name: Create a View with Edns UDP Size
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         edns_udp_size: 4096
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -394,13 +394,13 @@
           - view_info.objects[0].edns_udp_size == 4096
 
     - name: Create a View with Filter Aaaa On V4 (yes)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         filter_aaaa_on_v4: "yes"
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -412,13 +412,13 @@
           - view_info.objects[0].filter_aaaa_on_v4 == "yes"
 
     - name: Create a View with Filter Aaaa On V4 (break_dnssec)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         filter_aaaa_on_v4: "break_dnssec"
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -430,7 +430,7 @@
           - view_info.objects[0].filter_aaaa_on_v4 == "break_dnssec"
 
     - name: Create a View with Forwarders
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         forwarders:
             - address: "192.168.10.10"
@@ -438,7 +438,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -451,13 +451,13 @@
           - view_info.objects[0].forwarders[0].fqdn == "as-example.com."
 
     - name: Create a View with Forwarders Only Enabled
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         forwarders_only: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -469,13 +469,13 @@
           - view_info.objects[0].forwarders_only == true
 
     - name: Create a View with GSS Tsig Enabled
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         gss_tsig_enabled: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -487,7 +487,7 @@
           - view_info.objects[0].gss_tsig_enabled == true
 
     - name: "Create an View space with Inheritance Sources"
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         inheritance_sources:
           # The API currently requires all fields inside the inheritance config to be explicitly provided,
@@ -544,7 +544,7 @@
             rname:
               action: inherit
     - name: Get information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -554,13 +554,13 @@
           - view_info.objects | length == 1
 
     - name: Create a View with Lame TTL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         lame_ttl: 3600
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -572,7 +572,7 @@
           - view_info.objects[0].lame_ttl == 3600
 
     - name: Create a View with Match Clients ACL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         match_clients_acl:
           - access: "allow"
@@ -583,7 +583,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -600,7 +600,7 @@
           - view_info.objects[0].match_clients_acl | length == 2
 
     - name: Create a View with Match Destinations ACL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         match_destinations_acl:
           - access: "allow"
@@ -611,7 +611,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -628,13 +628,13 @@
           - view_info.objects[0].match_destinations_acl | length == 2
 
     - name: Create a View with Max Cache TTL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         max_cache_ttl: 1
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -646,13 +646,13 @@
           - view_info.objects[0].max_cache_ttl == 1
 
     - name: Create a View with Max Negative TTL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         max_negative_ttl: 1
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -664,13 +664,13 @@
           - view_info.objects[0].max_negative_ttl == 1
 
     - name: Create a View with Max UDP Size
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         max_udp_size: 4096
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -682,13 +682,13 @@
           - view_info.objects[0].max_udp_size == 4096
 
     - name: Create a View with Minimal Responses
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         minimal_responses: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -700,13 +700,13 @@
           - view_info.objects[0].minimal_responses == true
 
     - name: Create a View with Notify
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         notify: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -718,7 +718,7 @@
           - view_info.objects[0].notify == true
 
     - name: Create a View with Query ACL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         query_acl:
           - access: "allow"
@@ -729,7 +729,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -747,7 +747,7 @@
             
           - name: Create a View with Recursion ACL
             tags: runm
-            infoblox.bloxone.dns_view:
+            infoblox.universal_ddi.dns_view:
               name: "{{ name }}"
               recursion_acl:
                 - access: "allow"
@@ -758,7 +758,7 @@
               state: present
             register: view
           - name: Get Information about the View
-            infoblox.bloxone.dns_view_info:
+            infoblox.universal_ddi.dns_view_info:
               filters:
                 name: "{{ name }}"
             register: view_info
@@ -775,13 +775,13 @@
                 - view_info.objects[0].recursion_acl | length == 2
 
     - name: Create a View with Recursion Enabled
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         recursion_enabled: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -793,7 +793,7 @@
           - view_info.objects[0].recursion_enabled == true
 
     - name: Create a View with Sort List
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         sort_list:
           - element: "any"
@@ -804,7 +804,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -820,13 +820,13 @@
           - view_info.objects[0].sort_list[1].source == "192.168.11.11"
 
     - name: Create a View and Synthesize Address Records From HTTPS
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         synthesize_address_records_from_https: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -838,7 +838,7 @@
           - view_info.objects[0].synthesize_address_records_from_https == true
 
     - name: Create a View with Transfer ACL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         transfer_acl:
           - access: "allow"
@@ -849,7 +849,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -866,7 +866,7 @@
           - view_info.objects[0].transfer_acl | length == 2
             
     - name: Create a View with Update ACL
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         update_acl:
           - access: "allow"
@@ -877,7 +877,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -894,13 +894,13 @@
           - view_info.objects[0].update_acl | length == 2
 
     - name: Create a View with Use Forwarders For Subzones
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         use_forwarders_for_subzones: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -912,13 +912,13 @@
           - view_info.objects[0].use_forwarders_for_subzones == true
 
     - name: Create a View with Use Root Forwarders For Local Resolution With B1td
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         use_root_forwarders_for_local_resolution_with_b1td: true
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -930,7 +930,7 @@
           - view_info.objects[0].use_root_forwarders_for_local_resolution_with_b1td == true
 
     - name: Create a View with Zone Authority
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         zone_authority:
             default_ttl: 28600
@@ -944,7 +944,7 @@
         state: present
       register: view
     - name: Get Information about the View
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -965,7 +965,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete View"
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: "absent"
       ignore_errors: true

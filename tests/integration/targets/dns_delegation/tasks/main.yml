@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
 
@@ -10,7 +10,7 @@
         delegation_fqdn: "test-delegation--{{ 999999 | random | string }}.{{ _fqdn_auth_zone }}"
 
     - name: Create a Delegation (check mode)
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         delegation_servers:
@@ -20,7 +20,7 @@
       check_mode: true
       register: delegation
     - name: Get Information about the Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -32,7 +32,7 @@
           - delegation_info.objects | length == 0
 
     - name: Create a Delegation
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         delegation_servers:
           - fqdn: "ns1.example.com."
@@ -41,7 +41,7 @@
         state: present
       register: delegation
     - name: Get Information about the Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -53,7 +53,7 @@
           - delegation_info.objects[0].fqdn == delegation.object.fqdn
 
     - name: Create a Delegation (idempotent)
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         delegation_servers:
@@ -67,14 +67,14 @@
           - delegation is not failed
 
     - name: Delete the Delegation (check mode)
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         state: absent
       check_mode: true
       register: delegation
     - name: Get Information about the Delegation before deletion
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -86,13 +86,13 @@
           - delegation_info.objects | length == 1
 
     - name: Delete the Delegation
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         state: absent
       register: delegation
     - name: Get Information about the Delegation after deletion
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -104,7 +104,7 @@
           - delegation_info.objects | length == 0
 
     - name: Delete the Delegation (idempotent)
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         state: absent
@@ -115,7 +115,7 @@
           - delegation is not failed
 
     - name: Create DNS Delegation with a Comment
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         comment: "Delegation zone is created by Ansible"
@@ -125,7 +125,7 @@
         state: present
       register: delegation
     - name: Get Information about the DNS Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -139,7 +139,7 @@
           - delegation_info.objects[0].view == _view.id
 
     - name: Create DNS Delegation with Delegation Server
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         comment: "Delegation zone is created by Ansible"
@@ -149,7 +149,7 @@
         state: present
       register: delegation
     - name: Get Information about the DNS Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -164,7 +164,7 @@
           - delegation_info.objects[0].comment == "Delegation zone is created by Ansible"
 
     - name: Create DNS Delegation with Disabled set to false
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         comment: "Delegation zone is created by Ansible"
@@ -175,7 +175,7 @@
         state: present
       register: delegation
     - name: Get Information about the DNS Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -189,7 +189,7 @@
           - delegation_info.objects[0].comment == "Delegation zone is created by Ansible"
 
     - name: Create DNS Delegation with FQDN
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         comment: "Delegation zone created with Ansible for FQDN test"
@@ -199,7 +199,7 @@
         state: present
       register: delegation
     - name: Get Information about the DNS Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -213,7 +213,7 @@
           - delegation_info.objects[0].comment == "Delegation zone created with Ansible for FQDN test"
 
     - name: Create DNS Delegation with Tags
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         comment: "Delegation zone created with Ansible for tags test"
@@ -225,7 +225,7 @@
         state: present
       register: delegation
     - name: Get Information about the DNS Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -242,7 +242,7 @@
 
   always:
     - name: "Clean up DNS Delegation"
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         state: absent

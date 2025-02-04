@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
         range_end: "10.0.0.254"
 
     - name: "Create an IPAM Range"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -21,7 +21,7 @@
       register: ipam_range
 
     - name: Get IPAM Range information by ID
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         id: "{{ ipam_range.id }}"
       register: range_info
     - assert:
@@ -30,7 +30,7 @@
           - range_info.objects[0].name == ipam_range.object.name
 
     - name: Get IPAM Range information by filters
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -42,7 +42,7 @@
           - range_info.objects[0].id == ipam_range.id
 
     - name: Get IPAM Range information by filter query
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filter_query: "start=='{{ range_start }}' and end=='{{ range_end }}' and space=='{{ _ip_space.id }}'"
       register: range_info
     - assert:
@@ -51,7 +51,7 @@
           - range_info.objects[0].id == ipam_range.id
 
     - name: Get IPAM Range information by tag filters
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: range_info
@@ -63,7 +63,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete IPAM Range"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"

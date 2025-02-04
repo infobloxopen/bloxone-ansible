@@ -79,7 +79,7 @@ EXAMPLES = """
 RETURN = """ # """
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.b1ddi import Request
 
 
 def get_ipv4_reservation(data):

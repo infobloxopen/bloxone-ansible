@@ -73,18 +73,18 @@ options:
         required: true
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
 - name: Create an Auth Zone (Delegation requires a parent zone)
-  infoblox.bloxone.dns_auth_zone:
+  infoblox.universal_ddi.dns_auth_zone:
     fqdn: example_zone
     primary_type: cloud
     state: present
 
 - name: Create a Delegation
-  infoblox.bloxone.dns_delegation:
+  infoblox.universal_ddi.dns_delegation:
     fqdn: delegation.example_zone.
     view: default
     delegation_servers:
@@ -95,7 +95,7 @@ EXAMPLES = r"""
       location: my-location
 
 - name: Delete the DNS Delegation
-  infoblox.bloxone.dns_delegation:
+  infoblox.universal_ddi.dns_delegation:
     fqdn: delegation.example_zone.
     view: default
     state: absent
@@ -179,16 +179,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import Delegation, DelegationApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class DelegationModule(BloxoneAnsibleModule):
+class DelegationModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(DelegationModule, self).__init__(*args, **kwargs)
 

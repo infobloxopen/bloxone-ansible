@@ -13,6 +13,10 @@ module: b1_ns_record
 author: "Amit Mishra , amishra@infobloc.com"
 short_description: Configure DNS Authoritative Zone on Infoblox BloxOne DDI
 version_added: "1.0.1"
+deprecated:
+    removed_in: 3.0.0
+    why: This module is deprecated and will be removed in version 3.0.0. Use M(dns_record) instead.
+    alternative: Use M(dns_record) instead.
 description:
   - Get, Create, Update and Delete DNS Authoritative Zone on Infoblox BloxOne DDI. This module manages the DNS Authoritative Zone object using BloxOne REST APIs.
 requirements:
@@ -133,7 +137,7 @@ RETURN = """ # """
 import json
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request, Utilities
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.b1ddi import Request, Utilities
 
 
 def get_ns_record(data):

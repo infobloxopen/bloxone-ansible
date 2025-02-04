@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,7 +9,7 @@
         dns_view_name: "my-test-view-{{ 999999 | random | string }}"
 
     - name: Create a View
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ dns_view_name }}"
         state: present
       register: _view

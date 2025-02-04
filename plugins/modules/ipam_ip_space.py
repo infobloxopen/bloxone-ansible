@@ -805,23 +805,23 @@ options:
         type: str
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: "Create an IP space"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
       name: "my-ip-space"
       state: "present"
 
   - name: "Create an IP space with tags"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
       name: "my-ip-space"
       tags:
         location: "site-1"
 
   - name: "Create an IP space with Additional Fields"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
         name: "my-ip-space"
         dhcp_config:
             abandoned_reclaim_time: 3600
@@ -857,7 +857,7 @@ EXAMPLES = r"""
         comment: "IP Space"
 
   - name: "Delete an IP space"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
       name: "my-ip-space"
       state: "absent"
 """  # noqa: E501
@@ -2496,16 +2496,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import IPSpace, IpSpaceApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class IPSpaceModule(BloxoneAnsibleModule):
+class IPSpaceModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(IPSpaceModule, self).__init__(*args, **kwargs)
 

@@ -4,7 +4,7 @@
   # - Filter Delegation using view
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
 
@@ -14,7 +14,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: Create a Delegation
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         delegation_servers:
@@ -26,7 +26,7 @@
       register: delegation
 
     - name: Get Delegation information by filters (FQDN)
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "{{ delegation_fqdn }}"
           view: "{{ _view.id }}"
@@ -37,7 +37,7 @@
           - delegation_info.objects[0].id == delegation.id
 
     - name: Get Delegation information by filter query
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filter_query: "fqdn=='{{ delegation_fqdn }}' and view=='{{ _view.id }}'"
       register: delegation_info
     - assert:
@@ -46,7 +46,7 @@
           - delegation_info.objects[0].id == delegation.id
 
     - name: Get Delegation information by tag filters (if any)
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: delegation_info
@@ -57,7 +57,7 @@
 
   always:
     - name: "Clean up DNS Delegation"
-      infoblox.bloxone.dns_delegation:
+      infoblox.universal_ddi.dns_delegation:
         fqdn: "{{ delegation_fqdn }}"
         view: "{{ _view.id }}"
         state: absent

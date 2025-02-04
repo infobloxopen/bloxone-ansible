@@ -44,27 +44,27 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Get information about the Address by ID
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         id: "{{ address.id }}"
 
     - name: Get Address Block information by filters
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         filters:
           address: "10.0.0.3"
           space: "{{ ip_space.id }}"
 
     - name: Get information about the Address by tag
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         tag_filters:
           location : "site-1"
 
     - name:  Get Address information by filter query
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         filter_query: "address=='10.0.0.3' and space=='{{ ip_space.id }}'"
 """  # noqa: E501
 
@@ -285,16 +285,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import AddressApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AddressInfoModule(BloxoneAnsibleModule):
+class AddressInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AddressInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

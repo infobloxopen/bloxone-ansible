@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
 
     # Basic Test for Forward Zone
     - name: Create an Forward Zone
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         tags:
@@ -20,7 +20,7 @@
       register: forward_zone
 
     - name: Get Information about the Forward Zone
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -31,7 +31,7 @@
           - forward_zone_info.objects[0].fqdn == forward_zone.object.fqdn
 
     - name: Get Forward Zone information by filters (FQDN)
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -42,7 +42,7 @@
           - forward_zone_info.objects[0].id == forward_zone.id
 
     - name: Get Forward Zone information by filter query
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filter_query: "fqdn=='{{ fqdn }}' and view=='{{ _view.id }}'"
     - assert:
         that:
@@ -50,7 +50,7 @@
           - forward_zone_info.objects[0].id == forward_zone.id
 
     - name: Get Forward Zone information by tag filters
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -60,7 +60,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete Forward Zone"
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: "absent"

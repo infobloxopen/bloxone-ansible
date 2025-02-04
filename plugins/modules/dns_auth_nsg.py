@@ -175,17 +175,17 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create an Auth NSG
-    infoblox.bloxone.dns_auth_nsg:
+    infoblox.universal_ddi.dns_auth_nsg:
       name: "example_nsg"
       state: "present"
 
   - name: Create an Auth NSG with Additional Fields
-    infoblox.bloxone.dns_auth_nsg:
+    infoblox.universal_ddi.dns_auth_nsg:
       name: "example_nsg"
       comment: "Example Auth NSG"
       external_primaries:
@@ -197,7 +197,7 @@ EXAMPLES = r"""
         location: "site-1"
 
   - name: Delete the Auth NSG
-    infoblox.bloxone.dns_auth_nsg:
+    infoblox.universal_ddi.dns_auth_nsg:
       name: "example_nsg"
       state: "absent"
 """  # noqa: E501
@@ -412,16 +412,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import AuthNSG, AuthNsgApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AuthNsgModule(BloxoneAnsibleModule):
+class AuthNsgModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AuthNsgModule, self).__init__(*args, **kwargs)
 

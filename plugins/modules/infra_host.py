@@ -66,17 +66,17 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a host
-    infoblox.bloxone.infra_host:
+    infoblox.universal_ddi.infra_host:
       display_name: "example_host"
       state: "present"
 
   - name: Create a host with Additional Fields
-    infoblox.bloxone.infra_host:
+    infoblox.universal_ddi.infra_host:
       name: "example_host"
       description: "Example Infra Host"
       maintenance_mode: enabled
@@ -85,7 +85,7 @@ EXAMPLES = r"""
         location: "my-location"
 
   - name: Delete the host
-    infoblox.bloxone.infra_host:
+    infoblox.universal_ddi.infra_host:
       display_name: "example_host"
       state: "absent"
 """
@@ -277,16 +277,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from infra_mgmt import Host, HostsApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class InfraHostModule(BloxoneAnsibleModule):
+class InfraHostModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(InfraHostModule, self).__init__(*args, **kwargs)
 

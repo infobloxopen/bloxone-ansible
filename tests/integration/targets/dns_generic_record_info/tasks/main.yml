@@ -1,0 +1,87 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a random record name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-generic-record-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic Test for Generic Record
+    - name: Create a Generic Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          subfields:
+            - type: "PRESENTATION"
+              value: "10 1 \"https://example.com\""
+        type: "TYPE256"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: generic_record
+
+    - name: Get Generic Record information by ID
+      infoblox.universal_ddi.dns_record_info:
+            id: "{{ generic_record.id }}"
+      register: generic_record_info
+    - assert:
+        that:
+          - generic_record_info.objects | length == 1
+
+    - name: Get Generic Record information by filters
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "TYPE256"
+      register: generic_record_info
+    - assert:
+        that:
+          - generic_record_info.objects | length == 1
+          - generic_record_info.objects[0].id == generic_record.id
+
+    - name: Get Generic Record information by raw filter query
+      infoblox.universal_ddi.dns_record_info:
+        filter_query: "name_in_zone=='{{ record_name }}' and zone=='{{ _auth_zone.id }}' and type=='TYPE256'"
+    - assert:
+        that:
+          - generic_record_info.objects | length == 1
+          - generic_record_info.objects[0].id == generic_record.id
+
+    - name: Get Generic Record information by tag filters
+      infoblox.universal_ddi.dns_record_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - generic_record_info.objects | length == 1
+          - generic_record_info.objects[0].id == generic_record.id
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete Generic Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+            subfields:
+              - type: "PRESENTATION"
+                value: "10 1 \"https://example.com\""
+        type: "TYPE256"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

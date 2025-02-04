@@ -87,31 +87,31 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: "Create an IP Space (required as parent)"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
         name: "example-ipspace"
         state: "present"
       register: ip_space
 
     - name: "Create a Subnet (required as parent)"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/16"
         space: "{{ ip_space.id }}"
         state: "present"
       register: subnet
 
     - name: Create an Address
-      infoblox.bloxone.ipam_address:
+      infoblox.universal_ddi.ipam_address:
         address: "10.0.0.3"
         space: "{{ ip_space.id }}"
         state: "present"
       
     - name: Create an Address with Additional Fields
-      infoblox.bloxone.ipam_address:
+      infoblox.universal_ddi.ipam_address:
         address: "10.0.0.3"
         comment: "test comment"
         space: "{{ _ip_space.id }}"
@@ -120,13 +120,13 @@ EXAMPLES = r"""
         state: "present"
 
     - name: Create a Next Available Address in subnet
-      infoblox.bloxone.ipam_address:
+      infoblox.universal_ddi.ipam_address:
         space: "{{ _ip_space.id }}"
         next_available_id: "{{ subnet.id }}"
         state: "present"
 
     - name: Delete an Address
-      infoblox.bloxone.ipam_address:
+      infoblox.universal_ddi.ipam_address:
         address: "10.0.0.3"
         space: "{{ ip_space.id }}"
         state: "absent"
@@ -344,16 +344,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import Address, AddressApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AddressModule(BloxoneAnsibleModule):
+class AddressModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AddressModule, self).__init__(*args, **kwargs)
         self.next_available_id = self.params.get("next_available_id")

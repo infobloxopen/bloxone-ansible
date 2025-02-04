@@ -2,7 +2,7 @@
 - hosts: localhost
   connection: local
   collections:
-    - infoblox.bloxone
+    - infoblox.universal_ddi
 
   vars:
   - host: "{{ Host server to connect to }}"

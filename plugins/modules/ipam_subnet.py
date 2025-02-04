@@ -752,31 +752,31 @@ options:
         type: str
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: "Create an IP Space (required as parent)"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
         name: "example-ipspace"
         state: "present"
       register: ip_space
 
     - name: "Create an Address Block (required as parent)"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ ip_space.id }}"
         state: "present"
       register: address_block
 
     - name: "Create a subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space.id }}"
         state: "present"
 
     - name: "Create a subnet with Additional Fields"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space_id }}"
         tags: [location: "site1" ]
@@ -812,14 +812,14 @@ EXAMPLES = r"""
                     action: inherit
 
     - name: "Create a Next available Subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         cidr: 24
         next_available_id: "{{ address_block.id }}"
         space: "{{ ip_space.id }}"
         state: "present"
 
     - name: "Delete a subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0"
         cidr: "24"
         space: "{{ ip_space.id }}"
@@ -2416,16 +2416,16 @@ item:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import Subnet, SubnetApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class SubnetModule(BloxoneAnsibleModule):
+class SubnetModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(SubnetModule, self).__init__(*args, **kwargs)
 

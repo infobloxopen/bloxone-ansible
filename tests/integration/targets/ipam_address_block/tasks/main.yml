@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,14 +9,14 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Create an Address Block (check mode)"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
       check_mode: true
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -29,13 +29,13 @@
           - address_block_info.objects | length == 0
 
     - name: "Create an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -48,7 +48,7 @@
           - address_block_info.objects | length == 1
 
     - name: "Create an Address Block (idempotent)"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
@@ -59,14 +59,14 @@
           - address_block is not failed
 
     - name: "Create Next Available Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         space: "{{ _ip_space.id }}"
         cidr: 20
         next_available_id: "{{ address_block.id }}"
         state: "present"
       register: next_available_address_block
     - name: Get Address Block Information by ID
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         id: "{{ next_available_address_block.id }}"
       register: next_available_address_block_info
     - assert:
@@ -76,14 +76,14 @@
           - next_available_address_block_info.objects | length == 1
 
     - name: "Delete an Address Block (check mode)"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "absent"
       check_mode: true
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -96,13 +96,13 @@
           - address_block_info.objects | length == 1
 
     - name: "Delete an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "absent"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -115,7 +115,7 @@
           - address_block_info.objects | length == 0
 
     - name: "Delete an Address Block (idempotent)"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "absent"
@@ -126,14 +126,14 @@
           - address_block is not failed
 
     - name: "Create an Address Block with separate cidr"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0"
         cidr: 16
         space: "{{ _ip_space.id }}"
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -146,7 +146,7 @@
           - address_block_info.objects | length == 1
 
     - name: "Create an Address Block with ASM config overridden"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         asm_config:
@@ -178,7 +178,7 @@
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -200,14 +200,14 @@
           - address_block_info.objects[0].inheritance_sources.asm_config.min_unused.action == "override"
 
     - name: "Create an Address Block with comment"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
         comment: "Comment."
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -220,14 +220,14 @@
           - address_block_info.objects[0].comment == address_block.object.comment
 
     - name: "Create an Address Block with ddns_client_update set to server"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_client_update: "server"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -240,14 +240,14 @@
           - address_block_info.objects[0].ddns_client_update == "server"
 
     - name: "Create an Address Block with ddns_use_conflict_resolution set to false"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_use_conflict_resolution: "false"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -260,7 +260,7 @@
           - address_block_info.objects[0].ddns_use_conflict_resolution == false
 
     - name: "Create an Address Block with DHCP config overridden"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         dhcp_config:
@@ -292,7 +292,7 @@
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -316,14 +316,14 @@
           - address_block_info.objects[0].inheritance_sources.dhcp_config.lease_time_v6.action == "inherit"
 
     - name: "Create an Address Block with hostname_rewrite_enabled set to true"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
         hostname_rewrite_enabled: "true"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -336,7 +336,7 @@
           - address_block_info.objects[0].hostname_rewrite_enabled == true
 
     - name: "Create an Address Block with tags"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         tags:
@@ -344,7 +344,7 @@
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -357,14 +357,14 @@
           - address_block_info.objects[0].tags.location == tag_value
 
     - name: "Create an Address Block with empty Compartment Id"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         compartment_id: ""
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -377,14 +377,14 @@
           - address_block_info.objects[0].compartment_id == ""
 
     - name: "Create an Address Block with Compartment Id as null"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         compartment_id: null
         state: "present"
       register: address_block
     - name: Get information about the Address Block
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"

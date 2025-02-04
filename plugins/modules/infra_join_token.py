@@ -49,38 +49,38 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a Join token
-    infoblox.bloxone.infra_join_token:
+    infoblox.universal_ddi.infra_join_token:
       name: "example_token"
       state: "present"
 
   - name: Create a Join Token with Additional Fields
-    infoblox.bloxone.infra_join_token:
+    infoblox.universal_ddi.infra_join_token:
       name: "example_token"
       description: "Example Join Token"
       tags:
         location: "my-location"
 
   - name: Revoke a Join token
-    infoblox.bloxone.infra_join_token:
+    infoblox.universal_ddi.infra_join_token:
       name: "example_token"
       state: "revoked"
 """
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from infra_provision import JoinToken, UIJoinTokenApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class JoinTokenModule(BloxoneAnsibleModule):
+class JoinTokenModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(JoinTokenModule, self).__init__(*args, **kwargs)
 

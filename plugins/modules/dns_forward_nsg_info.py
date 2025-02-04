@@ -43,25 +43,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Get Forward NSG information by ID
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         id: "{{ forward_nsg_id }}"
       
     - name: Get Forward NSG information by filters (e.g. name)
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "example_nsg"
             
     - name: Get Forward NSG information by raw filter query
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filter_query: "name=='example_nsg'"
       
     - name: Get Forward NSG information by tag filters
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         tag_filters:
           location: "site-1"
 """  # noqa: E501
@@ -143,16 +143,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import ForwardNsgApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ForwardNsgInfoModule(BloxoneAnsibleModule):
+class ForwardNsgInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ForwardNsgInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

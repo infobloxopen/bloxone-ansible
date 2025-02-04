@@ -315,55 +315,165 @@ options:
         required: true
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Create a View (required as parent)
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ dns_view_name }}"
         state: present
       register: _view 
         
-    - name: Create an Auth Zone (required as parent) 
-      infoblox.bloxone.dns_auth_zone:
+    - name: Create an Auth Zone in the View (required as parent) 
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "example_zone"
         primary_type: "cloud"
         view: "{{ _view.id }}"
         state: "present"
       register: _auth_zone
     
-    - name: Create an A Record in an Auth Zone
-      infoblox.bloxone.dns_record:
+    - name: Create an A Record in the Auth Zone
+      infoblox.universal_ddi.dns_record:
         zone: "{{ _auth_zone.id }}"
-        comment: "Example A Record"
         rdata:
             address: "192.168.10.10"
         type: "A"
-        state: "present"        
-        
-    - name: Create an A Record with Name in Zone and Zone
-      infoblox.bloxone.dns_record:
+        state: "present"       
+                
+    - name: Create an A Record with Additional Fields
+      infoblox.universal_ddi.dns_record:
         zone: "{{ _auth_zone.id }}"
         name_in_zone: "example_a_record"
-        comment: "Example A Record"
-        ttl: 3600
-        disabled: true
         rdata:  
             address: "192.168.10.10"
         type: "A"
+        comment: "This is an example A Record"
+        ttl: 3600
+        disabled: true
+        inheritance_sources:
+            ttl:
+                action: "inherit"
         tags:
             location: "site-1"
         state: "present"
+   
+    - name: Create an AAAA Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+            address: "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        type: "AAAA"
+        state: "present"
+
+    - name: Create a CAA Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          tag: "issue"
+          value: "ca.example.com"
+        type: "CAA"
+        state: "present"
+
+    - name: Create a CNAME Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        name_in_zone: "example_cname_record"
+        rdata:
+          cname: "example.com"
+        type: "CNAME"
+        state: "present"
+
+    - name: Create a DNAME Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target: "google.com."
+        type: "DNAME"
+        state: "present"
+
+    - name: Create a Generic Record in an Auth Zone (e.g, TYPE256)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          subfields:
+            - type: "PRESENTATION"
+              value: "10 1 \"https://example.com\""
+        type: "TYPE256"
+        state: "present"
+    
+    - name: Create a MX Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          preference: 10
+          exchange: "mail.example.com."
+        type: "MX"
+        state: "present"
         
+    - name: Create a NAPTR Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          order: 100
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"     
+        type: "NAPTR"
+        state: "present"
+        
+    - name: Create a NS Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        name_in_zone: "example_ns_record"
+        rdata:
+          dname: "ns.example.com."
+        type: "NS"
+        state: "present"
+    
+    - name: Create a PTR Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}" 
+        name_in_zone: "1.0.0" # Note: 10.in-addr.arpa is the reverse mapping zone 
+        rdata:
+          dname: "ptr.example.com."
+        type: "PTR"
+        state: "present"
+    
+    - name: Create a SRV Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          priority: 10
+          port: 5060
+          target: "srv.example.com."
+        type: "SRV"
+        state: "present"
+        
+    - name: Create a SVCB Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target_name: "svc.example.com."
+        type: "SVCB"
+        state: "present"
+
+    - name: Create a TXT Record in an Auth Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          text: "sample text"
+        type: "TXT"
+        state: "present"  
+             
     - name: Delete the A Record
-      infoblox.bloxone.dns_record:
+      infoblox.universal_ddi.dns_record:
         zone: "{{ _auth_zone.id }}"
         name_in_zone: "example_a_record"
         rdata:
-            address: "192.168.10.10"
+          address: "192.168.10.10"
         type: "A"
-        state: "absent"
+        state: "absent"       
 """  # noqa: E501
 
 RETURN = r"""
@@ -825,16 +935,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_data import Record, RecordApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class RecordModule(BloxoneAnsibleModule):
+class RecordModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(RecordModule, self).__init__(*args, **kwargs)
 

@@ -43,30 +43,30 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get Host information by ID
-    infoblox.bloxone.infra_host_info:
+    infoblox.universal_ddi.infra_host_info:
       id: "{{ host_id }}"
 
   - name: Get Host information by filters (e.g. display name)
-    infoblox.bloxone.infra_host_info:
+    infoblox.universal_ddi.infra_host_info:
       filters:
         display_name: "example_host"
 
   - name: Get Host information by raw filter query
-    infoblox.bloxone.infra_host_info:
+    infoblox.universal_ddi.infra_host_info:
       filter_query: "display_name=='example_host'"
 
   - name: Get Host information by tag filters
-    infoblox.bloxone.infra_host_info:
+    infoblox.universal_ddi.infra_host_info:
       tag_filters:
         location: "site-1"
 
   - name: Get Host Information with retries
-    infoblox.bloxone.infra_host_info:
+    infoblox.universal_ddi.infra_host_info:
       filters:
         display_name: "example_host"
     timeout: 10
@@ -263,16 +263,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from infra_mgmt import HostsApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class HostsInfoModule(BloxoneAnsibleModule):
+class HostsInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(HostsInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

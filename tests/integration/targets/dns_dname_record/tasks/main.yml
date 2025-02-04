@@ -1,0 +1,278 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        record_name: "test-dname-record-{{ 999999 | random | string }}"
+
+    - name: Create a DNAME Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "google.com."
+        state: present
+      check_mode: true
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+        - dname_record is changed
+        - dname_record_info is not failed
+        - dname_record_info.objects | length == 0
+
+    - name: Create a DNAME Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "google.com."
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+        that:
+        - dname_record is changed
+        - dname_record_info is not failed
+        - dname_record_info.objects | length == 1
+        - dname_record_info.objects[0].id == dname_record.id
+        - dname_record_info.objects[0].rdata.target ==  "google.com."
+        - dname_record_info.objects[0].type == "DNAME"
+        - dname_record_info.objects[0].zone == dname_record.object.zone
+
+    - name: Create a DNAME Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "google.com."
+        state: present
+      register: dname_record
+    - assert:
+        that:
+          - dname_record is not changed
+          - dname_record is not failed
+
+    - name: Delete the DNAME Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "google.com."
+        state: absent
+      check_mode: true
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+        - dname_record is changed
+        - dname_record_info is not failed
+        - dname_record_info.objects | length == 1
+
+    - name: Delete the DNAME Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "google.com."
+        state: absent
+      register: dname_record_delete
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+        - dname_record_info is not failed
+        - dname_record_info.objects | length == 0
+
+    - name: Delete the DNAME Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "google.com."
+        state: absent
+      register: dname_record
+    - assert:
+       that:
+        - dname_record is not changed
+        - dname_record is not failed
+
+    - name: Create a DNAME Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "apple.com."
+        comment: "This is a test DNAME Record"
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+        - dname_record_info is not failed
+        - dname_record_info.objects | length == 1
+        - dname_record_info.objects[0].id == dname_record.id
+        - dname_record_info.objects[0].comment == "This is a test DNAME Record"
+
+    - name: Create a DNAME Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "apple.com."
+        ttl: 3600
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+        - dname_record_info is not failed
+        - dname_record_info .objects | length == 1
+        - dname_record_info.objects[0].id == dname_record.id
+        - dname_record_info.objects[0].ttl == 3600
+
+    - name: Create a DNAME Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "apple.com."
+        disabled: true
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+          - dname_record_info is not failed
+          - dname_record_info.objects | length == 1
+          - dname_record_info.objects[0].id == dname_record.id
+          - dname_record_info.objects[0].disabled == true
+
+    - name: Create a DNAME Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "apple.com."
+        tags:
+          location: "site-1"
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+       that:
+            - dname_record_info is not failed
+            - dname_record_info.objects | length == 1
+            - dname_record_info.objects[0].id == dname_record.id
+            - dname_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create a DNAME Record with Inheritance Options
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "DNAME"
+        rdata:
+          target: "apple.com."
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+        that:
+          - dname_record_info is not failed
+          - dname_record_info.objects | length == 1
+          - dname_record_info.objects[0].id == dname_record.id
+          - dname_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create a DNAME record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "DNAME"
+        rdata:
+          target: "apple.com."
+        state: present
+      register: dname_record
+    - name: Get information about the DNAME Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "DNAME"
+      register: dname_record_info
+    - assert:
+        that:
+          - dname_record_info is not failed
+          - dname_record_info.objects | length == 1
+          - dname_record_info.objects[0].id == dname_record.id
+          - dname_record_info.objects[0].name_in_zone == dname_record.object.name_in_zone
+          - dname_record_info.objects[0].zone == dname_record.object.zone
+
+  always:
+     - name: "Delete the DNAME Record"
+       infoblox.universal_ddi.dns_record:
+         name_in_zone: "{{ record_name }}"
+         zone: "{{ _auth_zone.id }}"
+         type: "DNAME"
+         rdata:
+          target: "apple.com."
+         state: absent
+       ignore_errors: true
+
+     - name: "Delete the Auth Zone"
+       ansible.builtin.include_role:
+         name: setup_auth_zone
+         tasks_from: cleanup.yml
+
+     - name: "Delete the View"
+       ansible.builtin.include_role:
+         name: setup_view
+         tasks_from: cleanup.yml

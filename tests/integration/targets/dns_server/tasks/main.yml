@@ -6,7 +6,7 @@
 # - acl
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -15,13 +15,13 @@
         dns_server_name: "test-dns-server-{{ 999999 | random | string }}"
 
     - name: Create a DNS Server (check mode)
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: present
       check_mode: true
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -32,12 +32,12 @@
           - dns_server_info.objects | length == 0
 
     - name: Create a DNS Server
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -48,7 +48,7 @@
           - dns_server_info.objects | length == 1
 
     - name: Create a DNS Server (idempotent)
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: present
       register: dns_server
@@ -58,13 +58,13 @@
           - dns_server is not failed
 
     - name: Delete the DNS Server (check mode)
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: absent
       check_mode: true
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -75,12 +75,12 @@
           - dns_server_info.objects | length == 1
 
     - name: Delete the DNS Server
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: absent
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -91,13 +91,13 @@
           - dns_server_info.objects | length == 0
 
     - name: Create a DNS Server with EDNS option enabled
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         add_edns_option_in_outgoing_query: true
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -109,13 +109,13 @@
           - dns_server_info.objects[0].add_edns_option_in_outgoing_query == true
 
     - name: Create a DNS Server with Auto Sort Views enabled
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         auto_sort_views: true
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -126,13 +126,13 @@
           - dns_server_info.objects[0].auto_sort_views == true
 
     - name: Create a DNS Server with a comment
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         comment: "test comment"
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -143,7 +143,7 @@
           - dns_server_info.objects[0].comment == "test comment"
 
     - name: Create a DNS Server with Custom Root Nameservers
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         custom_root_ns:
           - address: "192.168.10.10"
@@ -153,7 +153,7 @@
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -167,13 +167,13 @@
           - dns_server_info.objects[0].custom_root_ns[1].fqdn == "test-example2.com."
 
     - name: Create a DNS Server with Recursive Clients
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         recursive_clients: 100
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -186,7 +186,7 @@
 
 
     - name: Create a DNS Server with Custom Root Nameservers Enabled
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         custom_root_ns_enabled: true
         custom_root_ns:
@@ -195,7 +195,7 @@
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -206,13 +206,13 @@
           - dns_server_info.objects[0].custom_root_ns_enabled == true
 
     - name: Create a DNS Server with DNSSEC Enable Validation (false)
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         dnssec_enable_validation: false
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -223,13 +223,13 @@
           - dns_server_info.objects[0].dnssec_enable_validation == false
 
     - name: Create a DNS Server with DNSSEC Enabled (false)
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         dnssec_enabled: false
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -239,7 +239,7 @@
           - dns_server_info.objects[0].dnssec_enabled == false
 
     - name: Create DNS Server with DNSSEC Trust Anchors
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         dnssec_trust_anchors:
           - algorithm: "8"
@@ -249,7 +249,7 @@
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -262,13 +262,13 @@
           - dns_server_info.objects[0].dnssec_trust_anchors[0].sep == true
 
     - name: Create a DNS Server with DNSSEC Validate Expiry enabled
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         dnssec_validate_expiry: true
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -279,7 +279,7 @@
           - dns_server_info.objects[0].dnssec_validate_expiry == true
 
     - name: Create a DNS Server with ECS enabled
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         ecs_enabled: true
         ecs_zones:
@@ -288,7 +288,7 @@
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -299,12 +299,12 @@
           - dns_server_info.objects[0].ecs_enabled == true
 
     - name: Create DNS Server with ECS Forwarding configuration
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         ecs_forwarding: true
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -316,13 +316,13 @@
           - dns_server_info.objects[0].ecs_forwarding == true
 
     - name: Create a DNS server with ECS Prefix V4
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         ecs_prefix_v4: 20
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -334,13 +334,13 @@
           - dns_server_info.objects[0].ecs_prefix_v4 == 20
 
     - name: Create a DNS server with ECS Prefix V6
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         ecs_prefix_v6: 50
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -352,7 +352,7 @@
           - dns_server_info.objects[0].ecs_prefix_v6 == 50
 
     - name: Create a DNS server with ECS Zones
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         ecs_zones:
           - access: "allow"
@@ -360,7 +360,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -373,13 +373,13 @@
           - dns_server_info.objects[0].ecs_zones[0].fqdn == "test-infoblox.com."
 
     - name: Create a DNS server with Filter_AAAA_On_V4
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         filter_aaaa_on_v4: "break_dnssec"
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -391,13 +391,13 @@
           - dns_server_info.objects[0].filter_aaaa_on_v4 == "break_dnssec"
 
     - name: Create a DNS server with Filter_AAAA_On_V4 as yes
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         filter_aaaa_on_v4: "yes"
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -409,7 +409,7 @@
           - dns_server_info.objects[0].filter_aaaa_on_v4 == "yes"
 
     - name: Create a DNS server with Forwarders
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         forwarders:
           - address: "192.168.10.10"
@@ -417,7 +417,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -430,7 +430,7 @@
           - dns_server_info.objects[0].forwarders[0].fqdn == "test-example.com."
 
     - name: Create a DNS server with Forwarders_only set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         forwarders_only: true
         forwarders:
@@ -439,7 +439,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -453,13 +453,13 @@
           - dns_server_info.objects[0].forwarders[0].fqdn == "test-infoblox.com."
 
     - name: Create a DNS server with Gss_Tsig_Enabled set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         gss_tsig_enabled: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -471,7 +471,7 @@
           - dns_server_info.objects[0].gss_tsig_enabled == true
 
     - name: Create a DNS server with Inheritance sources action set to inherit
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "dns-server-example"
         inheritance_sources:
           add_edns_option_in_outgoing_query:
@@ -527,7 +527,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "dns-server-example"
       register: dns_server_info
@@ -563,13 +563,13 @@
           - dns_server_info.objects[0].inheritance_sources.use_forwarders_for_subzones.action == "inherit"
 
     - name: Create a DNS server with Lame_TTL set to 3000
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         lame_ttl: 3000
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -581,13 +581,13 @@
           - dns_server_info.objects[0].lame_ttl == 3000
 
     - name: Create a DNS server with Log_Query_Response set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         log_query_response: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -599,13 +599,13 @@
           - dns_server_info.objects[0].log_query_response == true
 
     - name: Create a DNS server with Match_Recursive_Only set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         match_recursive_only: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -617,13 +617,13 @@
           - dns_server_info.objects[0].match_recursive_only == true
 
     - name: Create a DNS server with Max_Cache_TTL
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         max_cache_ttl: 600000
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -635,13 +635,13 @@
           - dns_server_info.objects[0].max_cache_ttl == 600000
 
     - name: Create a DNS server with Max_Negative_TTL
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         max_negative_ttl: 10000
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -653,13 +653,13 @@
           - dns_server_info.objects[0].max_negative_ttl == 10000
 
     - name: Create a DNS server with Minimal_Responses set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         minimal_responses: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -671,13 +671,13 @@
           - dns_server_info.objects[0].minimal_responses == true
 
     - name: Create a DNS server with Notify set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         notify: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -689,13 +689,13 @@
           - dns_server_info.objects[0].notify == true
 
     - name: Create a DNS server with Recursion_Enabled set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         recursion_enabled: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -707,13 +707,13 @@
           - dns_server_info.objects[0].recursion_enabled == true
 
     - name: Create a DNS server with Resolver_Query_Timeout set to 15
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         resolver_query_timeout: 15
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -725,13 +725,13 @@
           - dns_server_info.objects[0].resolver_query_timeout == 15
 
     - name: Create a DNS Server with Query Port
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         query_port: 2
         state: present
       register: dns_server
     - name: Get Information about the DNS Server
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -743,13 +743,13 @@
           - dns_server_info.objects[0].query_port == 2
 
     - name: Create a DNS server with Secondary_Axfr_Query_Limit
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         secondary_axfr_query_limit: 2
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -761,13 +761,13 @@
           - dns_server_info.objects[0].secondary_axfr_query_limit == 2
 
     - name: Create a DNS server with Secondary_Soa_Query_Limit
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         secondary_soa_query_limit: 2
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -779,7 +779,7 @@
           - dns_server_info.objects[0].secondary_soa_query_limit == 2
 
     - name: Create a DNS server with Sort_List configuration
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         sort_list:
           - element: ip
@@ -789,7 +789,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -803,7 +803,7 @@
           - dns_server_info.objects[0].sort_list[0].prioritized_networks[0] == "192.168.12.12"
 
     - name: Create a DNS server with Sort_List configuration with element as any
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         sort_list:
           - element: any
@@ -812,7 +812,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -826,13 +826,13 @@
 
 
     - name: Create a DNS server with Synthesize_Address_Records_From_Https set to false
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         synthesize_address_records_from_https: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -844,7 +844,7 @@
           - dns_server_info.objects[0].synthesize_address_records_from_https == true
 
     - name: Create a DNS server with Tags
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         tags:
           tag1: "value1"
@@ -852,7 +852,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -865,13 +865,13 @@
           - dns_server_info.objects[0].tags.tag2 == "value2"
 
     - name: Create a DNS server with Use_Forwarders_For_Subzones set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         use_forwarders_for_subzones: true
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -883,7 +883,7 @@
           - dns_server_info.objects[0].use_forwarders_for_subzones == true
 
     - name: Create a DNS server with Use_Root_Forwarders_For_Local_Resolution_With_B1td set to true
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         use_root_forwarders_for_local_resolution_with_b1td: true
         forwarders:
@@ -892,7 +892,7 @@
         state: present
       register: dns_server
     - name: Get DNS server details
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -906,7 +906,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete Dns Server"
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: "absent"
       ignore_errors: true

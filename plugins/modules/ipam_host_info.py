@@ -43,25 +43,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Get Host information by ID
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         id: "{{ host.id }}"
 
     - name: Get Host information by filters
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "example_host"
 
     - name: Get Host information by filter query
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filter_query: "name=='example_host'"
 
     - name: Get Host information by tag filters
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         tag_filters:
             location: "site-1"
 """
@@ -171,16 +171,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import IpamHostApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class IpamHostInfoModule(BloxoneAnsibleModule):
+class IpamHostInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(IpamHostInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

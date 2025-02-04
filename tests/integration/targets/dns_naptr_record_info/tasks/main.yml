@@ -1,0 +1,89 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a random NAPTR record name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-naptr-record-{{ 999999 | random | string }}"
+        tag_value: "site-{{ 999999 | random | string }}"
+
+    # Basic Test for NAPTR Record
+    - name: Create a NAPTR Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 100
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        tags:
+          location: "{{ tag_value }}"
+        state: present
+      register: naptr_record
+
+    - name: Get NAPTR Record information by ID
+      infoblox.universal_ddi.dns_record_info:
+        id: "{{ naptr_record.id }}"
+      register: naptr_record_info
+    - assert:
+        that:
+          - naptr_record_info.objects | length == 1
+
+    - name: Get NAPTR Record information by filters
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+        that:
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+
+    - name: Get NAPTR Record information by raw filter query
+      infoblox.universal_ddi.dns_record_info:
+        filter_query: "name_in_zone=='{{ record_name }}' and zone=='{{ _auth_zone.id }}' and type=='NAPTR'"
+    - assert:
+        that:
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+
+    - name: Get NAPTR Record information by tag filters
+      infoblox.universal_ddi.dns_record_info:
+        tag_filters:
+          location: "{{ tag_value }}"
+    - assert:
+        that:
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete NAPTR Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          order: 100
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        type: "NAPTR"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

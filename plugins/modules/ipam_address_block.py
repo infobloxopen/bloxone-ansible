@@ -737,32 +737,32 @@ options:
         type: str
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: "Create an IP space (required as parent)"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
         name: "my-ip-space"
         state: "present"
         register: ip_space
 
     - name: "Create an address block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ ip_space.id }}"
         state: "present"
         register: address_block
 
     - name: "Create Next Available Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         space: "{{ ip_space.id }}"
         cidr: 20
         next_available_id: "{{ address_block.id }}"
         state: "present"
 
     - name: "Create an Address Block with Additional Fields"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0"
         cidr: 16
         space: "{{ ip_space.id }}"
@@ -797,7 +797,7 @@ EXAMPLES = r"""
             location: "site-1"
 
     - name: "Delete an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ ip_space.id }}"
         state: "absent"
@@ -2341,16 +2341,16 @@ item:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import AddressBlock, AddressBlockApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AddressBlockModule(BloxoneAnsibleModule):
+class AddressBlockModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AddressBlockModule, self).__init__(*args, **kwargs)
         self.next_available_id = self.params.get("next_available_id")

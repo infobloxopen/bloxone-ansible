@@ -37,35 +37,35 @@ options:
             
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Get Information about Next Available IP in Address Block
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _address_block.id }}"
         count: 5
 
     - name: Get Information about Next Available IP in Address Block Default Count
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _address_block.id }}"
 
     - name: Get Information about Next Available IP in Subnet
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _subnet.id }}"
         count: 5
 
     - name: Get Information about Next Available IP in Subnet Default Count
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _subnet.id }}"
         
     - name: Get Information about Next Available IP in Range
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _range.id }}"
         count: 5
         
     - name: Get Information about Next Available IP in Range Default Count
-      infoblox.bloxone.ipam_next_available_ip_info:
+      infoblox.universal_ddi.ipam_next_available_ip_info:
         id: "{{ _range.id }}"
    
 """  # noqa: E501
@@ -84,16 +84,16 @@ objects:
     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import AddressBlockApi, RangeApi, SubnetApi
     from universal_ddi_client import ApiException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class NextAvailableIPInfoModule(BloxoneAnsibleModule):
+class NextAvailableIPInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(NextAvailableIPInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

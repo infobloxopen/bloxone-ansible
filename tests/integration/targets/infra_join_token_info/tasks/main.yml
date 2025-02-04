@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
 
@@ -10,7 +10,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: Create a Join Token
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         tags:
           location: "{{ tag_value }}"
@@ -18,7 +18,7 @@
       register: join_token
 
     - name: Get Information about the Join Token by filters (Name)
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name }}"
       register: join_token_info
@@ -28,7 +28,7 @@
           - join_token_info.objects[0].id == join_token.id
 
     - name: Get Information about the Join Token by filter query
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filter_query: "name=='{{ name }}'"
       register: join_token_info
     - assert:
@@ -37,7 +37,7 @@
           - join_token_info.objects[0].id == join_token.id
 
     - name: Get Information about the Join Token by a tag filter
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: join_token_info
@@ -48,7 +48,7 @@
 
   always:
     - name: "Clean up the Join Token"
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: revoked
       ignore_errors: true

@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
 
     # Basic Test for View
     - name: Create a View
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         tags:
           location: "{{ tag_value }}"
@@ -19,7 +19,7 @@
       register: view
 
     - name: Get View information by filters (name)
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           name: "{{ name }}"
       register: view_info
@@ -29,7 +29,7 @@
           - view_info.objects[0].id == view.id
 
     - name: Get View information by filters (Id)
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filters:
           id: "{{ view.id }}"
       register: view_info
@@ -39,7 +39,7 @@
           - view_info.objects[0].id == view.id
 
     - name: Get View information by filter query
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         filter_query: "name=='{{ name }}'"
     - assert:
         that:
@@ -47,7 +47,7 @@
           - view_info.objects[0].id == view.id
 
     - name: Get View information by tag filters
-      infoblox.bloxone.dns_view_info:
+      infoblox.universal_ddi.dns_view_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -58,7 +58,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete View"
-      infoblox.bloxone.dns_view:
+      infoblox.universal_ddi.dns_view:
         name: "{{ name }}"
         state: "absent"
       ignore_errors: true

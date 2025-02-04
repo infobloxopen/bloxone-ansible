@@ -127,17 +127,17 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create ACL
-    infoblox.bloxone.dns_acl:
+    infoblox.universal_ddi.dns_acl:
       name: "example-acl"
       state: "present"
 
   - name: Create ACL with additional fields
-    infoblox.bloxone.dns_acl:
+    infoblox.universal_ddi.dns_acl:
       name: "example-acl"
       comment: "example comment"
       list:
@@ -149,7 +149,7 @@ EXAMPLES = r"""
       state: "present"
 
   - name: Delete ACL
-    infoblox.bloxone.dns_acl:
+    infoblox.universal_ddi.dns_acl:
       name: "example-acl"
       state: "absent"
 """
@@ -273,16 +273,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import ACL, AclApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AclModule(BloxoneAnsibleModule):
+class AclModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AclModule, self).__init__(*args, **kwargs)
 

@@ -7,7 +7,7 @@
 
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -17,7 +17,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: Create a DNS Server
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         recursion_enabled: true
         tags:
@@ -29,7 +29,7 @@
       register: dns_server
 
     - name: Get Information about the DNS Server by filter (name)
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filters:
           name: "{{ dns_server_name }}"
       register: dns_server_info
@@ -39,7 +39,7 @@
           - dns_server_info.objects[0].name == dns_server.object.name
 
     - name: Get DNS Server information by filter query
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         filter_query: "name=='{{ dns_server_name }}'"
       register: dns_server_info
     - assert:
@@ -48,7 +48,7 @@
           - dns_server_info.objects[0].id == dns_server.id
 
     - name: Get DNS Server information by tag filters
-      infoblox.bloxone.dns_server_info:
+      infoblox.universal_ddi.dns_server_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: dns_server_info
@@ -59,7 +59,7 @@
 
   always:
     - name: "Delete dns server"
-      infoblox.bloxone.dns_server:
+      infoblox.universal_ddi.dns_server:
         name: "{{ dns_server_name }}"
         state: "absent"
       ignore_errors: true

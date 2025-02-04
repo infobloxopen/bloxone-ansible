@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,7 +9,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Create an IP space"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
         name: "{{ name }}"
         tags:
           location: "{{ tag_value }}"
@@ -17,7 +17,7 @@
       register: ip_space
 
     - name: Get IP Space information by ID
-      infoblox.bloxone.ipam_ip_space_info:
+      infoblox.universal_ddi.ipam_ip_space_info:
         id: "{{ ip_space.id }}"
       register: ip_space_info
     - assert:
@@ -26,7 +26,7 @@
           - ip_space_info.objects[0].name == ip_space.object.name
 
     - name: Get IP Space information by filters (name)
-      infoblox.bloxone.ipam_ip_space_info:
+      infoblox.universal_ddi.ipam_ip_space_info:
         filters:
           name: "{{ name }}"
       register: ip_space_info
@@ -36,7 +36,7 @@
           - ip_space_info.objects[0].id == ip_space.id
 
     - name: Get IP Space information by filter query
-      infoblox.bloxone.ipam_ip_space_info:
+      infoblox.universal_ddi.ipam_ip_space_info:
         filter_query: "name=='{{ name }}'"
     - assert:
         that:
@@ -44,7 +44,7 @@
           - ip_space_info.objects[0].id == ip_space.id
 
     - name: Get IP Space information by tag filters
-      infoblox.bloxone.ipam_ip_space_info:
+      infoblox.universal_ddi.ipam_ip_space_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -55,7 +55,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete IP Space"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
         name: "{{ name }}"
         state: "absent"
       ignore_errors: true

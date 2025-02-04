@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,7 +9,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: Create a Host
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         tags:
            region: "{{ tag_value }}"
@@ -17,7 +17,7 @@
       register: host
 
     - name: Get Host information by ID
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         id: "{{ host.id }}"
       register: host_info
     - assert:
@@ -25,7 +25,7 @@
           - host_info.objects | length == 1
 
     - name: Get Host information by filters
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -34,7 +34,7 @@
           - host_info.objects | length == 1
 
     - name: Get Host information by filter query
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filter_query: "name=='{{ name }}'"
     - assert:
         that:
@@ -42,7 +42,7 @@
           - host_info.objects[0].id == host.id
 
     - name: Get Host information by tag filters
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         tag_filters:
              region: "{{ tag_value }}"
     - assert:
@@ -53,7 +53,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete IPAM Host"
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "absent"
       ignore_errors: true

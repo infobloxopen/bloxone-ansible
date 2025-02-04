@@ -77,17 +77,17 @@ options:
         type: dict
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a Forward NSG
-    infoblox.bloxone.dns_forward_nsg:
+    infoblox.universal_ddi.dns_forward_nsg:
       name: "example_nsg"
       state: "present"
       
   - name: Create a Forward NSG with Additional Fields
-    infoblox.bloxone.dns_forward_nsg:
+    infoblox.universal_ddi.dns_forward_nsg:
       name: "example_nsg"
       comment: "Example Forward NSG"
       external_forwarders:
@@ -98,7 +98,7 @@ EXAMPLES = r"""
         location: "site-1"
         
   - name: Delete the Forward NSG
-    infoblox.bloxone.dns_forward_nsg:
+    infoblox.universal_ddi.dns_forward_nsg:
       name: "example_nsg"
       state: "absent"
 """  # noqa: E501
@@ -179,16 +179,16 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import ForwardNSG, ForwardNsgApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ForwardNsgModule(BloxoneAnsibleModule):
+class ForwardNsgModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ForwardNsgModule, self).__init__(*args, **kwargs)
 

@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: Create a TSIG Key
-      infoblox.bloxone.tsig_key:
+      infoblox.universal_ddi.tsig_key:
         name: "{{ tsig_key_name }}"
         algorithm: "{{ tsig_key_algorithm }}"
         secret: "{{ tsig_key_secret }}"
@@ -21,7 +21,7 @@
       register: tsig_key
 
     - name: Get TSIG Key Information by ID
-      infoblox.bloxone.tsig_key_info:
+      infoblox.universal_ddi.tsig_key_info:
         filters:
           id: "{{ tsig_key.id }}"
       register: tsig_key_info
@@ -31,7 +31,7 @@
           - tsig_key_info.objects[0].name == tsig_key.object.name
 
     - name: Get TSIG Key Information by Filters
-      infoblox.bloxone.tsig_key_info:
+      infoblox.universal_ddi.tsig_key_info:
         filters:
           name: "{{ tsig_key_name }}"
       register: tsig_key_info
@@ -41,7 +41,7 @@
           - tsig_key_info.objects[0].id == tsig_key.id
 
     - name: Get TSIG Key Information by Filter Query
-      infoblox.bloxone.tsig_key_info:
+      infoblox.universal_ddi.tsig_key_info:
         filter_query: "name=='{{ tsig_key_name }}' and algorithm=='{{ tsig_key_algorithm }}'"
       register: tsig_key_info
     - assert:
@@ -50,7 +50,7 @@
           - tsig_key_info.objects[0].id == tsig_key.id
 
     - name: Get TSIG Key Information by Tag Filters
-      infoblox.bloxone.tsig_key_info:
+      infoblox.universal_ddi.tsig_key_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: tsig_key_info
@@ -62,7 +62,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete TSIG Key"
-      infoblox.bloxone.tsig_key:
+      infoblox.universal_ddi.tsig_key:
         name: "{{ tsig_key_name }}"
         state: "absent"
       ignore_errors: true

@@ -1,0 +1,377 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a AAAA record with a random name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-aaaa-record-{{ 999999 | random | string }}"
+
+    - name: Create a AAAA Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::1"
+        type: "AAAA"
+        state: present
+      check_mode: true
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record is changed
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 0
+
+    - name: Create a AAAA Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "AAAA"
+        rdata:
+          address: "2001:db8::1"
+        state: present
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record is changed
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].rdata.address == "2001:db8::1"
+          - aaaa_record_info.objects[0].type == "AAAA"
+          - aaaa_record_info.objects[0].zone == aaaa_record.object.zone
+
+    - name: Create a AAAA Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "AAAA"
+        rdata:
+          address: "2001:db8::1"
+        state: present
+      register: aaaa_record
+    - assert:
+        that:
+          - aaaa_record is not changed
+          - aaaa_record is not failed
+
+    - name: Delete the AAAA Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::1"
+        type: "AAAA"
+        state: absent
+      check_mode: true
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record is changed
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+
+    - name: Delete the AAAA Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::1"
+        type: "AAAA"
+        state: absent
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record is changed
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 0
+
+    - name: Delete the AAAA Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::1"
+        type: "AAAA"
+        state: absent
+      register: aaaa_record
+    - assert:
+        that:
+          - aaaa_record is not changed
+          - aaaa_record is not failed
+
+    - name: Create AAAA Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::4"
+        type: "AAAA"
+        comment: "This is a test AAAA Record"
+        state: present
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].comment == "This is a test AAAA Record"
+
+    - name: Create AAAA Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::4"
+        type: "AAAA"
+        ttl: 4000
+        state: present
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].ttl == 4000
+
+    - name: Create AAAA Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::4"
+        type: "AAAA"
+        disabled: true
+        state: present
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].disabled == true
+
+    - name: Create AAAA Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::4"
+        type: "AAAA"
+        tags:
+          location: "site-1"
+        state: present
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create AAAA Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::4"
+        type: "AAAA"
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: aaaa_record
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create AAAA Record with Options (create_ptr and check_rmz are true)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001::1"
+        type: "AAAA"
+        options:
+          create_ptr: true
+          check_rmz: true
+        state: present
+      register: aaaa_record_options
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record_options.id
+    - name: Get Information about the PTR Record created in the Reverse Mapping Zone
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz_ipv6.id }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].zone == rmz_ipv6.id
+          - ptr_record_info.objects[0].name_in_zone == "1"
+
+    - name: Create AAAA Record with Options (create_ptr is true and check_rmz is false)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001::2"
+        type: "AAAA"
+        options:
+          create_ptr: true
+          check_rmz: false
+        state: present
+      register: aaaa_record_options
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record_options.id
+    - name: Get Information about the PTR Record created in the Reverse Mapping Zone
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz_ipv6.id }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].zone == rmz_ipv6.id
+          - ptr_record_info.objects[0].name_in_zone == "2"
+
+    - name: Create AAAA Record with Options (create_ptr and check_rmz are false)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "3001::0"
+        type: "AAAA"
+        options:
+          create_ptr: false
+          check_rmz: false
+        state: present
+      register: aaaa_record_options
+    - name: Get information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record_options.id
+
+    - name: Create a AAAA Record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::6"
+        type: "AAAA"
+        state: present
+      register: aaaa_record
+    - name: Get Information about the AAAA Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          type: "AAAA"
+      register: aaaa_record_info
+    - assert:
+        that:
+          - aaaa_record_info is not failed
+          - aaaa_record_info.objects | length == 1
+          - aaaa_record_info.objects[0].id == aaaa_record.id
+          - aaaa_record_info.objects[0].name_in_zone == aaaa_record.object.name_in_zone
+          - aaaa_record_info.objects[0].zone == aaaa_record.object.zone
+
+  always:
+    - name: "Delete the AAAA Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          address: "2001:db8::6"
+        type: "AAAA"
+        state: absent
+      ignore_errors: true
+
+    - name: "Delete the Auth Zone"
+      ansible.builtin.include_role:
+        name: setup_auth_zone
+        tasks_from: cleanup.yml
+
+    - name: "Delete the Reverse Mapping Zone"
+      ansible.builtin.include_role:
+        name: setup_auth_zone_rmz_ipv6
+        tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

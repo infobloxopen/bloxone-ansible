@@ -43,30 +43,30 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: Get Information about the Delegation
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         id: '{{ delegation_fqdn_id }}'
         
     - name: Get Delegation information by filters (e.g. fqdn)
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "delegation.example_zone."
           
     - name: Get Delegation information by filters (e.g. fqdn)
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filters:
           fqdn: "delegation.example_zone."
 
     - name: Get Delegation information by raw filter query
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         filter_query: fqdn=='delegation.example_zone'
         
     - name: Get Delegation information by tag filters
-      infoblox.bloxone.dns_delegation_info:
+      infoblox.universal_ddi.dns_delegation_info:
         tag_filters:
           location: site-1  
 """  # noqa: E501
@@ -150,16 +150,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import DelegationApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class DelegationInfoModule(BloxoneAnsibleModule):
+class DelegationInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(DelegationInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

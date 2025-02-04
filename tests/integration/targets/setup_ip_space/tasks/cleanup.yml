@@ -1,12 +1,12 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
 
   block:
     - name: "Delete IP space"
-      infoblox.bloxone.ipam_ip_space:
+      infoblox.universal_ddi.ipam_ip_space:
           name: "{{ ip_space_name }}"
           state: "absent"
       ignore_errors: true

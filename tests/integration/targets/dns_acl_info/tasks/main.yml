@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
 
     # Basic Test for DNS ACL
     - name: Create a DNS ACL
-      infoblox.bloxone.dns_acl:
+      infoblox.universal_ddi.dns_acl:
         name: "{{ acl_name }}"
         tags:
           location: "{{ tag_value }}"
@@ -19,7 +19,7 @@
       register: dns_acl
 
     - name: Get Information about the DNS ACL by ID
-      infoblox.bloxone.dns_acl_info:
+      infoblox.universal_ddi.dns_acl_info:
         filters:
             id: "{{ dns_acl.id }}"
       register: dns_acl_info
@@ -29,7 +29,7 @@
           - dns_acl_info.objects[0].name == dns_acl.object.name
 
     - name: Get DNS ACL information by filters (Name)
-      infoblox.bloxone.dns_acl_info:
+      infoblox.universal_ddi.dns_acl_info:
         filters:
           name: "{{ acl_name }}"
       register: dns_acl_info
@@ -39,7 +39,7 @@
           - dns_acl_info.objects[0].id == dns_acl.id
 
     - name: Get DNS ACL information by filter query
-      infoblox.bloxone.dns_acl_info:
+      infoblox.universal_ddi.dns_acl_info:
         filter_query: "name=='{{ acl_name }}'"
     - assert:
         that:
@@ -47,7 +47,7 @@
           - dns_acl_info.objects[0].id == dns_acl.id
 
     - name: Get DNS ACL information by tag filters
-      infoblox.bloxone.dns_acl_info:
+      infoblox.universal_ddi.dns_acl_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -58,7 +58,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete DNS ACL"
-      infoblox.bloxone.dns_acl:
+      infoblox.universal_ddi.dns_acl:
         name: "{{ acl_name }}"
         state: "absent"
       ignore_errors: true

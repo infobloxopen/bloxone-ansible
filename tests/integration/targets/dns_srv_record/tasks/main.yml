@@ -1,0 +1,330 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        record_name: "test-srv-record-{{ 999999 | random | string }}"
+
+    - name: Create the SRV Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        state: present
+      check_mode: true
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+       that:
+        - srv_record is changed
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 0
+
+    - name: Create the SRV Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+        that:
+        - srv_record is changed
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 1
+        - srv_record_info.objects[0].id == srv_record.id
+        - srv_record_info.objects[0].rdata.port == 5060
+        - srv_record_info.objects[0].rdata.priority == 10
+        - srv_record_info.objects[0].rdata.target == "service.example.com."
+        - srv_record_info.objects[0].type == "SRV"
+        - srv_record_info.objects[0].zone == srv_record.object.zone
+
+    - name: Create the SRV Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        state: present
+      register: srv_record
+    - assert:
+        that:
+          - srv_record is not changed
+          - srv_record is not failed
+
+    - name: Delete the SRV Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        type: "SRV"
+        state: absent
+      check_mode: true
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+       that:
+        - srv_record is changed
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 1
+
+    - name: Delete the SRV Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        type: "SRV"
+        state: absent
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "SRV"
+      register: srv_record_info
+    - assert:
+       that:
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 0
+
+    - name: Delete the SRV Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        type: "SRV"
+        state: absent
+      register: srv_record
+    - assert:
+       that:
+        - srv_record is not changed
+        - srv_record is not failed
+
+    - name: Create SRV Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        comment: "This is a test SRV Record"
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+       that:
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 1
+        - srv_record_info.objects[0].id == srv_record.id
+        - srv_record_info.objects[0].comment == "This is a test SRV Record"
+
+    - name: Create SRV Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        disabled: true
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+        that:
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 1
+        - srv_record_info.objects[0].id == srv_record.id
+        - srv_record_info.objects[0].disabled == true
+
+    - name: Create SRV Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        ttl: 3600
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+       that:
+        - srv_record_info is not failed
+        - srv_record_info.objects | length == 1
+        - srv_record_info.objects[0].id == srv_record.id
+        - srv_record_info.objects[0].ttl == 3600
+
+    - name: Create SRV Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          priority: 10
+          port: 80
+          target: "service.example.com."
+        tags:
+          location: "site-1"
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+        that:
+          - srv_record_info is not failed
+          - srv_record_info.objects | length == 1
+          - srv_record_info.objects[0].id == srv_record.id
+          - srv_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create SRV Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          priority: 10
+          port: 80
+          target: "service.example.com."
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+        that:
+          - srv_record_info is not failed
+          - srv_record_info.objects | length == 1
+          - srv_record_info.objects[0].id == srv_record.id
+          - srv_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create a SRV Record with Weights
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+          weight: 10
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+        that:
+            - srv_record_info is not failed
+            - srv_record_info.objects | length == 1
+            - srv_record_info.objects[0].id == srv_record.id
+            - srv_record_info.objects[0].rdata.weight == 10
+
+    - name: Create a SRV Record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "SRV"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        state: present
+      register: srv_record
+    - name: Get information about the SRV Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "SRV"
+      register: srv_record_info
+    - assert:
+        that:
+          - srv_record_info is not failed
+          - srv_record_info.objects | length == 1
+          - srv_record_info.objects[0].id == srv_record.id
+          - srv_record_info.objects[0].name_in_zone == srv_record.object.name_in_zone
+          - srv_record_info.objects[0].zone == srv_record.object.zone
+
+  always:
+    - name: "Delete SRV Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          port: 5060
+          priority: 10
+          target: "service.example.com."
+        type: "SRV"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,7 +9,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Get information about the next available Subnet"
-      infoblox.bloxone.ipam_next_available_subnet_info:
+      infoblox.universal_ddi.ipam_next_available_subnet_info:
         id: "{{ _address_block.id }}"
         cidr: 24
       register: subnet_info
@@ -19,7 +19,7 @@
           - subnet_info.objects | length == 1
 
     - name: "Get information about the next available Subnet with count"
-      infoblox.bloxone.ipam_next_available_subnet_info:
+      infoblox.universal_ddi.ipam_next_available_subnet_info:
         id: "{{ _address_block.id }}"
         cidr: 24
         count: 5

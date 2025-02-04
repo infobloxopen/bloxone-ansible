@@ -61,67 +61,103 @@ plugin_routing:
         b1_ipam_ip_space:
             deprecation:
                 removal_version: 3.0.0
-                warning_text: Use infoblox.bloxone.ipam_ip_space instead.
+                warning_text: Use infoblox.universal_ddi.ipam_ip_space instead.
         b1_ipam_ip_space_gather:
             deprecation:
                 removal_version: 3.0.0
-                warning_text: Use infoblox.bloxone.ipam_ip_space_info instead.
+                warning_text: Use infoblox.universal_ddi.ipam_ip_space_info instead.
 
         b1_ipam_subnet:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_subnet instead.
+            warning_text: Use infoblox.universal_ddi.ipam_subnet instead.
         b1_ipam_subnet_gather:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_subnet_info instead.
+            warning_text: Use infoblox.universal_ddi.ipam_subnet_info instead.
 
         b1_dns_view:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.dns_view instead.
+            warning_text: Use infoblox.universal_ddi.dns_view instead.
         b1_dns_view_gather:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.dns_view_info instead.
+            warning_text: Use infoblox.universal_ddi.dns_view_info instead.
 
         b1_ipam_address_block:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_address_block instead.
+            warning_text: Use infoblox.universal_ddi.ipam_address_block instead.
         b1_ipam_address_block_gather:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_address_block_info instead.
+            warning_text: Use infoblox.universal_ddi.ipam_address_block_info instead.
 
         b1_dns_auth_zone:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.dns_auth_zone instead.
+            warning_text: Use infoblox.universal_ddi.dns_auth_zone instead.
         b1_dns_zone_gather:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.dns_auth_zone_info instead.
+            warning_text: Use infoblox.universal_ddi.dns_auth_zone_info instead.
 
         b1_ipam_range:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_range instead.
+            warning_text: Use infoblox.universal_ddi.ipam_range instead.
 
         b1_ipam_host:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_host instead.
+            warning_text: Use infoblox.universal_ddi.ipam_host instead.
         b1_ipam_host_gather:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_host_info instead.
+            warning_text: Use infoblox.universal_ddi.ipam_host_info instead.
 
         b1_ipam_ipv4_reservation:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_address instead.
+            warning_text: Use infoblox.universal_ddi.ipam_address instead.
         b1_ipam_ipv4_reservation_gather:
           deprecation:
             removal_version: 3.0.0
-            warning_text: Use infoblox.bloxone.ipam_address_info instead.
+            warning_text: Use infoblox.universal_ddi.ipam_address_info instead.
+
+        b1_a_record:
+          deprecation:
+            removal_version: 3.0.0
+            warning_text: Use infoblox.universal_ddi.dns_record instead.
+        b1_a_record_gather:
+          deprecation:
+              removal_version: 3.0.0
+              warning_text: Use infoblox.universal_ddi.dns_record_info instead.
+
+        b1_cname_record:
+            deprecation:
+                removal_version: 3.0.0
+                warning_text: Use infoblox.universal_ddi.dns_record instead.
+        b1_cname_record_gather:
+            deprecation:
+                removal_version: 3.0.0
+                warning_text: Use infoblox.universal_ddi.dns_record_info instead.
+
+        b1_ns_record:
+            deprecation:
+                removal_version: 3.0.0
+                warning_text: Use infoblox.universal_ddi.dns_record instead.
+        b1_ns_record_gather:
+            deprecation:
+                removal_version: 3.0.0
+                warning_text: Use infoblox.universal_ddi.dns_record_info instead.
+
+        b1_ptr_record:
+            deprecation:
+                removal_version: 3.0.0
+                warning_text: Use infoblox.universal_ddi.dns_record instead.
+        b1_ptr_record_gather:
+            deprecation:
+                removal_version: 3.0.0
+                warning_text: Use infoblox.universal_ddi.dns_record_info instead.

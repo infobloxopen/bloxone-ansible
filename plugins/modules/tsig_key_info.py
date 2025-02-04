@@ -43,25 +43,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
 - name: Get TSIG Key information by ID
-  infoblox.bloxone.tsig_key_info:
+  infoblox.universal_ddi.tsig_key_info:
     id: "{{ tsig_key_id }}"
 
 - name: Get TSIG Key information by filters (e.g. name)
-  infoblox.bloxone.tsig_key_info:
+  infoblox.universal_ddi.tsig_key_info:
     filters:
       name: "tsig-name"
 
 - name: Get TSIG Key information by raw filter query
-  infoblox.bloxone.tsig_key_info:
+  infoblox.universal_ddi.tsig_key_info:
     filter_query: "name=='tsig-name'"
 
 - name: Get TSIG Key information by tag filters
-  infoblox.bloxone.tsig_key_info:
+  infoblox.universal_ddi.tsig_key_info:
     tag_filters:
       location: "site-1"
 """  # noqa: E501
@@ -133,16 +133,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from keys import TsigApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class TsigKeyInfoModule(BloxoneAnsibleModule):
+class TsigKeyInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(TsigKeyInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

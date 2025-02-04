@@ -1,0 +1,274 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a random PTR record name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "{{ 256 | random }}"
+        
+    - name: Create a PTR Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: present
+      check_mode: true
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record is changed
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 0
+
+    - name: Create a PTR Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: present
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record is changed
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].id == ptr_record.id
+          - ptr_record_info.objects[0].rdata.dname == "domain.com."
+          - ptr_record_info.objects[0].type == "PTR"
+          - ptr_record_info.objects[0].zone == ptr_record.object.zone
+
+    - name: Create a PTR Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: present
+      register: ptr_record
+    - assert:
+        that:
+          - ptr_record is not changed
+          - ptr_record is not failed
+
+    - name: Delete the PTR Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: absent
+      check_mode: true
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record is changed
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+
+    - name: Delete the PTR Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: absent
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 0
+
+    - name: Delete the PTR Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: absent
+      register: ptr_record
+    - assert:
+        that:
+          - ptr_record is not changed
+          - ptr_record is not failed
+
+    - name: Create a PTR Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        comment: "This is a test PTR Record"
+        state: present
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].id == ptr_record.id
+          - ptr_record_info.objects[0].comment == "This is a test PTR Record"
+
+    - name: Create a PTR Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        ttl: 3600
+        state: present
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].id == ptr_record.id
+          - ptr_record_info.objects[0].ttl == 3600
+
+    - name: Create a PTR Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        disabled: true
+        state: present
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].id == ptr_record.id
+          - ptr_record_info.objects[0].disabled == true
+
+    - name: Create a PTR Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        tags:
+          location: "site-1"
+        state: present
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].id == ptr_record.id
+          - ptr_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create a PTR Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: ptr_record
+    - name: Get Information about the PTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ rmz.id }}"
+          name_in_zone: "{{ record_name }}"
+          type: "PTR"
+      register: ptr_record_info
+    - assert:
+        that:
+          - ptr_record_info is not failed
+          - ptr_record_info.objects | length == 1
+          - ptr_record_info.objects[0].id == ptr_record.id
+          - ptr_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+  always:
+    - name: "Delete PTR Record"
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ rmz.id }}"
+        name_in_zone: "{{ record_name }}"
+        type: "PTR"
+        rdata:
+          dname: "domain.com."
+        state: "absent"
+
+    - name: "Delete the Reverse Mapping Zone"
+      ansible.builtin.include_role:
+        name: setup_auth_zone_rmz
+        tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

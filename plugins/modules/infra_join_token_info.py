@@ -43,39 +43,39 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get Join Token information by ID
-    infoblox.bloxone.infra_join_token_info:
+    infoblox.universal_ddi.infra_join_token_info:
       id: "{{ join_token_id }}"
 
   - name: Get a Join Token information by filters (e.g. name)
-    infoblox.bloxone.infra_join_token_info:
+    infoblox.universal_ddi.infra_join_token_info:
       filters:
         name: "example_token"
 
   - name: Get a Join Token information by raw filter query
-    infoblox.bloxone.infra_join_token_info:
+    infoblox.universal_ddi.infra_join_token_info:
       filter_query: "name=='example_token'"
 
   - name: Get a Join Token information by tag filters
-    infoblox.bloxone.infra_join_token_info:
+    infoblox.universal_ddi.infra_join_token_info:
       tag_filters:
         location: "site-1"
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from infra_provision import UIJoinTokenApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class JoinTokenInfoModule(BloxoneAnsibleModule):
+class JoinTokenInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(JoinTokenInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

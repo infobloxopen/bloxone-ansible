@@ -1,0 +1,350 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        record_name: "test-naptr-record-{{ 999999 | random | string }}"
+
+    - name: Create a NAPTR Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        state: present
+      check_mode: true
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+       that:
+        - naptr_record is changed
+        - naptr_record_info is not failed
+        - naptr_record_info.objects | length == 0
+
+    - name: Create a NAPTR Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+        that:
+        - naptr_record is changed
+        - naptr_record_info is not failed
+        - naptr_record_info.objects | length == 1
+        - naptr_record_info.objects[0].id == naptr_record.id
+        - naptr_record_info.objects[0].rdata.order == 20
+        - naptr_record_info.objects[0].rdata.preference == 10
+        - naptr_record_info.objects[0].rdata.replacement == "."
+        - naptr_record_info.objects[0].rdata.services == "SIP+D2U"
+        - naptr_record_info.objects[0].type == "NAPTR"
+        - naptr_record_info.objects[0].zone == naptr_record.object.zone
+
+    - name: Create a NAPTR Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        state: present
+      register: naptr_record
+    - assert:
+        that:
+          - naptr_record is not changed
+          - naptr_record is not failed
+
+    - name: Delete the NAPTR Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        type: "NAPTR"
+        state: absent
+      check_mode: true
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+       that:
+        - naptr_record is changed
+        - naptr_record_info is not failed
+        - naptr_record_info.objects | length == 1
+
+    - name: Delete the NAPTR Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        type: "NAPTR"
+        state: absent
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+       that:
+        - naptr_record_info is not failed
+        - naptr_record_info.objects | length == 0
+
+    - name: Delete the NAPTR Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        type: "NAPTR"
+        state: absent
+      register: naptr_record
+    - assert:
+       that:
+        - naptr_record is not changed
+        - naptr_record is not failed
+
+    - name: Create NAPTR Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        comment: "This is a test NAPTR Record"
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+       that:
+        - naptr_record_info is not failed
+        - naptr_record_info.objects | length == 1
+        - naptr_record_info.objects[0].id == naptr_record.id
+        - naptr_record_info.objects[0].comment == "This is a test NAPTR Record"
+
+    - name: Create NAPTR Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        ttl: 3600
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+       that:
+        - naptr_record_info is not failed
+        - naptr_record_info.objects | length == 1
+        - naptr_record_info.objects[0].id == naptr_record.id
+        - naptr_record_info.objects[0].ttl == 3600
+
+    - name: Create NAPTR Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        tags:
+          location: "site-1"
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+        that:
+          - naptr_record_info is not failed
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+          - naptr_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create NAPTR Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "."
+          services: "SIP+D2U"
+        disabled: true
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+       that:
+          - naptr_record_info is not failed
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+          - naptr_record_info.objects[0].disabled == true
+
+    - name: Create NAPTR Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          replacement: "example.com."
+          services: "SIP+D2U"
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+        that:
+          - naptr_record_info is not failed
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+          - naptr_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create a NAPTR Record with Flags and Regexp
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 20
+          preference: 10
+          flags: "A"
+          services: "SIP+D2U"
+          regexp: "!^.*$!sip:jdoe@corpabc.com!"
+          replacement: "."
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+        that:
+          - naptr_record_info is not failed
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+          - naptr_record_info.objects[0].rdata.flags == "A"
+          - naptr_record_info.objects[0].rdata.services == "SIP+D2U"
+          - naptr_record_info.objects[0].rdata.regexp == "!^.*$!sip:jdoe@corpabc.com!"
+          - naptr_record_info.objects[0].rdata.replacement == "."
+
+    - name: Create a NAPTR Record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "NAPTR"
+        rdata:
+          order: 100
+          preference: 10
+          replacement: "."
+          services: "SIP+E2U"
+        state: present
+      register: naptr_record
+    - name: Get information about the NAPTR Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NAPTR"
+      register: naptr_record_info
+    - assert:
+        that:
+          - naptr_record_info is not failed
+          - naptr_record_info.objects | length == 1
+          - naptr_record_info.objects[0].id == naptr_record.id
+          - naptr_record_info.objects[0].name_in_zone == naptr_record.object.name_in_zone
+          - naptr_record_info.objects[0].zone == naptr_record.object.zone
+
+  always:
+    # Cleanup if the test fails
+    - name: "Delete NAPTR Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          order: 100
+          preference: 10
+          replacement: "."
+          services: "SIP+E2U"
+        type: "NAPTR"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

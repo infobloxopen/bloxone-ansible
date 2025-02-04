@@ -1,7 +1,7 @@
 ---
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -10,7 +10,7 @@
 
     # Basic tests for Address
     - name: Create an Address
-      infoblox.bloxone.ipam_address:
+      infoblox.universal_ddi.ipam_address:
         address: "10.0.0.3"
         space: "{{ _ip_space.id }}"
         tags:
@@ -19,7 +19,7 @@
       register: address
 
     - name: Get Address information by ID
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         id: "{{ address.id }}"
       register: address_info
     - assert:
@@ -28,7 +28,7 @@
           - address_info.objects[0].id == address.id
 
     - name: Get Address information by filters
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         filters:
           address: "10.0.0.3"
           space: "{{ _ip_space.id }}"
@@ -39,7 +39,7 @@
           - address_info.objects[0].id == address.id
 
     - name: Get Address information by tag_filters
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         tag_filters:
           location: "{{ tag_value }}"
       register: address_info
@@ -49,7 +49,7 @@
           - address_info.objects[0].id == address.id
 
     - name:  Get Address information by filter query
-      infoblox.bloxone.ipam_address_info:
+      infoblox.universal_ddi.ipam_address_info:
         filter_query: "address=='10.0.0.3' and space=='{{ _ip_space.id }}'"
       register: address_info
     - assert:

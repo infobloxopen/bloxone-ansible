@@ -53,25 +53,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get View information by ID
-    infoblox.bloxone.dns_view_info:
+    infoblox.universal_ddi.dns_view_info:
       id: "{{ view_id }}"
 
   - name: Get View information by filters (e.g. name)
-    infoblox.bloxone.dns_view_info:
+    infoblox.universal_ddi.dns_view_info:
       filters:
         name: "my-view"
 
   - name: Get View information by raw filter query
-    infoblox.bloxone.dns_view_info:
+    infoblox.universal_ddi.dns_view_info:
       filter_query: "name=='my-view'"
 
   - name: Get View information by tag filters
-    infoblox.bloxone.dns_view_info:
+    infoblox.universal_ddi.dns_view_info:
       tag_filters:
         location: "site-1"
 """  # noqa: E501
@@ -2626,16 +2626,16 @@ objects:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import ViewApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ViewInfoModule(BloxoneAnsibleModule):
+class ViewInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ViewInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

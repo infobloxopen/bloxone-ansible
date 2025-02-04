@@ -15,16 +15,16 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
-          path: infoblox.bloxone
+          path: infoblox.universal_ddi
 
       - name: Set up integration_config.yml
         run: |
-          echo "portal_key: ${{ secrets.INFOBLOX_PORTAL_KEY }}" > infoblox.bloxone/tests/integration/integration_config.yml
-          echo "portal_url: ${{ secrets.INFOBLOX_PORTAL_URL }}" >> infoblox.bloxone/tests/integration/integration_config.yml
+          echo "portal_key: ${{ secrets.INFOBLOX_PORTAL_KEY }}" > infoblox.universal_ddi/tests/integration/integration_config.yml
+          echo "portal_url: ${{ secrets.INFOBLOX_PORTAL_URL }}" >> infoblox.universal_ddi/tests/integration/integration_config.yml
 
       - uses: ansible-community/ansible-test-gh-action@v1.15.0
         with:
-          collection-src-directory: infoblox.bloxone
+          collection-src-directory: infoblox.universal_ddi
           ansible-core-version: 'stable-2.15'
           target-python-version: '3.11'
           testing-type: integration

@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -10,7 +10,7 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: Create a Service
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"
@@ -20,7 +20,7 @@
       register: infra_service
 
     - name: Get Information about the Service by Id
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         id: "{{ infra_service.id }}"
       register: infra_service_info
     - assert:
@@ -29,7 +29,7 @@
           - infra_service_info.objects[0].name == infra_service.object.name
 
     - name: Get Service information by filters (Display Name)
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -39,7 +39,7 @@
           - infra_service_info.objects[0].id == infra_service.id
 
     - name: Get Service information by filter query
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filter_query: "name=='{{ service_name }}'"
     - assert:
         that:
@@ -47,7 +47,7 @@
           - infra_service_info.objects[0].id == infra_service.id
 
     - name: Get Service information by tag filters
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -58,7 +58,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete Service"
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"

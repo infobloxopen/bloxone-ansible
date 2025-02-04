@@ -6,7 +6,7 @@
 # - Forward Zone with NSGs
 -
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -15,14 +15,14 @@
         fqdn: "fw-zone-{{ 999999 | random | string }}.com."
 
     - name: Create a Forward Zone (check mode)
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: present
       check_mode: true
       register: forward_zone
     - name: Get Information about the Forward Zone
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -34,13 +34,13 @@
           - forward_zone_info.objects | length == 0
 
     - name: Create a Forward Zone
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -53,7 +53,7 @@
           - forward_zone_info.objects[0].fqdn == forward_zone.object.fqdn
 
     - name: Create a Forward Zone (idempotent)
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: present
@@ -64,14 +64,14 @@
           - forward_zone is not failed
 
     - name: Delete the Forward Zone (check mode)
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: absent
       check_mode: true
       register: forward_zone
     - name: Get Information about the Forward Zone
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -83,13 +83,13 @@
           - forward_zone_info.objects | length == 1
 
     - name: Delete the Forward Zone
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: absent
       register: forward_zone
     - name: Get Information about the Forward Zone
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -101,7 +101,7 @@
           - forward_zone_info.objects | length == 0
 
     - name: Delete a Forward Zone (idempotent)
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: absent
@@ -112,13 +112,13 @@
           - forward_zone is not failed
 
     - name: Create and Read Forward Zone with Basic Configuration
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -130,14 +130,14 @@
           - forward_zone_info.objects[0].fqdn == forward_zone.object.fqdn
 
     - name: Create and Read Forward Zone with Tags
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         tags:
           location: "site-1"
       register: forward_zone
     - name: Get Information about the Forward Zone with Tags
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -149,14 +149,14 @@
           - forward_zone_info.objects[0].tags.location == "site-1"
 
     - name: Create and Read Forward Zone with Comment
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         comment: "test comment"
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone with Comment
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -168,14 +168,14 @@
           - forward_zone.objects[0].comment == "test comment"
 
     - name: Create and Read Forward Zone with Disabled
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         disabled: true
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone with Disabled
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -187,7 +187,7 @@
           - forward_zone_info.objects[0].disabled == true
 
     - name: Create Forward Zone with External Forwarders using Address only
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         external_forwarders:
@@ -195,7 +195,7 @@
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone with External Forwarder Address
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -207,7 +207,7 @@
           - forward_zone_info.objects[0].external_forwarders[0].address == "192.168.10.10"
 
     - name: Create Forward Zone with External Forwarders using FQDN and Address
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         external_forwarders:
@@ -216,7 +216,7 @@
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone with External Forwarders
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -229,14 +229,14 @@
           - forward_zone_info.objects[0].external_forwarders[0].fqdn == "tf-infoblox-test.com."
 
     - name: Create Forward Zone with Forward Only
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         forward_only: false
         state: present
       register: forward_zone
     - name: Get Information about the Forward Zone with Forward Only
-      infoblox.bloxone.dns_forward_zone_info:
+      infoblox.universal_ddi.dns_forward_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -250,7 +250,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete The Forward Zone"
-      infoblox.bloxone.dns_forward_zone:
+      infoblox.universal_ddi.dns_forward_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: absent

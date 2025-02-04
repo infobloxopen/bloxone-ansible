@@ -1,7 +1,7 @@
 ---
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,13 +11,13 @@
         forward_nsg_secondary_name: "test-forward-nsg-{{ 999999 | random | string }}.com."
 
     - name: Create an Forward NSG (check mode)
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: present
       check_mode: true
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -28,12 +28,12 @@
           - forward_nsg_info.objects | length == 0
 
     - name: Create an Forward NSG
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: present
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -44,7 +44,7 @@
           - forward_nsg_info.objects | length == 1
 
     - name: Create a Forward NSG (idempotent)
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: present
       register: forward_nsg
@@ -54,13 +54,13 @@
           - forward_nsg is not failed
 
     - name: Delete the Forward NSG (check mode)
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: absent
       check_mode: true
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -71,12 +71,12 @@
           - forward_nsg_info.objects | length == 1
 
     - name: Delete the Forward NSG
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: absent
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -87,7 +87,7 @@
           - forward_nsg_info.objects | length == 0
 
     - name: Delete the Forward NSG (idempotent)
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: absent
       register: forward_nsg
@@ -97,13 +97,13 @@
           - forward_nsg is not failed
 
     - name: Create a Forward NSG with a comment
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         comment: "Test Comment"
         state: present
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -115,14 +115,14 @@
           - forward_nsg_info.objects[0].comment == "Test Comment"
 
     - name: Create a Forward NSG with External Forwarders
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         external_forwarders:
           - address: "192.168.1.0"
         state: present
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -136,7 +136,7 @@
           - forward_nsg_info.objects[0].external_forwarders[0].address == "192.168.1.0"
 
     - name: Create a Forward NSG with Address and FQDN External Forwarders
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         external_forwarders:
           - address: "192.168.1.0"
@@ -144,7 +144,7 @@
         state: present
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -159,13 +159,13 @@
           - forward_nsg_info.objects[0].external_forwarders[0].fqdn == "test_external_forwarder."
 
     - name: Create a Forward NSG with Forwarders Only Enabled
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         forwarders_only: true
         state: present
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -178,7 +178,7 @@
           - forward_nsg_info.objects[0].forwarders_only == true
 
     - name: Create a Forward NSG with Tags
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         comment: "Test Comment"
         tags:
@@ -186,7 +186,7 @@
         state: present
       register: forward_nsg
     - name: Get Information about the Forward NSG
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_name }}"
       register: forward_nsg_info
@@ -198,14 +198,14 @@
           - forward_nsg_info.objects[0].tags.location == "site-1"
 
     - name: Create Secondary Forward NSG referencing Primary
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_secondary_name }}"
         nsgs:
           - "{{ forward_nsg.id }}"
         state: present
       register: secondary_forward_nsg
     - name: Get Information about the Secondary Forward NSG Creation
-      infoblox.bloxone.dns_forward_nsg_info:
+      infoblox.universal_ddi.dns_forward_nsg_info:
         filters:
           name: "{{ forward_nsg_secondary_name }}"
       register: ssecondary_forward_nsg_info
@@ -218,13 +218,13 @@
 
   always:
     - name: "Delete Secondary Forward NSG"
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_secondary_name }}"
         state: "absent"
       ignore_errors: true
 
     - name: "Delete Forward NSG"
-      infoblox.bloxone.dns_forward_nsg:
+      infoblox.universal_ddi.dns_forward_nsg:
         name: "{{ forward_nsg_name }}"
         state: "absent"
       ignore_errors: true

@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
 
@@ -11,13 +11,13 @@
         name2: "test-join-token-{{ 999999 | random | string }}"
 
     - name: Create a Join Token (check mode)
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: present
       check_mode: true
       register: join_token
     - name: Get Information about the Join Token
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name }}"
       register: join_token_info
@@ -28,12 +28,12 @@
           - join_token_info.objects | length == 0
 
     - name: Create a Join Token
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: present
       register: join_token
     - name: Get Information about the Join Token
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name }}"
       register: join_token_info
@@ -44,7 +44,7 @@
           - join_token_info.objects | length == 1
 
     - name: Create a Join Token (idempotent)
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: present
       register: join_token
@@ -54,13 +54,13 @@
           - join_token is not failed
 
     - name: Revoke the Join Token (check mode)
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: revoked
       check_mode: true
       register: join_token
     - name: Get Information about the Join Token
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name }}"
       register: join_token_info
@@ -72,12 +72,12 @@
           - join_token_info.objects[0].status == "ACTIVE"
 
     - name: Revoke the Join Token
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: revoked
       register: join_token
     - name: Get Information about the Join Token
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name }}"
       register: join_token_info
@@ -91,7 +91,7 @@
       
 
     - name: Revoke the Join Token (idempotent)
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: revoked
       register: join_token
@@ -101,13 +101,13 @@
           - join_token is not failed
 
     - name: Create a Join Token with Description
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name2 }}"
         description: "Test Join Token"
         state: present
       register: join_token
     - name: Get Information about the Join Token
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name2 }}"
       register: join_token_info
@@ -118,7 +118,7 @@
           - join_token_info.objects | length == 1
 
     - name: Create a Join Token with Tags
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name2 }}"
         description: "Test Join Token"
         tags:
@@ -126,7 +126,7 @@
         state: present
       register: join_token
     - name: Get Information about the Join Token
-      infoblox.bloxone.infra_join_token_info:
+      infoblox.universal_ddi.infra_join_token_info:
         filters:
           name: "{{ name2 }}"
       register: join_token_info
@@ -138,13 +138,13 @@
 
   always:
     - name: "Clean up the second Join Token"
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name2 }}"
         state: revoked
       ignore_errors: true
 
     - name: "Clean up the first Join Token"
-      infoblox.bloxone.infra_join_token:
+      infoblox.universal_ddi.infra_join_token:
         name: "{{ name }}"
         state: revoked
       ignore_errors: true

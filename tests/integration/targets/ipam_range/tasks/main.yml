@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
         range_end: "10.0.0.254"
 
     - name: "Create a Range (check mode)"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -19,7 +19,7 @@
       check_mode: true
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -32,14 +32,14 @@
           - range_info.objects | length == 0
 
     - name: "Create a Range"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
         state: "present"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -54,7 +54,7 @@
           - range_info.objects[0].end == range.object.end
 
     - name: "Create a Range (idempotent)"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -66,7 +66,7 @@
           - range is not failed
 
     - name: "Delete a Range (check mode)"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -74,7 +74,7 @@
       check_mode: true
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -87,14 +87,14 @@
           - range_info.objects | length == 1
 
     - name: "Delete a Range"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
         state: "absent"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -107,7 +107,7 @@
           - range_info.objects | length == 0
 
     - name: "Delete a Range (idempotent)"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -119,7 +119,7 @@
           - range is not failed
 
     - name: "Create a Range with comment"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -127,7 +127,7 @@
         comment: "Comment."
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -140,7 +140,7 @@
           - range_info.objects[0].comment == "Comment."
 
     - name: "Create a Range with DHCP disabled"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -148,7 +148,7 @@
         state: "present"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -161,7 +161,7 @@
           - range_info.objects[0].disable_dhcp == true
 
     - name: "Create a Range with tags"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -170,7 +170,7 @@
         state: "present"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -183,7 +183,7 @@
           - range_info.objects[0].tags.location == tag_value
 
     - name: "Create a Range with name"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -191,7 +191,7 @@
         name: "Test Range"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -204,7 +204,7 @@
           - range_info.objects[0].name == "Test Range"
 
     - name: "Create a Range with exclusion ranges"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -215,7 +215,7 @@
             comment: "Exclude this range"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -230,7 +230,7 @@
           - range_info.objects[0].exclusion_ranges[0].comment == "Exclude this range"
 
     - name: "Create a Range with threshold"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -241,7 +241,7 @@
           low: 10
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -256,7 +256,7 @@
           - range_info.objects[0].threshold.low == 10
 
     - name: "Create a Range with inheritance sources"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"
@@ -266,7 +266,7 @@
         state: "present"
       register: range
     - name: Get information about the Range
-      infoblox.bloxone.ipam_range_info:
+      infoblox.universal_ddi.ipam_range_info:
         filters:
           start: "{{ range_start }}"
           end: "{{ range_end }}"
@@ -281,7 +281,7 @@
 
   always:
     - name: "Delete a Range"
-      infoblox.bloxone.ipam_range:
+      infoblox.universal_ddi.ipam_range:
         start: "{{ range_start }}"
         end: "{{ range_end }}"
         space: "{{ _ip_space.id }}"

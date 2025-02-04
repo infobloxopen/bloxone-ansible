@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -10,7 +10,7 @@
         serial_number: "serial{{ 999999 | random | string }}"
 
     - name: Create a Host
-      infoblox.bloxone.infra_host:
+      infoblox.universal_ddi.infra_host:
         display_name: "{{ display_name }}"
         serial_number: "{{ serial_number }}"
         state: present

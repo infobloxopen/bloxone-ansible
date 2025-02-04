@@ -4,7 +4,7 @@
 # - Create IPAM Host with next available ip
 
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -15,13 +15,13 @@
 
     # Basic tests for Ipam Host
     - name: Create a Host (check mode)
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "present"
       check_mode: true
       register: host
     - name: Get information about the host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -32,12 +32,12 @@
           - host_info.objects | length == 0
 
     - name: Create a Host
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "present"
       register: host
     - name: Get information about the host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -48,7 +48,7 @@
           - host_info.objects[0].id == host.id
 
     - name: Create a Host (idempotent)
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "present"
       register: host
@@ -58,13 +58,13 @@
           - host is not failed
 
     - name: Delete a Host (check mode)
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "absent"
       check_mode: true
       register: host
     - name: Get information about the Host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -75,12 +75,12 @@
           - host_info.objects | length == 1
 
     - name: Delete a host
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "absent"
       register: host
     - name: Get information about the  host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -91,7 +91,7 @@
           - host_info.objects | length == 0
 
     - name: Delete a host (idempotent)
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "absent"
       register: host
@@ -101,7 +101,7 @@
           - host is not failed
 
     - name: Create a Host with auto generate records set to true
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         auto_generate_records: true
         host_names:
@@ -113,7 +113,7 @@
         state: "present"
       register: host
     - name: Get information about the host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -128,13 +128,13 @@
           - host_info.objects[0].addresses[0].address == "10.0.0.1"
 
     - name: Create a Host with comment
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         comment: "test comment"
         state: "present"
       register: host
     - name: Get information about the Host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -146,14 +146,14 @@
           - host_info.objects[0].comment == "test comment"
 
     - name: Create a Host with tags
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
           name: "{{ name }}"
           tags:
             region: "{{ tag_value }}"
           state: "present"
       register: host
     - name: Get information about the Host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -165,7 +165,7 @@
           - host_info.objects[0].tags.region == tag_value
 
     - name: Create a Host with Addresses
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
           name: "{{ name }}"
           addresses:
               - address: "10.0.0.1"
@@ -173,7 +173,7 @@
           state: "present"
       register: host
     - name: Get information about the Host
-      infoblox.bloxone.ipam_host_info:
+      infoblox.universal_ddi.ipam_host_info:
         filters:
           name: "{{ name }}"
       register: host_info
@@ -187,7 +187,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete IPAM Host"
-      infoblox.bloxone.ipam_host:
+      infoblox.universal_ddi.ipam_host:
         name: "{{ name }}"
         state: "absent"
       ignore_errors: true

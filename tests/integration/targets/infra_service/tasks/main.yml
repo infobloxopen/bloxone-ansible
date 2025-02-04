@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,7 +9,7 @@
         service_name: "test-infra-service-{{ 999999 | random | string }}"
 
     - name: Create a Service (check mode)
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dhcp"
@@ -17,7 +17,7 @@
       check_mode: true
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -28,14 +28,14 @@
           - infra_service_info.objects | length == 0
 
     - name: Create a Service
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dhcp"
         state: present
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -46,7 +46,7 @@
           - infra_service_info.objects | length == 1
 
     - name: Create a Service (idempotent)
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dhcp"
@@ -58,7 +58,7 @@
           - infra_service is not failed
 
     - name: Delete the Service (check mode)
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dhcp"
@@ -66,7 +66,7 @@
       check_mode: true
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -77,14 +77,14 @@
           - infra_service_info.objects | length == 1
 
     - name: Delete the Service
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dhcp"
         state: absent
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -95,7 +95,7 @@
           - infra_service_info.objects | length == 0
 
     - name: Delete the Service (idempotent)
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dhcp"
@@ -107,7 +107,7 @@
           - infra_service is not failed
 
     - name: Create a Service with Description
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"
@@ -115,7 +115,7 @@
         state: present
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -127,7 +127,7 @@
           - infra_service_info.objects[0].description == "Test Service"
 
     - name: Create a Service with Desired State
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"
@@ -135,7 +135,7 @@
         state: present
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -146,7 +146,7 @@
           - infra_service_info.objects | length == 1
 
     - name: Create a Service with Desired Version
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"
@@ -154,7 +154,7 @@
         state: present
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -165,7 +165,7 @@
           - infra_service_info.objects | length == 1
 
     - name: Create a Service with Interface Labels
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"
@@ -177,7 +177,7 @@
         state: present
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -189,7 +189,7 @@
 
 
     - name: Create a Service with Tags
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"
@@ -198,7 +198,7 @@
         state: present
       register: infra_service
     - name: Get Information about the Service
-      infoblox.bloxone.infra_service_info:
+      infoblox.universal_ddi.infra_service_info:
         filters:
           name: "{{ service_name }}"
       register: infra_service_info
@@ -212,7 +212,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete the Service"
-      infoblox.bloxone.infra_service:
+      infoblox.universal_ddi.infra_service:
         name: "{{ service_name }}"
         pool_id: "{{ _infra_host.object.pool_id }}"
         service_type: "dns"

@@ -1,8 +1,9 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
+
   block:
     # Create a random  A record name to avoid conflicts
     - ansible.builtin.set_fact:
@@ -11,7 +12,7 @@
 
     # Basic Test for A Record
     - name: Create an A Record
-      infoblox.bloxone.dns_record:
+      infoblox.universal_ddi.dns_record:
         name_in_zone: "{{ record_name }}"
         zone: "{{ _auth_zone.id }}"
         rdata:
@@ -22,28 +23,18 @@
         state: present
       register: a_record
 
-    - name: Get A Record information by filters (name_in_zone)
-      infoblox.bloxone.dns_record_info:
-        filters:
-          name_in_zone: "{{ record_name }}"
-          type: "A"
+    - name: Get A Record information by ID
+      infoblox.universal_ddi.dns_record_info:
+        id: "{{ a_record.id }}"
       register: a_record_info
     - assert:
         that:
           - a_record_info.objects | length == 1
-          - a_record_info.objects[0].id == a_record.id
 
-    - name: Get A Record information by raw filter query
-      infoblox.bloxone.dns_record_info:
-        filter_query: "name_in_zone=='{{ record_name }}' and type=='A'"
-    - assert:
-        that:
-          - a_record_info.objects | length == 1
-          - a_record_info.objects[0].id == a_record.id
-
-    - name: Get A Record information by filters (zone)
-      infoblox.bloxone.dns_record_info:
+    - name: Get A Record information by filters
+      infoblox.universal_ddi.dns_record_info:
         filters:
+          name_in_zone: "{{ record_name }}"
           zone: "{{ _auth_zone.id }}"
           type: "A"
       register: a_record_info
@@ -53,8 +44,8 @@
           - a_record_info.objects[0].id == a_record.id
 
     - name: Get A Record information by raw filter query
-      infoblox.bloxone.dns_record_info:
-        filter_query: "zone=='{{ _auth_zone.id }}' and type=='A'"
+      infoblox.universal_ddi.dns_record_info:
+        filter_query: "name_in_zone=='{{ record_name }}' and zone=='{{ _auth_zone.id }}' and type=='A'"
       register: a_record_info
     - assert:
         that:
@@ -62,7 +53,7 @@
           - a_record_info.objects[0].id == a_record.id
 
     - name: Get A Record information by tag filters
-      infoblox.bloxone.dns_record_info:
+      infoblox.universal_ddi.dns_record_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -73,7 +64,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete A Record"
-      infoblox.bloxone.dns_record:
+      infoblox.universal_ddi.dns_record:
         name_in_zone: "{{ record_name }}"
         zone: "{{ _auth_zone.id }}"
         rdata:

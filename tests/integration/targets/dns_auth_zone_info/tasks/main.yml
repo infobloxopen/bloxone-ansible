@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
 
     # Basic Test for Auth Zone
     - name: Create an Auth Zone
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
         view: "{{ _view.id }}"
@@ -21,7 +21,7 @@
       register: auth_zone
 
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -32,7 +32,7 @@
           - auth_zone_info.objects[0].fqdn == auth_zone.object.fqdn
 
     - name: Get Auth Zone information by filters (FQDN)
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
           view: "{{ _view.id }}"
@@ -43,7 +43,7 @@
           - auth_zone_info.objects[0].id == auth_zone.id
 
     - name: Get Auth Zone information by filter query
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filter_query: "fqdn=='{{ fqdn }}' and view=='{{ _view.id }}'"
     - assert:
         that:
@@ -51,7 +51,7 @@
           - auth_zone_info.objects[0].id == auth_zone.id
 
     - name: Get Auth Zone information by tag filters
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -62,7 +62,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete Auth Zone"
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         view: "{{ _view.id }}"
         state: "absent"

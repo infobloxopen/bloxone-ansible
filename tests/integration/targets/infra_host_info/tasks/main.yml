@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -11,7 +11,7 @@
 
     # Basic Test for Host
     - name: Create a Host
-      infoblox.bloxone.infra_host:
+      infoblox.universal_ddi.infra_host:
         display_name: "{{ display_name }}"
         tags:
           location: "{{ tag_value }}"
@@ -19,7 +19,7 @@
       register: infra_host
 
     - name: Get Information about the Host
-      infoblox.bloxone.infra_host_info:
+      infoblox.universal_ddi.infra_host_info:
         filters:
           display_name: "{{ display_name }}"
       register: infra_host_info
@@ -29,7 +29,7 @@
           - infra_host_info.objects[0].display_name == infra_host.object.display_name
 
     - name: Get Infra Host information by filters (Display Name)
-      infoblox.bloxone.infra_host_info:
+      infoblox.universal_ddi.infra_host_info:
         filters:
           display_name: "{{ display_name }}"
       register: infra_host_info
@@ -39,7 +39,7 @@
           - infra_host_info.objects[0].id == infra_host.id
 
     - name: Get Host information by filter query
-      infoblox.bloxone.infra_host_info:
+      infoblox.universal_ddi.infra_host_info:
         filter_query: "display_name=='{{ display_name }}'"
     - assert:
         that:
@@ -47,7 +47,7 @@
           - infra_host_info.objects[0].id == infra_host.id
 
     - name: Get Host information by tag filters
-      infoblox.bloxone.infra_host_info:
+      infoblox.universal_ddi.infra_host_info:
         tag_filters:
           location: "{{ tag_value }}"
     - assert:
@@ -58,7 +58,7 @@
     # The following test will not retrieve any result as the display_name is incorrect
     # This test demonstrates to retry the call maximum 5 times with a delay of 1 second between each call
     - name: Get Information about the Host by using Retry if not found and Timeout
-      infoblox.bloxone.infra_host_info:
+      infoblox.universal_ddi.infra_host_info:
         filters:
           display_name: "{{ display_name }}+incorrect_name"
       timeout: "10" # Timeout for each call is set to 10 seconds
@@ -74,7 +74,7 @@
   always:
     # Cleanup if the test fails
     - name: "Delete Host"
-      infoblox.bloxone.infra_host:
+      infoblox.universal_ddi.infra_host:
         display_name: "{{ display_name }}"
         state: "absent"
       ignore_errors: true

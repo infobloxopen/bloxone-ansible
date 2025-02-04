@@ -54,25 +54,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get Subnet information by ID
-    infoblox.bloxone.ipam_subnet_info:
+    infoblox.universal_ddi.ipam_subnet_info:
       id: "{{ subnet_id }}"
 
   - name: Get Subnet information by filters (e.g. address)
-    infoblox.bloxone.ipam_subnet_info:
+    infoblox.universal_ddi.ipam_subnet_info:
       filters:
         address: "10.0.0.0/24"
 
   - name: Get Subnet information by raw filter query
-    infoblox.bloxone.ipam_subnet_info:
+    infoblox.universal_ddi.ipam_subnet_info:
       filter_query: "address=='10.0.0.0/24'"
 
   # - name: Get Subnet information by tag filters
-  #   infoblox.bloxone.ipam_subnet_info:
+  #   infoblox.universal_ddi.ipam_subnet_info:
   #     tag_filters:
   #       location: "site-1"
 """
@@ -1680,16 +1680,16 @@ objects:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import SubnetApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class SubnetInfoModule(BloxoneAnsibleModule):
+class SubnetInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(SubnetInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

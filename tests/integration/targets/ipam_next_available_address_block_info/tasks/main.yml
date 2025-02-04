@@ -1,18 +1,18 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
     - name: "Create an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ _ip_space.id }}"
         state: "present"
       register: address_block
 
     - name: Get Next Available Address Block Information by ID and default Count
-      infoblox.bloxone.ipam_next_available_address_block_info:
+      infoblox.universal_ddi.ipam_next_available_address_block_info:
           id: "{{ address_block.id }}"
           cidr: 20
       register: next_available_address_block_info
@@ -22,7 +22,7 @@
           - next_available_address_block_info.objects | length == 1
 
     - name: Get Next Available Address Block Information by ID and Count
-      infoblox.bloxone.ipam_next_available_address_block_info:
+      infoblox.universal_ddi.ipam_next_available_address_block_info:
         id: "{{ address_block.id }}"
         cidr: 24
         count: 5

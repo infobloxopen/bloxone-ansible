@@ -1,6 +1,6 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
@@ -9,14 +9,14 @@
         tag_value: "site-{{ 999999 | random | string }}"
 
     - name: "Create a Subnet (check mode)"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
       check_mode: true
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -29,13 +29,13 @@
           - subnet_info.objects | length == 0
 
     - name: "Create a Subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -49,7 +49,7 @@
           - subnet_info.objects[0].address == subnet.object.address
 
     - name: "Create a Subnet (idempotent)"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
@@ -60,14 +60,14 @@
           - subnet is not failed
 
     - name: "Delete a Subnet (check mode)"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "absent"
       check_mode: true
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -80,13 +80,13 @@
           - subnet_info.objects | length == 1
 
     - name: "Delete a Subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "absent"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -99,7 +99,7 @@
           - subnet_info.objects | length == 0
 
     - name: "Delete a Subnet (idempotent)"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "absent"
@@ -110,7 +110,7 @@
           - subnet is not failed
 
     - name: "Create a Subnet with ASM config overridden"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
@@ -143,7 +143,7 @@
               action: override
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -159,14 +159,14 @@
           - subnet_info.objects[0].inheritance_sources.asm_config.forecast_period.action == "override"
 
     - name: "Create a Subnet with comment"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         comment: "Comment."
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -179,14 +179,14 @@
           - subnet_info.objects[0].comment == subnet.object.comment
 
     - name: "Create a Subnet with ddns_client_update set to server"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_client_update: "server"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -199,14 +199,14 @@
           - subnet_info.objects[0].ddns_client_update == subnet.object.ddns_client_update
 
     - name: "Create a Subnet with ddns_conflict_resolution_mode set to no_check_with_dhcid"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_conflict_resolution_mode: "no_check_with_dhcid"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -219,14 +219,14 @@
           - subnet_info.objects[0].ddns_conflict_resolution_mode == "no_check_with_dhcid"
 
     - name: "Create a Subnet with ddns_domain set to non empty"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_domain: "abc"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -239,14 +239,14 @@
           - subnet_info.objects[0].ddns_domain == "abc"
 
     - name: "Create a Subnet with ddns_generate_name set to true"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_generate_name: "true"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -259,14 +259,14 @@
           - subnet_info.objects[0].ddns_generate_name == true
 
     - name: "Create a Subnet with ddns_send_updates set to false"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_send_updates: "false"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -279,14 +279,14 @@
           - subnet_info.objects[0].ddns_send_updates == false
 
     - name: "Create a Subnet with ddns_update_on_renew set to true"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_update_on_renew: "true"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -299,14 +299,14 @@
           - subnet_info.objects[0].ddns_update_on_renew == true
 
     - name: "Create a Subnet with ddns_ttl_percent set to 25"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_ttl_percent: 25.0
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -319,14 +319,14 @@
           - subnet_info.objects[0].ddns_ttl_percent == 25.0
 
     - name: "Create a Subnet with ddns_use_conflict_resolution set to false"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         ddns_use_conflict_resolution: "false"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -339,7 +339,7 @@
           - subnet_info.objects[0].ddns_use_conflict_resolution == false
 
     - name: "Create a Subnet with DHCP config overridden"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         dhcp_config:
@@ -373,7 +373,7 @@
         state: "present"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -387,14 +387,14 @@
           - subnet_info.objects[0].inheritance_sources.dhcp_config.lease_time.action == "override"
 
     - name: "Create a Subnet with DHCP disabled"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         disable_dhcp: "true"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -407,14 +407,14 @@
           - subnet_info.objects[0].disable_dhcp == true
 
     - name: "Create a Subnet with hostname_rewrite_enabled set to true"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
         hostname_rewrite_enabled: "true"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -427,7 +427,7 @@
           - subnet_info.objects[0].hostname_rewrite_enabled == true
 
     - name: "Create a Subnet with rebind_time set to 60 and renew_time set to 50"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         state: "present"
@@ -435,7 +435,7 @@
         renew_time: 50
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -449,7 +449,7 @@
           - subnet_info.objects[0].renew_time == 50
 
     - name: "Create a Subnet with tags"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ _ip_space.id }}"
         tags:
@@ -457,7 +457,7 @@
         state: "present"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -470,14 +470,14 @@
           - subnet_info.objects[0].tags.location == tag_value
 
     - name: "Create a Subnet with separate address and cidr"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0"
         cidr: 24
         space: "{{ _ip_space.id }}"
         state: "present"
       register: subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         filters:
           address: "10.0.0.0"
           space: "{{ _ip_space.id }}"
@@ -491,14 +491,14 @@
           - subnet_info.objects[0].cidr == 24
 
     - name: "Create a Next available Subnet inside an Address Block"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         cidr: 24
         next_available_id: "{{ _address_block.id }}"
         space: "{{ _ip_space.id }}"
         state: "present"
       register: next_available_subnet
     - name: Get information about the Subnet
-      infoblox.bloxone.ipam_subnet_info:
+      infoblox.universal_ddi.ipam_subnet_info:
         id: "{{ next_available_subnet.id }}"
       register: next_available_subnet_info
     - assert:

@@ -43,25 +43,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get ACL by ID
-    infoblox.bloxone.dns_acl_info:
+    infoblox.universal_ddi.dns_acl_info:
         id: "{{ acl_id }}"
 
   - name: Get ACL by filters
-    infoblox.bloxone.dns_acl_info:
+    infoblox.universal_ddi.dns_acl_info:
       filters:
         name: "{{ acl_name }}"
 
   - name: Get ACL by filter query
-    infoblox.bloxone.dns_acl_info:
+    infoblox.universal_ddi.dns_acl_info:
       filter_query: "name=='{{ acl_name }}'"
 
   - name: Get ACL by tag filters
-    infoblox.bloxone.dns_acl_info:
+    infoblox.universal_ddi.dns_acl_info:
       tag_filters:
         location: "us-west"
 """
@@ -186,16 +186,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from dns_config import AclApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AclInfoModule(BloxoneAnsibleModule):
+class AclInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AclInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

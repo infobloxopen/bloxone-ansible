@@ -56,27 +56,27 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """
 
 EXAMPLES = r"""
   - name: Get range information by ID
-    infoblox.bloxone.ipam_range_info:
+    infoblox.universal_ddi.ipam_range_info:
       id: "{{range.id}}"
 
   - name: Get range information with filters
-    infoblox.bloxone.ipam_range_info:
+    infoblox.universal_ddi.ipam_range_info:
       filters:
         start: "192.168.1.0"
         end: "192.168.1.255"
         space: "{{ ip_space.id }}"
 
   - name: Get range information with filters (eg. start , end)
-    infoblox.bloxone.ipam_range_info:
+    infoblox.universal_ddi.ipam_range_info:
       filter_query: "start=='10.0.0.1' and end=='10.0.0.100'"
 
   - name: Get range information with tag filters
-    infoblox.bloxone.ipam_range_info:
+    infoblox.universal_ddi.ipam_range_info:
         tag_filters:
           location: "site-1"
 """
@@ -454,16 +454,16 @@ objects:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
     from ipam import RangeApi
     from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class RangeInfoModule(BloxoneAnsibleModule):
+class RangeInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(RangeInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

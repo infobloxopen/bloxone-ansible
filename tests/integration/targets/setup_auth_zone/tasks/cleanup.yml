@@ -1,11 +1,11 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
+    group/infoblox.universal_ddi.all:
       portal_url: "{{ portal_url }}"
       portal_key: "{{ portal_key }}"
   block:
     - name: "Delete an Auth Zone"
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ _fqdn_auth_zone }}"
         view: "{{ _view.id }}"
         state: "absent"
