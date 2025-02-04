@@ -4,13 +4,13 @@ The Infoblox BloxOne Collection (`infoblox.universal_ddi`) includes a variety of
 
 ## Description 
 Infoblox Universal DDI Modules for Ansible Collections facilitate the DNS and IPAM automation of VM workloads that are deployed across multiple platforms.
-The bloxone_modules collection consists of modules and plug-ins required to manage the networks, IP addresses, and DNS records in universal_ddi. The collection is hosted on Ansible Galaxy under infoblox.universal_ddi_modules.
+The universal_ddi_modules collection consists of modules and plug-ins required to manage the networks, IP addresses, and DNS records in universal_ddi. The collection is hosted on Ansible Galaxy under infoblox.universal_ddi_modules.
 ## Version Information
 
 ### What's new in v2
 - The collection has been renamed from `b1ddi_modules` to `universal_ddi`.
 - The modules are renamed to follow the Universal DDI API naming conventions. The old module names are deprecated and will be removed in the next major release.
-- The modules are rewritten to use the [Universal DDI Python client](https://github.com/infobloxopen/universal-ddi-python-client) library. This provides a more consistent experience across the modules and supports a wider range of BloxOne services.
+- The modules are rewritten to use the [Universal DDI Python client](https://github.com/infobloxopen/universal-ddi-python-client) library. This provides a more consistent experience across the modules and supports a wider range of universal_ddi services.
 
 ## Collection Overview
 
@@ -30,10 +30,10 @@ The `infoblox.universal_ddi` modules collection has the following content:
 - `dns_forward_nsg_info` : Module to get DNS forward NSG information.
 - `dns_forward_zone` : Module to create, update and delete DNS forward zone.
 - `dns_forward_zone_info` : Module to get DNS forward zone information.
-- `dns_host` : Module to create, update and delete DNS host.
+- `dns_host` : Module to update and disassociate DNS host.
 - `dns_host_info` : Module to get DNS host information.
-- `dns_records` : Module to create, update and delete DNS records.
-- `dns_records_info` : Module to get DNS records information.
+- `dns_record` : Module to create, update and delete DNS record.
+- `dns_record_info` : Module to get DNS record information.
 - `dns_server` : Module to create, update and delete DNS server.
 - `dns_server_info` : Module to get DNS server information.
 - `dns_view` : Module to create, update and delete DNS view.
@@ -54,12 +54,15 @@ The `infoblox.universal_ddi` modules collection has the following content:
 - `ipam_address_block_info` : Module to get IPAM address block information.
 - `ipam_host` : Module to create, update and delete a IPAM host.
 - `ipam_host_info` : Module to get IPAM host information.
-- `ipam_ipspace` : Module to create, update and delete an IPAM IPSpace.
-- `ipam_ipspace_info` : Module to get IPAM IPSpace information.
+- `ipam_ip_space` : Module to create, update and delete an IPAM IPSpace.
+- `ipam_ip_space_info` : Module to get IPAM IPSpace information.
 - `ipam_range` : Module to create, update and delete a IPAM range.
-- `ipam_range` : Module to get IPAM range information.
+- `ipam_range_info` : Module to get IPAM range information.
 - `ipam_subnet` : Module to create, update and delete a IPAM subnet.
 - `ipam_subnet_info` : Module to get IPAM subnets information.
+- `tsig_key` : Module to create, update and delete a tsig key.
+- `tsig_key_info` : Module to get tsig key information.
+- `kerberos_key_info` : Module to get kerberos key information.
 - `ipam_next_available_ip_info` : Module to get next available ip information.
 - `ipam_next_available_subnet_info` : Module to get next available subnets information.
 - `ipam_next_available_address_block_info` : Module to get next available address block information.
@@ -129,15 +132,15 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 
 **Example:**
 ```yaml
-    - name: Create an Auth NSG
-      infoblox.bloxone.dns_auth_nsg:
-        name: "example_nsg"
-        state: present
-    
-    - name: Delete the Auth NSG
-      infoblox.bloxone.dns_auth_nsg:
-        name: "example_nsg"
-        state: absent
+- name: Create an Auth NSG
+  infoblox.bloxone.dns_auth_nsg:
+    name: "example_nsg"
+    state: present
+
+- name: Delete the Auth NSG
+  infoblox.bloxone.dns_auth_nsg:
+    name: "example_nsg"
+    state: absent
 ```
 
 ### 4. Automated DNS Auth Zone Management
@@ -145,18 +148,19 @@ Latest sample playbooks and examples are available at [playbooks](https://github
 
 **Example:**
 ```yaml
-    - name: Create an Auth Zone
-      infoblox.bloxone.dns_auth_zone:
-        fqdn: "test-auth-zone"
-        primary_type: external
-        view: "{{ view.id }}"
-        state: present
-    
-    - name: Delete the Auth Zone
-      infoblox.bloxone.dns_auth_zone:
-        fqdn: "test-auth-zone"
-        primary_type: external
-        view: "{{ view.id }}"
+- name: Create an Auth Zone
+  infoblox.bloxone.dns_auth_zone:
+    fqdn: "test-auth-zone"
+    primary_type: external
+    view: "{{ view.id }}"
+    state: present
+
+- name: Delete the Auth Zone
+  infoblox.bloxone.dns_auth_zone:
+    fqdn: "test-auth-zone"
+    primary_type: external
+    view: "{{ view.id }}"
+    state: absent
 ```
 ### 5. DNS Delegation Management
 **Description:** Create and delete DNS delegations within a domain for DNS management.
