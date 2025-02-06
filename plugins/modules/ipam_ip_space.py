@@ -73,11 +73,16 @@ options:
                     - "The minimum percentage of addresses that must be available outside of the DHCP ranges and fixed addresses when making a suggested change.."
                 type: int
             reenable_date:
-                description: ""
+                description:
+                    - "The date at which notifications will be re-enabled automatically."
                 type: str
     comment:
         description:
             - "The description for the IP space. May contain 0 to 1024 characters. Can include UTF-8."
+        type: str
+    compartment_id:
+        description:
+            - "The compartment associated with the object. If no compartment is associated with the object, the value defaults to empty."
         type: str
     ddns_client_update:
         description:
@@ -800,23 +805,23 @@ options:
         type: str
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: "Create an IP space"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
       name: "my-ip-space"
       state: "present"
 
   - name: "Create an IP space with tags"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
       name: "my-ip-space"
       tags:
-        location: "my-location"
+        location: "site-1"
 
-  - name: "Create an IP space with DHCP configuration value overridden"
-    infoblox.bloxone.ipam_ip_space:
+  - name: "Create an IP space with Additional Fields"
+    infoblox.universal_ddi.ipam_ip_space:
         name: "my-ip-space"
         dhcp_config:
             abandoned_reclaim_time: 3600
@@ -847,9 +852,12 @@ EXAMPLES = r"""
                     action: inherit
                 lease_time_v6:
                     action: inherit
+        tags:
+            location: "my-location"
+        comment: "IP Space"
 
   - name: "Delete an IP space"
-    infoblox.bloxone.ipam_ip_space:
+    infoblox.universal_ddi.ipam_ip_space:
       name: "my-ip-space"
       state: "absent"
 """  # noqa: E501
@@ -918,7 +926,8 @@ item:
                     type: int
                     returned: Always
                 reenable_date:
-                    description: ""
+                    description:
+                        - "The date at which notifications will be re-enabled automatically."
                     type: str
                     returned: Always
         asm_scope_flag:
@@ -2456,23 +2465,28 @@ item:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description:
+                        - "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description:
+                        - "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description:
+                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as I(static) &#x3D; I(used) - I(dynamic)."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description:
+                        - "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description:
+                        - "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
         vendor_specific_option_option_space:
@@ -2482,20 +2496,20 @@ item:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import IPSpace, IpSpaceApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class IPSpaceModule(BloxoneAnsibleModule):
+class IPSpaceModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(IPSpaceModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = IPSpace.from_dict(self._payload_params)
         self._existing = None
@@ -2622,6 +2636,7 @@ def main():
             ),
         ),
         comment=dict(type="str"),
+        compartment_id=dict(type="str"),
         ddns_client_update=dict(
             type="str", choices=["client", "server", "ignore", "over_client_update", "over_no_update"], default="client"
         ),

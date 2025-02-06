@@ -1,1 +1,1 @@
-bloxone-python-client @ git+https://github.com/infobloxopen/bloxone-python-client@fac16a90
+universal-ddi-python-client @ git+https://github.com/infobloxopen/universal-ddi-python-client

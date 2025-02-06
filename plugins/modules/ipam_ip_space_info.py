@@ -54,25 +54,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get IP Space information by ID
-    infoblox.bloxone.ipam_ip_space_info:
+    infoblox.universal_ddi.ipam_ip_space_info:
       id: "{{ ip_space_id }}"
 
   - name: Get IP Space information by filters (e.g. name)
-    infoblox.bloxone.ipam_ip_space_info:
+    infoblox.universal_ddi.ipam_ip_space_info:
       filters:
         name: "my-ip-space"
 
   - name: Get IP Space information by raw filter query
-    infoblox.bloxone.ipam_ip_space_info:
+    infoblox.universal_ddi.ipam_ip_space_info:
       filter_query: "name=='my-ip-space'"
 
   - name: Get IP Space information by tag filters
-    infoblox.bloxone.ipam_ip_space_info:
+    infoblox.universal_ddi.ipam_ip_space_info:
       tag_filters:
         location: "site-1"
 """  # noqa: E501
@@ -142,7 +142,8 @@ objects:
                     type: int
                     returned: Always
                 reenable_date:
-                    description: ""
+                    description:
+                        - "The date at which notifications will be re-enabled automatically."
                     type: str
                     returned: Always
         asm_scope_flag:
@@ -1680,23 +1681,28 @@ objects:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description:
+                        - "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description:
+                        - "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description:
+                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as I(static) &#x3D; I(used) - I(dynamic)."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description:
+                        - "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description:
+                        - "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
         vendor_specific_option_option_space:
@@ -1706,16 +1712,16 @@ objects:
             returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import IpSpaceApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class IPSpaceInfoModule(BloxoneAnsibleModule):
+class IPSpaceInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(IPSpaceInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

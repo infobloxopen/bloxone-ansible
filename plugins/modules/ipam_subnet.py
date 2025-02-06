@@ -13,6 +13,7 @@ module: ipam_subnet
 short_description: Manage Subnet
 description:
     - Manage Subnet
+    - The Subnet object represents a set of addresses from which addresses are assigned to network equipment interfaces.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -76,7 +77,8 @@ options:
                     - "The minimum percentage of addresses that must be available outside of the DHCP ranges and fixed addresses when making a suggested change.."
                 type: int
             reenable_date:
-                description: ""
+                description: 
+                    - "The date at which notifications will be re-enabled automatically."
                 type: str
     cidr:
         description:
@@ -744,28 +746,40 @@ options:
                 description:
                     - "The low threshold value for the percentage of used IP addresses relative to the total IP addresses available in the scope of the object. Thresholds are inclusive in the comparison test."
                 type: int
+    next_available_id:
+        description:
+            - "The resource identifier for the address block where the next available subnet should be generated."
+        type: str
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
-    - name: "Create an ip space"
-      infoblox.bloxone.ipam_ip_space:
-        name: "my-ip-space"
+    - name: "Create an IP Space (required as parent)"
+      infoblox.universal_ddi.ipam_ip_space:
+        name: "example-ipspace"
         state: "present"
       register: ip_space
 
+    - name: "Create an Address Block (required as parent)"
+      infoblox.universal_ddi.ipam_address_block:
+        address: "10.0.0.0/16"
+        space: "{{ ip_space.id }}"
+        state: "present"
+      register: address_block
+
     - name: "Create a subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space.id }}"
         state: "present"
 
-    - name: "Create a subnet with dhcp_config overridden"
-      infoblox.bloxone.ipam_subnet:
+    - name: "Create a subnet with Additional Fields"
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0/24"
         space: "{{ ip_space_id }}"
+        tags: [location: "site1" ]
         state: "present"
         dhcp_config:
             abandoned_reclaim_time: 3600
@@ -797,8 +811,15 @@ EXAMPLES = r"""
                 lease_time_v6:
                     action: inherit
 
+    - name: "Create a Next available Subnet"
+      infoblox.universal_ddi.ipam_subnet:
+        cidr: 24
+        next_available_id: "{{ address_block.id }}"
+        space: "{{ ip_space.id }}"
+        state: "present"
+
     - name: "Delete a subnet"
-      infoblox.bloxone.ipam_subnet:
+      infoblox.universal_ddi.ipam_subnet:
         address: "10.0.0.0"
         cidr: "24"
         space: "{{ ip_space.id }}"
@@ -874,7 +895,8 @@ item:
                     type: int
                     returned: Always
                 reenable_date:
-                    description: ""
+                    description: 
+                        - "The date at which notifications will be re-enabled automatically."
                     type: str
                     returned: Always
         asm_scope_flag:
@@ -2368,45 +2390,52 @@ item:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description: 
+                        - "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description: 
+                        - "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description: 
+                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as _static_ = _used_ - _dynamic_."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description: 
+                        - "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description: 
+                        - "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import Subnet, SubnetApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class SubnetModule(BloxoneAnsibleModule):
+class SubnetModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(SubnetModule, self).__init__(*args, **kwargs)
 
-        if "/" in self.params["address"]:
-            self.params["address"], netmask = self.params["address"].split("/")
-            self.params["cidr"] = int(netmask)
+        self.next_available_id = self.params.get("next_available_id")
+        if self.params["address"] is not None:
+            if "/" in self.params["address"]:
+                self.params["address"], netmask = self.params["address"].split("/")
+                self.params["cidr"] = int(netmask)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id", "next_available_id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = Subnet.from_dict(self._payload_params)
 
@@ -2451,6 +2480,9 @@ class SubnetModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
+            if self.params["address"] is None:
+                return None
+
             filter = f"address=='{self.params['address']}' and space=='{self.params['space']}' and cidr=={self.params['cidr']}"
             resp = SubnetApi(self.client).list(filter=filter, inherit="full")
             if len(resp.results) == 1:
@@ -2464,6 +2496,9 @@ class SubnetModule(BloxoneAnsibleModule):
         if self.check_mode:
             return None
 
+        if self.next_available_id is not None:
+            naId = f"{self.next_available_id}/nextavailablesubnet"
+            self._payload.address = naId
         resp = SubnetApi(self.client).create(body=self.payload, inherit="full")
         return resp.result.model_dump(by_alias=True, exclude_none=True)
 
@@ -2528,6 +2563,7 @@ def main():
         id=dict(type="str", required=False),
         state=dict(type="str", required=False, choices=["present", "absent"], default="present"),
         address=dict(type="str"),
+        next_available_id=dict(type="str", required=False),
         asm_config=dict(
             type="dict",
             options=dict(
@@ -2822,7 +2858,10 @@ def main():
     module = SubnetModule(
         argument_spec=module_args,
         supports_check_mode=True,
-        required_if=[("state", "present", ["address", "space"])],
+        mutually_exclusive=[["address", "next_available_id"]],
+        required_if=[("state", "present", ["space"])],
+        required_one_of=[["address", "next_available_id"]],
+        required_by={"next_available_id": "cidr"},
     )
 
     module.run_command()

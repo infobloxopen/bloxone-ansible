@@ -1,0 +1,292 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    # Create a random MX record name to avoid conflicts
+    - ansible.builtin.set_fact:
+        record_name: "test-mx-record-{{ 999999 | random | string }}"
+
+    - name: Create a MX Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example.com"
+          preference: 10
+        type: "MX"
+        state: present
+      check_mode: true
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+        - mx_record is changed
+        - mx_record_info is not failed
+        - mx_record_info.objects | length == 0
+
+    - name: Create a MX Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example.com"
+          preference: 10
+        type: "MX"
+        state: present
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+        that:
+        - mx_record is changed
+        - mx_record_info is not failed
+        - mx_record_info.objects | length == 1
+        - mx_record_info.objects[0].id == mx_record.id
+        - mx_record_info.objects[0].rdata.exchange == "mail.example.com"
+        - mx_record_info.objects[0].type == "MX"
+        - mx_record_info.objects[0].zone == mx_record.object.zone
+
+    - name: Create a MX Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example.com"
+          preference: 10
+        type: "MX"
+        state: present
+      register: mx_record
+    - assert:
+        that:
+          - mx_record is not changed
+          - mx_record is not failed
+
+    - name: Delete the MX Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example.com"
+          preference: 10
+        type: "MX"
+        state: absent
+      check_mode: true
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+        - mx_record is changed
+        - mx_record_info is not failed
+        - mx_record_info.objects | length == 1
+
+    - name: Delete the MX Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example.com"
+          preference: 10
+        type: "MX"
+        state: absent
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+        - mx_record_info is not failed
+        - mx_record_info.objects | length == 0
+
+    - name: Delete the MX Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example.com"
+          preference: 10
+        type: "MX"
+        state: absent
+      register: mx_record
+    - assert:
+       that:
+        - mx_record is not changed
+        - mx_record is not failed
+
+    - name: Create a MX Record with comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        type: "MX"
+        comment: "This is a test MX Record"
+        state: present
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+        - mx_record_info is not failed
+        - mx_record_info.objects | length == 1
+        - mx_record_info.objects[0].id == mx_record.id
+        - mx_record_info.objects[0].comment == "This is a test MX Record"
+
+    - name: Create a MX Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        type: "MX"
+        ttl: 3600
+        state: present
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+        - mx_record_info is not failed
+        - mx_record_info.objects | length == 1
+        - mx_record_info.objects[0].id == mx_record.id
+        - mx_record_info.objects[0].ttl == 3600
+
+    - name: Create a MX Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        type: "MX"
+        disabled: true
+        state: present
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+          - mx_record_info is not failed
+          - mx_record_info.objects | length == 1
+          - mx_record_info.objects[0].id == mx_record.id
+          - mx_record_info.objects[0].disabled == true
+
+    - name: Create a MX Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        type: "MX"
+        tags:
+          location: "site-1"
+        state: present
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+       that:
+            - mx_record_info is not failed
+            - mx_record_info.objects | length == 1
+            - mx_record_info.objects[0].id == mx_record.id
+            - mx_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create a MX Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "MX"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: mx_record
+    - name: Get information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+        that:
+          - mx_record_info is not failed
+          - mx_record_info.objects | length == 1
+          - mx_record_info.objects[0].id == mx_record.id
+          - mx_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create an MX Record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        type: "MX"
+        state: present
+      register: mx_record
+    - name: Get Information about the MX Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "MX"
+      register: mx_record_info
+    - assert:
+        that:
+          - mx_record_info is not failed
+          - mx_record_info.objects | length == 1
+          - mx_record_info.objects[0].id == mx_record.id
+          - mx_record_info.objects[0].name_in_zone == mx_record.object.name_in_zone
+          - mx_record_info.objects[0].zone == mx_record.object.zone
+
+  always:
+    - name: "Delete the MX Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          exchange: "mail.example1.com"
+          preference: 20
+        type: "MX"
+        state: absent
+      register: mx_record
+
+    - name: "Delete the Auth Zone"
+      ansible.builtin.include_role:
+        name: setup_auth_zone
+        tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

@@ -158,7 +158,7 @@ RETURN = """ # """
 import json
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request, Utilities
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.b1ddi import Request, Utilities
 
 
 def get_fixed_address(data):

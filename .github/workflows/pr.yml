@@ -36,11 +36,11 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
-          path: infoblox.bloxone
+          path: infoblox.universal_ddi
 
       - uses: ansible-community/ansible-test-gh-action@v1.15.0
         with:
-          collection-src-directory: infoblox.bloxone
+          collection-src-directory: infoblox.universal_ddi
           ansible-core-version: ${{ matrix.ansible }}
           target-python-version: ${{ matrix.python }}
           testing-type: sanity

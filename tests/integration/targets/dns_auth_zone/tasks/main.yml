@@ -6,16 +6,16 @@
 # - nsgs
 
 - module_defaults:
-    group/infoblox.bloxone.all:
-      csp_url: "{{ csp_url }}"
-      api_key: "{{ api_key }}"
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
   block:
     # Create a random Auth Zone name to avoid conflicts
     - ansible.builtin.set_fact:
         fqdn: "test-auth-zone-{{ 999999 | random | string }}.com."
 
     - name: Create an Auth Zone (check mode)
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
         view: "{{ _view.id }}"
@@ -23,9 +23,10 @@
       check_mode: true
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -34,16 +35,17 @@
           - auth_zone_info.objects | length == 0
 
     - name: Create an Auth Zone
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
         view: "{{ _view.id }}"
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -52,9 +54,10 @@
           - auth_zone_info.objects | length == 1
 
     - name: Create an Auth Zone with External Primaries
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
+        view: "{{ _view.id }}"
         external_primaries:
           - fqdn: "as-infoblox-test.com."
             address: "192.168.10.10"
@@ -62,9 +65,10 @@
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -76,9 +80,10 @@
           - auth_zone_info.objects[0].external_primaries[0].type == "primary"
 
     - name: Create an Auth Zone (idempotent)
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
+        view: "{{ _view.id }}"
         state: present
       register: auth_zone
     - assert:
@@ -87,16 +92,18 @@
           - auth_zone is not failed
 
     - name: Delete the Auth Zone (check mode)
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
+        view: "{{ _view.id }}"
         state: absent
       check_mode: true
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -105,16 +112,17 @@
           - auth_zone_info.objects | length == 1
 
     - name: Delete the Auth Zone
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
         view: "{{ _view.id }}"
         state: absent
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -123,7 +131,7 @@
           - auth_zone_info.objects | length == 0
 
     - name: Delete the Auth Zone (idempotent)
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: external
         view: "{{ _view.id }}"
@@ -135,7 +143,7 @@
           - auth_zone is not failed
 
     - name: Create an Auth Zone with tags
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
         comment: "Test Comment"
@@ -145,9 +153,10 @@
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -157,16 +166,18 @@
           - auth_zone_info.objects[0].tags.location == "site-1"
 
     - name: Create an Auth Zone with a comment
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         comment: "Test Comment"
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -176,16 +187,18 @@
           - auth_zone_info.objects[0].comment == "Test Comment"
 
     - name: Create an Auth Zone with Disabled
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         disabled: true
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -195,18 +208,20 @@
           - auth_zone_info.objects[0].disabled == true
 
     - name: Create an Auth Zone with External Secondaries
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         external_secondaries:
           - fqdn: "as-infoblox-test.com."
             address: "192.168.10.10"
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -218,15 +233,17 @@
 
 
     - name: Create an Auth Zone with primary type and FQDN
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -237,16 +254,18 @@
           - auth_zone_info.objects[0].fqdn == fqdn
 
     - name: Create an Auth Zone with GSS Tsig Enabled
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         gss_tsig_enabled: true
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -256,9 +275,10 @@
           - auth_zone_info.objects[0].gss_tsig_enabled == true
 
     - name: "Create an Auth Zone space with Inheritance Sources"
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         inheritance_sources:
           # The API currently requires all fields inside the inheritance config to be explicitly provided,
           # or it fails with error 'The value of an inheritance action field is not valid'.
@@ -290,9 +310,10 @@
             rname:
               action: inherit
     - name: Get information about Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -300,16 +321,18 @@
           - auth_zone_info.objects | length == 1
 
     - name: Create an Auth Zone with Notify
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         notify: true
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -319,9 +342,10 @@
           - auth_zone_info.objects[0].notify == true
 
     - name: Create an Auth Zone with Query ACL
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         query_acl:
           - access: "allow"
             element: "ip"
@@ -331,9 +355,10 @@
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -348,9 +373,10 @@
           - auth_zone_info.objects[0].query_acl | length == 2
 
     - name: Create an Auth Zone with Transfer ACL
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         transfer_acl:
           - access: "allow"
             element: "ip"
@@ -360,9 +386,10 @@
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -377,9 +404,10 @@
           - auth_zone_info.objects[0].transfer_acl | length == 2
 
     - name: Create an Auth Zone with Update ACL
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         update_acl:
           - access: "allow"
             element: "ip"
@@ -389,9 +417,10 @@
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -406,16 +435,18 @@
           - auth_zone_info.objects[0].update_acl | length == 2
 
     - name: Create an Auth Zone with Use Forwarders For Subzones
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         use_forwarders_for_subzones: true
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -425,9 +456,10 @@
           - auth_zone_info.objects[0].use_forwarders_for_subzones == true
 
     - name: Create an Auth Zone with Zone Authority
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
         primary_type: cloud
+        view: "{{ _view.id }}"
         zone_authority:
             default_ttl: 28600
             expire: 2519200
@@ -440,9 +472,10 @@
         state: present
       register: auth_zone
     - name: Get Information about the Auth Zone
-      infoblox.bloxone.dns_auth_zone_info:
+      infoblox.universal_ddi.dns_auth_zone_info:
         filters:
           fqdn: "{{ fqdn }}"
+          view: "{{ _view.id }}"
       register: auth_zone_info
     - assert:
         that:
@@ -459,14 +492,14 @@
   always:
     # Cleanup if the test fails
     - name: "Delete Auth Zone"
-      infoblox.bloxone.dns_auth_zone:
+      infoblox.universal_ddi.dns_auth_zone:
         fqdn: "{{ fqdn }}"
+        primary_type: cloud
+        view: "{{ _view.id }}"
         state: "absent"
       ignore_errors: true
 
     - name: "Delete the View"
-      infoblox.bloxone.dns_view:
-        name: "{{ name }}"
-        state: absent
-      register: _view
-      ignore_errors: true
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

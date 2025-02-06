@@ -32,6 +32,6 @@ sections:
   - Bugfixes
 - - known_issues
   - Known Issues
-title: Infoblox.Bloxone
+title: infoblox.universal_ddi
 trivial_section_name: trivial
 use_fqcn: true

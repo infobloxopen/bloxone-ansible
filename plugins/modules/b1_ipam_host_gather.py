@@ -3,13 +3,17 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.infoblox.bloxone.plugins.module_utils.b1ddi import Request
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.b1ddi import Request
 
 DOCUMENTATION = """
 ---
-module: b1_ipam_ip_space
+module: b1_ipam_host
 author: "Akhilesh Kabade (@akhilesh-kabade-infoblox)"
 short_description: Gather IPAM host facts
+deprecated:
+  removed_in: 3.0.0
+  why: This module is deprecated and will be removed in version 3.0.0. Use M(ipam_host_info) instead.
+  alternative: Use M(ipam_host_info) instead.
 description:
   - Gather facts about IPAM hosts in Infoblox BloxOne DDI. This module gathers facts of IPAM Hosts object using BloxOne REST APIs.
 requirements:

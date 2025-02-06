@@ -1,0 +1,278 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        record_name: "test-svcb-record-{{ 999999 | random | string }}"
+
+    - name: Create the SVCB Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        state: present
+      check_mode: true
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+       that:
+        - svcb_record is changed
+        - svcb_record_info is not failed
+        - svcb_record_info.objects | length == 0
+
+    - name: Create the SVCB Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+        that:
+        - svcb_record is changed
+        - svcb_record_info is not failed
+        - svcb_record_info.objects | length == 1
+        - svcb_record_info.objects[0].id == svcb_record.id
+        - svcb_record_info.objects[0].rdata.target_name == "service.example.com."
+        - svcb_record_info.objects[0].type == "SVCB"
+        - svcb_record_info.objects[0].zone == svcb_record.object.zone
+
+    - name: Create the SVCB Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        state: present
+      register: svcb_record
+    - assert:
+        that:
+          - svcb_record is not changed
+          - svcb_record is not failed
+
+    - name: Delete the SVCB Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target_name: "service.example.com."
+        type: "SVCB"
+        state: absent
+      check_mode: true
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+       that:
+        - svcb_record is changed
+        - svcb_record_info is not failed
+        - svcb_record_info.objects | length == 1
+
+    - name: Delete the SVCB Record
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target_name: "service.example.com."
+        type: "SVCB"
+        state: absent
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+            zone: "{{ _auth_zone.id }}"
+            type: "SVCB"
+      register: svcb_record_info
+    - assert:
+       that:
+        - svcb_record_info is not failed
+        - svcb_record_info.objects | length == 0
+
+    - name: Delete the SVCB Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target_name: "service.example.com."
+        type: "SVCB"
+        state: absent
+      register: svcb_record
+    - assert:
+       that:
+        - svcb_record is not changed
+        - svcb_record is not failed
+
+    - name: Create SVCB Record with Comment
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        comment: "This is a test SVCB Record"
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+        that:
+          - svcb_record_info is not failed
+          - svcb_record_info.objects | length == 1
+          - svcb_record_info.objects[0].id == svcb_record.id
+          - svcb_record_info.objects[0].comment == "This is a test SVCB Record"
+
+    - name: Create SVCB Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        disabled: true
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+        that:
+        - svcb_record_info is not failed
+        - svcb_record_info.objects | length == 1
+        - svcb_record_info.objects[0].id == svcb_record.id
+        - svcb_record_info.objects[0].disabled == true
+
+    - name: Create SVCB Record with TTL
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        ttl: 3600
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+       that:
+        - svcb_record_info is not failed
+        - svcb_record_info.objects | length == 1
+        - svcb_record_info.objects[0].id == svcb_record.id
+        - svcb_record_info.objects[0].ttl == 3600
+
+    - name: Create SVCB Record with Tags
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        tags:
+          location: "site-1"
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+        that:
+          - svcb_record_info is not failed
+          - svcb_record_info.objects | length == 1
+          - svcb_record_info.objects[0].id == svcb_record.id
+          - svcb_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create SVCB Record with Inheritance Sources
+      infoblox.universal_ddi.dns_record:
+        zone: "{{ _auth_zone.id }}"
+        type: "SVCB"
+        rdata:
+          target_name: "service.example.com."
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+        that:
+          - svcb_record_info is not failed
+          - svcb_record_info.objects | length == 1
+          - svcb_record_info.objects[0].id == svcb_record.id
+          - svcb_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+    - name: Create a SVCB Record with Name in Zone and Zone
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target_name: "service.example.com."
+        type: "SVCB"
+        state: present
+      register: svcb_record
+    - name: Get information about the SVCB Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "SVCB"
+      register: svcb_record_info
+    - assert:
+        that:
+          - svcb_record_info is not failed
+          - svcb_record_info.objects | length == 1
+          - svcb_record_info.objects[0].id == svcb_record.id
+          - svcb_record_info.objects[0].name_in_zone == svcb_record.object.name_in_zone
+          - svcb_record_info.objects[0].zone == svcb_record.object.zone
+
+  always:
+    - name: "Delete SVCB Record"
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          target_name: "service.example.com."
+        type: "SVCB"
+        state: "absent"
+      ignore_errors: true
+
+    - name: "Delete Auth Zone"
+      ansible.builtin.include_role:
+       name: setup_auth_zone
+       tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+       name: setup_view
+       tasks_from: cleanup.yml

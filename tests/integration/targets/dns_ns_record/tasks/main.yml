@@ -1,0 +1,275 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - ansible.builtin.set_fact:
+        record_name: "test-ns-record-{{ 999999 | random | string }}"
+
+    # Create an NS Record (check mode)
+    - name: Create an NS Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        state: present
+      check_mode: true
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+        - ns_record is changed
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 0
+
+    - name: Create an NS Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        state: present
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+        that:
+        - ns_record is changed
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 1
+        - ns_record_info.objects[0].id == ns_record.id
+        - ns_record_info.objects[0].rdata.dname == "ns1.example.com."
+        - ns_record_info.objects[0].type == "NS"
+        - ns_record_info.objects[0].zone == ns_record.object.zone
+
+    - name: Create an NS Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "NS"
+        rdata:
+          dname: "ns1.example.com."
+        state: present
+      register: ns_record
+    - assert:
+        that:
+          - ns_record is not changed
+          - ns_record is not failed
+
+    - name: Delete the NS Record (check mode)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        state: absent
+      check_mode: true
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+        - ns_record is changed
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 1
+
+    - name: Delete the NS Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        state: absent
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 0
+
+    - name: Delete the NS Record (idempotent)
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        state: absent
+      register: ns_record
+    - assert:
+       that:
+        - ns_record is not changed
+        - ns_record is not failed
+
+    - name: Create a NS Record with comment
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        comment: "This is a test NS Record"
+        state: present
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 1
+        - ns_record_info.objects[0].id == ns_record.id
+        - ns_record_info.objects[0].comment == "This is a test NS Record"
+
+    - name: Create a NS Record with TTL
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        ttl: 5000
+        state: present
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 1
+        - ns_record_info.objects[0].id == ns_record.id
+        - ns_record_info.objects[0].ttl == 5000
+
+    - name: Create a NS Record with Disabled
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        disabled: true
+        state: present
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+          - ns_record_info is not failed
+          - ns_record_info.objects | length == 1
+          - ns_record_info.objects[0].id == ns_record.id
+          - ns_record_info.objects[0].disabled == true
+
+    - name: Create a NS Record with Tags
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        tags:
+          location: "site-1"
+        state: present
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+            - ns_record_info is not failed
+            - ns_record_info.objects | length == 1
+            - ns_record_info.objects[0].id == ns_record.id
+            - ns_record_info.objects[0].tags.location == "site-1"
+
+    - name: Create a NS Record with Inheritance sources
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        type: "NS"
+        rdata:
+          dname: "ns1.example.com."
+        inheritance_sources:
+          ttl:
+            action: "inherit"
+        state: present
+      register: ns_record
+    - name: Get information about the NS Record
+      infoblox.universal_ddi.dns_record_info:
+        filters:
+          name_in_zone: "{{ record_name }}"
+          zone: "{{ _auth_zone.id }}"
+          type: "NS"
+      register: ns_record_info
+    - assert:
+       that:
+        - ns_record_info is not failed
+        - ns_record_info.objects | length == 1
+        - ns_record_info.objects[0].id == ns_record.id
+        - ns_record_info.objects[0].inheritance_sources.ttl.action == "inherit"
+
+  always:
+    - name: Delete the NS Record
+      infoblox.universal_ddi.dns_record:
+        name_in_zone: "{{ record_name }}"
+        zone: "{{ _auth_zone.id }}"
+        rdata:
+          dname: "ns1.example.com."
+        type: "NS"
+        state: absent
+      ignore_errors: true
+
+    - name: "Delete the Auth Zone"
+      ansible.builtin.include_role:
+        name: setup_auth_zone
+        tasks_from: cleanup.yml
+
+    - name: "Delete the View"
+      ansible.builtin.include_role:
+        name: setup_view
+        tasks_from: cleanup.yml

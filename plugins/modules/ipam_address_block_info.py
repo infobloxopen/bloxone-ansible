@@ -53,37 +53,36 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
     - name: "Create an Address Block"
-      infoblox.bloxone.ipam_address_block:
+      infoblox.universal_ddi.ipam_address_block:
         address: "10.0.0.0/16"
         space: "{{ ip_space.id }}"
         tags:
-          location: "{{ tag_value }}"
+          location: "site-1"
         state: "present"
-      register: address_block
 
     - name: Get Address Block information by ID
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         id: "{{ address_block.id }}"
 
     - name: Get Address Block information by filters
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters:
           address: "10.0.0.0/16"
           space: "{{ ip_space.id }}"
 
     - name: Get Address Block information by filter query
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         filters_query: "address=='10.0.0.0/16' and space=='{{ ip_space.id }}'"
 
     - name: Get Address Block information by tag filters
-      infoblox.bloxone.ipam_address_block_info:
+      infoblox.universal_ddi.ipam_address_block_info:
         tag_filters:
-          location: "{{ tag_value }}"
+          location: "site-1"
 """
 
 RETURN = r"""
@@ -156,7 +155,7 @@ objects:
                     type: int
                     returned: Always
                 reenable_date:
-                    description: ""
+                    description: "The date at which notifications will be re-enabled automatically."
                     type: str
                     returned: Always
         asm_scope_flag:
@@ -1619,37 +1618,37 @@ objects:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description: "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description: "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description: "The number of defined IP addresses such as reservations or DNS records. It can be computed as _static_ = _used_ - _dynamic_."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description: "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description: "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import AddressBlockApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class AddressBlockInfoModule(BloxoneAnsibleModule):
+class AddressBlockInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(AddressBlockInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

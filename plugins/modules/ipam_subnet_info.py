@@ -10,9 +10,10 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: ipam_subnet_info
-short_description: Manage Subnet
+short_description: Retrieve a Subnet
 description:
-    - Manage Subnet
+    - Retrieves information about existing Subnets.
+    - The Subnet object represents a set of addresses from which addresses are assigned to network equipment interfaces.
 version_added: 2.0.0
 author: Infoblox Inc. (@infobloxopen)
 options:
@@ -53,25 +54,25 @@ options:
         required: false
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Get Subnet information by ID
-    infoblox.bloxone.ipam_subnet_info:
+    infoblox.universal_ddi.ipam_subnet_info:
       id: "{{ subnet_id }}"
 
   - name: Get Subnet information by filters (e.g. address)
-    infoblox.bloxone.ipam_subnet_info:
+    infoblox.universal_ddi.ipam_subnet_info:
       filters:
         address: "10.0.0.0/24"
 
   - name: Get Subnet information by raw filter query
-    infoblox.bloxone.ipam_subnet_info:
+    infoblox.universal_ddi.ipam_subnet_info:
       filter_query: "address=='10.0.0.0/24'"
 
   # - name: Get Subnet information by tag filters
-  #   infoblox.bloxone.ipam_subnet_info:
+  #   infoblox.universal_ddi.ipam_subnet_info:
   #     tag_filters:
   #       location: "site-1"
 """
@@ -146,7 +147,8 @@ objects:
                     type: int
                     returned: Always
                 reenable_date:
-                    description: ""
+                    description: 
+                        - "The date at which notifications will be re-enabled automatically."
                     type: str
                     returned: Always
         asm_scope_flag:
@@ -1652,37 +1654,42 @@ objects:
             returned: Always
             contains:
                 abandoned:
-                    description: ""
+                    description: 
+                        - "The number of IP addresses in the scope of the object which are in the abandoned state (issued by a DHCP server and then declined by the client)."
                     type: str
                     returned: Always
                 dynamic:
-                    description: ""
+                    description: 
+                        - "The number of IP addresses handed out by DHCP in the scope of the object. This includes all leased addresses, fixed addresses that are defined but not currently leased and abandoned leases."
                     type: str
                     returned: Always
                 static:
-                    description: ""
+                    description: 
+                        - "The number of defined IP addresses such as reservations or DNS records. It can be computed as _static_ = _used_ - _dynamic_."
                     type: str
                     returned: Always
                 total:
-                    description: ""
+                    description: 
+                        - "The total number of IP addresses available in the scope of the object."
                     type: str
                     returned: Always
                 used:
-                    description: ""
+                    description: 
+                        - "The number of IP addresses used in the scope of the object."
                     type: str
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from ipam import SubnetApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class SubnetInfoModule(BloxoneAnsibleModule):
+class SubnetInfoModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(SubnetInfoModule, self).__init__(*args, **kwargs)
         self._existing = None

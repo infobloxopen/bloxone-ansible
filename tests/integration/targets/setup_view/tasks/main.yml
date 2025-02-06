@@ -1,15 +1,15 @@
 ---
 - module_defaults:
-    group/infoblox.bloxone.all:
-      csp_url: "{{ csp_url }}"
-      api_key: "{{ api_key }}"
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
   block:
     # Create a random View name to avoid conflicts
     - ansible.builtin.set_fact:
-        name: "test-view-{{ 999999 | random | string }}"
+        dns_view_name: "my-test-view-{{ 999999 | random | string }}"
 
     - name: Create a View
-      infoblox.bloxone.dns_view:
-        name: "{{ name }}"
+      infoblox.universal_ddi.dns_view:
+        name: "{{ dns_view_name }}"
         state: present
       register: _view

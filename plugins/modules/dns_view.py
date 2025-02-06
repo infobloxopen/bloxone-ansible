@@ -1185,17 +1185,17 @@ options:
                 type: bool
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a view
-    infoblox.bloxone.dns_view:
+    infoblox.universal_ddi.dns_view:
       name: "view1"
       state: "present"
 
   - name: Create a view with Additional Fields
-    infoblox.bloxone.dns_view:
+    infoblox.universal_ddi.dns_view:
       name: "view1"
       comment: "Example DNS View"
       custom_root_ns:
@@ -1217,7 +1217,7 @@ EXAMPLES = r"""
         location: "my-location"
 
   - name: Delete a view
-    infoblox.bloxone.dns_view:
+    infoblox.universal_ddi.dns_view:
       name: "view1"
       state: "absent"
 """  # noqa: E501
@@ -3772,20 +3772,20 @@ item:
 """  # noqa: E501
 
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from dns_config import View, ViewApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ViewModule(BloxoneAnsibleModule):
+class ViewModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ViewModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = View.from_dict(self._payload_params)
         self._existing = None

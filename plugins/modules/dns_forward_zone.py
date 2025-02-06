@@ -88,19 +88,20 @@ options:
         description:
             - "The resource identifier."
         type: str
+        required: true
 
 extends_documentation_fragment:
-    - infoblox.bloxone.common
+    - infoblox.universal_ddi.common
 """  # noqa: E501
 
 EXAMPLES = r"""
   - name: Create a Forward Zone
-    infoblox.bloxone.dns_forward_zone:
+    infoblox.universal_ddi.dns_forward_zone:
       fqdn: "example_zone."
       state: present
 
   - name: Create an Forward Zone with Additional Fields
-    infoblox.bloxone.dns_forward_zone:
+    infoblox.universal_ddi.dns_forward_zone:
       fqdn: "example_zone."
       comment: "Example Forward Zone"
       disabled: true
@@ -109,10 +110,10 @@ EXAMPLES = r"""
       notify: true
       state: "present"
       tags:
-        location: "my-location"
+        location: "site-1"
 
   - name: Delete the Zone
-    infoblox.bloxone.dns_forward_zone:
+    infoblox.universal_ddi.dns_forward_zone:
       name: "example_zone."
       state: "absent"
 """  # noqa: E501
@@ -255,20 +256,20 @@ item:
                     returned: Always
 """  # noqa: E501
 
-from ansible_collections.infoblox.bloxone.plugins.module_utils.modules import BloxoneAnsibleModule
+from ansible_collections.infoblox.universal_ddi.plugins.module_utils.modules import UniversalDDIAnsibleModule
 
 try:
-    from bloxone_client import ApiException, NotFoundException
     from dns_config import ForwardZone, ForwardZoneApi
+    from universal_ddi_client import ApiException, NotFoundException
 except ImportError:
-    pass  # Handled by BloxoneAnsibleModule
+    pass  # Handled by UniversalDDIAnsibleModule
 
 
-class ForwardZoneModule(BloxoneAnsibleModule):
+class ForwardZoneModule(UniversalDDIAnsibleModule):
     def __init__(self, *args, **kwargs):
         super(ForwardZoneModule, self).__init__(*args, **kwargs)
 
-        exclude = ["state", "csp_url", "api_key", "id"]
+        exclude = ["state", "csp_url", "api_key", "portal_url", "portal_key", "id"]
         self._payload_params = {k: v for k, v in self.params.items() if v is not None and k not in exclude}
         self._payload = ForwardZone.from_dict(self._payload_params)
         self._existing = None
@@ -306,7 +307,7 @@ class ForwardZoneModule(BloxoneAnsibleModule):
                     return None
                 raise e
         else:
-            filter = f"fqdn=='{self.params['fqdn']}'"
+            filter = f"fqdn=='{self.params['fqdn']}' and view=='{self.params['view']}'"
             resp = ForwardZoneApi(self.client).list(filter=filter)
             if len(resp.results) == 1:
                 return resp.results[0]
@@ -327,7 +328,7 @@ class ForwardZoneModule(BloxoneAnsibleModule):
             return None
 
         update_body = self.payload
-        update_body = self.validate_readonly_on_update(self.existing, update_body, ["fqdn"])
+        update_body = self.validate_readonly_on_update(self.existing, update_body, ["fqdn", "view"])
 
         resp = ForwardZoneApi(self.client).update(id=self.existing.id, body=update_body)
         return resp.result.model_dump(by_alias=True, exclude_none=True)
@@ -399,13 +400,13 @@ def main():
         nsgs=dict(type="list", elements="str"),
         parent=dict(type="str"),
         tags=dict(type="dict"),
-        view=dict(type="str"),
+        view=dict(type="str", required=True),
     )
 
     module = ForwardZoneModule(
         argument_spec=module_args,
         supports_check_mode=True,
-        required_if=[("state", "present", ["fqdn"])],
+        required_if=[("state", "present", ["fqdn", "view"])],
     )
 
     module.run_command()

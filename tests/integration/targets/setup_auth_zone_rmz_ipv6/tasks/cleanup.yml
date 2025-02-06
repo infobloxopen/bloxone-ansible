@@ -1,0 +1,14 @@
+---
+- module_defaults:
+    group/infoblox.universal_ddi.all:
+      portal_url: "{{ portal_url }}"
+      portal_key: "{{ portal_key }}"
+
+  block:
+    - name: "Delete the IPv6 Reverse Mapping Zone"
+      infoblox.universal_ddi.dns_auth_zone:
+        fqdn: "0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.1.0.0.2.ip6.arpa."
+        primary_type: cloud
+        view: "{{ _view.id }}"
+        state: absent
+      ignore_errors: true
